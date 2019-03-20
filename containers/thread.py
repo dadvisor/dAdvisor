@@ -45,7 +45,7 @@ class ContainerThread(Thread):
 
     def containers_filtered(self):
         """
-        :return: A dict without the keys for its own container and the nslookup-container
+        :return: A dict without the keys for its own container and the DNS-container
         """
         filter_set = {'dadvisor', 'dns'}
         return {k: v for k, v in self.containers.items() if set(v.aliases) & filter_set == set()}
