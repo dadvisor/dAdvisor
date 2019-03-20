@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="{{ url_for('static', filename='style.css')}}" rel="stylesheet"/>
+    <meta charset=utf-8/>
+    <title>Visualization graph</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.js"></script>
+    <script src="https://raw.githubusercontent.com/cytoscape/cytoscape.js-dagre/master/cytoscape-dagre.js"></script>
+    <script src="{{ url_for('static', filename='code.js')}}"></script>
+</head>
+<body>
+<div id="cy"></div>
+</body>
+</html>
