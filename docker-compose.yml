@@ -1,0 +1,11 @@
+version: '2'
+services:
+  web:
+    container_name: web
+    image: dadvisor/web:latest
+    ports:
+      - 5000:5000
+  req:
+    image: dadvisor/req:latest
+    depends_on:
+    - web

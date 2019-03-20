@@ -7,7 +7,7 @@ Suppose you have a large project with many docker containers, and you don't know
 An example docker-compose can be found in the root folder of this project.
 It'll boot up a web-service (*web*) and a request-maker (*req*). Use the following command for starting those containers:
 
-	docker-compose up --build -d
+	docker-compose up -d
 
 ## Find out the network traffic
 In order to find out the traffic, you'll need two new containers:
