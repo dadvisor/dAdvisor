@@ -47,7 +47,7 @@ class ContainerThread(Thread):
         """
         :return: A dict without the keys for its own container and the nslookup-container
         """
-        filter_set = {'nslookup', 'inspector'}
+        filter_set = {'dadvisor', 'dns'}
         return {k: v for k, v in self.containers.items() if set(v.aliases) & filter_set == set()}
 
     def get_hash_from_ip(self, ip):

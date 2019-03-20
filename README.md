@@ -15,14 +15,15 @@ In order to find out the traffic, you'll need two new containers:
 2. A container to inspect the network traffic.
 
 For 1. you'll need the following commands:
-Note: change --net to the network in which you want to find out the traffic
+
+Note: change `--net` to the network in which you want to find out the traffic
 
 	docker run \
-	  --net=dadvisor_default \ 
+	  --net=dadvisor_default \
 	  --publish=5001:5001 \
 	  --name=dns \
 	  --detach=true \
-	  dadvisor/dns:latest
+	  dadvisor/dns:latest 
 
 For 2. you'll need the following commands:
 
