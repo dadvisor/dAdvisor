@@ -1,6 +1,8 @@
 from threading import Thread
 from time import sleep
 
+import requests
+
 from peers.peer import Peer
 
 
@@ -23,6 +25,13 @@ class PeersThread(Thread):
     def validate_peers(self):
         # TODO: implement method
         print('Validating peers')
+        for p in self.peers:
+            try:
+                json = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
+                print(json)
+            except ConnectionError as e:
+                print('Connection error: {}'.format(e))
+                self.peers.remove(p)
 
     def add_peer(self, host, port):
         p = Peer(host, port)
