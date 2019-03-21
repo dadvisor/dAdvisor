@@ -4,17 +4,20 @@ $(function () { // on dom ready
         let data = {edges: [], nodes: []};
 
         let gets = [];
+        let result = [];
         for (let i = 0; i < peers.length; i++) {
             let host = peers[i].host;
             let port = peers[i].port;
-            gets.push($.getJSON(`http://${host}:${port}/data`));
+            gets.push($.getJSON(`http://${host}:${port}/data`, function(success){
+                result.push(success);
+            }));
         }
-        $.when.apply($, gets).done(function (other_peer_list) {
-            console.log(other_peer_list);
-            for (let i = 0; i < other_peer_list.length; i++) {
-                data.edges.push.apply(data.edges, other_peer_list[i].edges);
-                data.nodes.push.apply(data.nodes, other_peer_list[i].nodes);
-            }
+        $.when.apply($, gets).then(function () {
+            console.log(result);
+            // for (let i = 0; i < other_peer_list.length; i++) {
+            //     data.edges.push.apply(data.edges, other_peer_list[i].edges);
+            //     data.nodes.push.apply(data.nodes, other_peer_list[i].nodes);
+            // }
 
             console.log(data.edges);
             console.log(data.edges[0]);
