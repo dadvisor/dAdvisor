@@ -2,6 +2,7 @@ import requests
 from flask import Flask, jsonify, render_template, request
 
 IP = requests.get('https://api.ipify.org').text
+PEERS = []
 
 
 def create_web_app(container_thread, inspector_thread):
@@ -34,5 +35,13 @@ def create_web_app(container_thread, inspector_thread):
             'nodes': container_thread.get_nodes(IP, hash_length),
             'edges': inspector_thread.get_edges(container_thread, hash_length)
         })
+
+    @app.route('/peers')
+    def peers():
+        return jsonify(PEERS)
+
+    @app.route('/peer/<host>/<port')
+    def peer(host, port):
+        peers.add({'host': host, 'port': port})
 
     return app
