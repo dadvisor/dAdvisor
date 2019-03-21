@@ -13,11 +13,10 @@ $(function () { // on dom ready
             }));
         }
         $.when.apply($, gets).then(function () {
-            console.log(result);
-            // for (let i = 0; i < other_peer_list.length; i++) {
-            //     data.edges.push.apply(data.edges, other_peer_list[i].edges);
-            //     data.nodes.push.apply(data.nodes, other_peer_list[i].nodes);
-            // }
+            for (let i = 0; i < result.length; i++) {
+                data.edges.push.apply(data.edges, result[i].edges);
+                data.nodes.push.apply(data.nodes, result[i].nodes);
+            }
 
             console.log(data.edges);
             console.log(data.edges[0]);
