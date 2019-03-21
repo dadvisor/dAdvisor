@@ -1,15 +1,20 @@
 $(function () { // on dom ready
 
     $.getJSON('/peers', function (peers) {
-        let data = {'edges': [], 'nodes': []};
+        let data = {edges: [], nodes: []};
 
+        let count = 0;
         for (let i = 0; i < peers.length; i++) {
             let host = peers[i].host;
             let port = peers[i].port;
             $.getJSON(`http://${host}:${port}/data`, function (peer_data) {
                 data.edges.push.apply(data.edges, peer_data.edges);
                 data.nodes.push.apply(data.nodes, peer_data.nodes);
+                count++;
             });
+        }
+        while (count < peers.length) {
+            console.log('Waiting');
         }
         console.log(data.edges);
         console.log(data.edges[0]);
