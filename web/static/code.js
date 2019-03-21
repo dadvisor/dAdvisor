@@ -14,6 +14,7 @@ $(function () { // on dom ready
         }
         $.when.apply($, gets).then(function () {
             for (let i = 0; i < result.length; i++) {
+                console.log(result[i]);
                 data.edges.push.apply(data.edges, result[i].edges);
                 data.nodes.push.apply(data.nodes, result[i].nodes);
             }
