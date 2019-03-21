@@ -29,7 +29,7 @@ class PeersThread(Thread):
             try:
                 json = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
                 print(json)
-            except ConnectionError as e:
+            except requests.ConnectionError as e:
                 print('Connection error: {}'.format(e))
                 self.peers.remove(p)
 
