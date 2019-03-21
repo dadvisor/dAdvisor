@@ -22,5 +22,9 @@ def parse_row(row):
     parts = row.rstrip().split(' ')
     src = remove_port(parts[2])
     dst = remove_port(parts[4])
-    size = parse_size(parts[-1])
+
+    if parts[-3] == 'HTTP/1.1':
+        size = parse_size(parts[-5].replace(':', ''))
+    else:
+        size = parse_size(parts[-1])
     return src, dst, size
