@@ -31,14 +31,15 @@ class PeersThread(Thread):
                 continue
             try:
                 other_peers = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
+                other_peers = [Peer(p2['host'], p2['port']) for p2 in other_peers]
                 # Expose own node if it is not in the other_peers-list
                 if self.my_peer not in other_peers:
                     requests.get(
-                        'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port, self.my_peer.host, self.my_peer.port))
+                        'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port, self.my_peer.host,
+                                                              self.my_peer.port)).json()
 
                 # Add new peers (if they're not in the list)
                 for p2 in other_peers:
-                    p2 = Peer(p2.host, p2.port)
                     if p2 not in self.peers:
                         self.peers.append(p2)
             except requests.ConnectionError as e:
