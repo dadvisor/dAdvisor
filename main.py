@@ -2,6 +2,7 @@ from containers import start_container_thread
 from inspector import start_inspector_thread
 from web import create_web_app
 
+
 if __name__ == '__main__':
     container_thread = start_container_thread()
     inspector_thread = start_inspector_thread()

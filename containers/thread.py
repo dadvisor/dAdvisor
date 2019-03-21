@@ -34,13 +34,14 @@ class ContainerThread(Thread):
             if h not in self.containers:
                 self.containers[h] = ContainerInfo(h, obj[key])
 
-    def get_nodes(self, hash_length):
+    def get_nodes(self, ip, hash_length):
         """
         :return: A list of dicts with the containers
         """
         nodes = self.containers_filtered()
         images = set(v.image for v in nodes.values())
-        return [{'data': {'id': i}} for i in images] + \
+        return [{'data': {'id': ip}}] + \
+               [{'data': {'id': i, 'parent': ip}} for i in images] + \
                [{'data': {'id': k[:hash_length], 'parent': v.image}} for k, v in nodes.items()]
 
     def containers_filtered(self):

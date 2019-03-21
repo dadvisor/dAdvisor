@@ -1,4 +1,7 @@
+import requests
 from flask import Flask, jsonify, render_template, request
+
+IP = requests.get('https://api.ipify.org').text
 
 
 def create_web_app(container_thread, inspector_thread):
@@ -16,6 +19,10 @@ def create_web_app(container_thread, inspector_thread):
     def inspect(src):
         return jsonify(inspector_thread.inspect(src))
 
+    @app.route('/ip')
+    def ip():
+        return IP
+
     @app.route('/graph')
     def graph():
         return render_template('index.html')
@@ -24,7 +31,7 @@ def create_web_app(container_thread, inspector_thread):
     def data():
         hash_length = 12
         return jsonify({
-            'nodes': container_thread.get_nodes(hash_length),
+            'nodes': container_thread.get_nodes(IP, hash_length),
             'edges': inspector_thread.get_edges(container_thread, hash_length)
         })
 
