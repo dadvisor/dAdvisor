@@ -17,16 +17,12 @@ $(function () { // on dom ready
                 data.edges.push.apply(data.edges, result[i].edges);
                 data.nodes.push.apply(data.nodes, result[i].nodes);
             }
-
-            console.log(data.edges);
-            console.log(data.edges[0]);
-            console.log(data.edges.length);
             for (let i = 0; i < data.edges.length; i++) {
                 data.edges[i].data.id = i;
             }
-            console.log(data);
-
             displayGraph(data);
+        }).fail(function(){
+            console.log('Something failed', data);
         });
     });
 
@@ -45,7 +41,7 @@ $(function () { // on dom ready
                 {
                     selector: 'node',
                     css: {
-                        'content': 'data(id)',
+                        'content': 'data(name)',
                         'text-valign': 'center',
                         'text-halign': 'center'
                     }

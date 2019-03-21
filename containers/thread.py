@@ -40,9 +40,14 @@ class ContainerThread(Thread):
         """
         nodes = self.containers_filtered()
         images = set(v.image for v in nodes.values())
-        return [{'data': {'id': ip}}] + \
-               [{'data': {'id': i, 'parent': ip}} for i in images] + \
-               [{'data': {'id': k[:hash_length], 'parent': v.image}} for k, v in nodes.items()]
+        return [{'data': {'id': ip,
+                          'name': ip}}] + \
+               [{'data': {'id': ip + i,
+                          'parent': ip,
+                          'name': i}} for i in images] + \
+               [{'data': {'id': k[:hash_length],
+                          'parent': ip + v.image,
+                          'name': k[:hash_length]}} for k, v in nodes.items()]
 
     def containers_filtered(self):
         """
