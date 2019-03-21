@@ -11,7 +11,7 @@ $(function () { // on dom ready
                 data.nodes.push.apply(data.nodes, peer_data.nodes);
             });
         }
-        for (let i = 0; i<data.edges; i++){
+        for (let i = 0; i<data.edges.length; i++){
             data.edges[i].data.id = i;
         }
         console.log(data);
