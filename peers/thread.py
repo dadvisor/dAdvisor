@@ -23,12 +23,14 @@ class PeersThread(Thread):
             sleep(self.sleep_time)
 
     def validate_peers(self):
-        # TODO: implement method
-        print('Validating peers')
+        print('Validating peers: {}'.format(len(self.peers)))
         for p in self.peers:
             try:
-                json = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
-                print(json)
+                other_peers = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
+                for p2 in other_peers:
+                    p2 = Peer(p2.host, p2.port)
+                    if p2 not in self.peers:
+                        self.peers.append(p2)
             except requests.ConnectionError as e:
                 print('Connection error: {}'.format(e))
                 self.peers.remove(p)

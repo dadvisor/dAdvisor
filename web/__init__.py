@@ -39,8 +39,13 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     def peers():
         return jsonify([p.__dict__ for p in peers_thread.peers])
 
-    @app.route('/peers/add/<host>/<port>')
-    def peers_add(host, port):
+    @app.route('/peers/add/<host_port>')
+    def peers_add(host_port):
+        """
+        :param host_port: Example: 35.204.153.106:8800
+        :return: A json object with {'host': '35.204.153.106', 'port': '8800'}
+        """
+        host, port = host_port.split(':')
         p = peers_thread.add_peer(host, port)
         return jsonify(p.__dict__)
 
