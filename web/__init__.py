@@ -40,7 +40,7 @@ def create_web_app(container_thread, inspector_thread):
     def peers():
         return jsonify(PEERS)
 
-    @app.route('/peer/<host>/<port')
+    @app.route('/peer/<host>/<port>')
     def peer(host, port):
         p = {'host': host, 'port': port}
         peers.add(p)
