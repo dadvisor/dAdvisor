@@ -15,6 +15,7 @@ class PeersThread(Thread):
         self.running = True
         self.sleep_time = 10
         self.my_peer = Peer(IP, port)
+        self.my_peer.can_be_removed = False
         self.peers = [self.my_peer]
 
         self.init_peers()
@@ -35,7 +36,8 @@ class PeersThread(Thread):
         if peers != '':
             for peer in peers.split(','):
                 host, port = peer.split(':')
-                self.add_peer(host, port)
+                p = self.add_peer(host, port)
+                p.can_be_removed = False
 
     def validate_peers(self):
         print('Validating peers: {}'.format(len(self.peers)))
@@ -57,7 +59,8 @@ class PeersThread(Thread):
                         self.peers.append(p2)
             except requests.ConnectionError as e:
                 print('Connection error: {}'.format(e))
-                self.peers.remove(p)
+                if p.can_be_removed:
+                    self.peers.remove(p)
 
     def add_peer(self, host, port):
         p = Peer(host, port)
