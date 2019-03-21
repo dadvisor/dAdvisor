@@ -9,8 +9,7 @@ $(function () { // on dom ready
             let port = peers[i].port;
             gets.push($.getJSON(`http://${host}:${port}/data`));
         }
-        console.log(gets);
-        $.when(gets).done(function (other_peer_list) {
+        $.when.apply($, gets).done(function (other_peer_list) {
             console.log(other_peer_list);
             for (let i = 0; i < other_peer_list.length; i++) {
                 data.edges.push.apply(data.edges, other_peer_list[i].edges);
