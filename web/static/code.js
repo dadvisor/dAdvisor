@@ -6,13 +6,15 @@ $(function () { // on dom ready
         for (let i = 0; i < peers.length; i++) {
             let host = peers[i].host;
             let port = peers[i].port;
-            $.getJSON(`http://${host}:${port}/data`, function(peer_data){
+            $.getJSON(`http://${host}:${port}/data`, function (peer_data) {
                 data.edges.push.apply(data.edges, peer_data.edges);
                 data.nodes.push.apply(data.nodes, peer_data.nodes);
             });
         }
+        console.log(data.edges);
+        console.log(data.edges[0]);
         console.log(data.edges.length);
-        for (let i = 0; i<data.edges.length; i++){
+        for (let i = 0; i < data.edges.length; i++) {
             data.edges[i].data.id = i;
         }
         console.log(data);
