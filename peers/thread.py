@@ -31,6 +31,10 @@ class PeersThread(Thread):
                 continue
             try:
                 other_peers = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
+                # Expose own node if it is not in the other_peers-list
+                if self.my_peer not in other_peers:
+                    requests.get(
+                        'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port, self.my_peer.host, self.my_peer.port))
 
                 # Add new peers (if they're not in the list)
                 for p2 in other_peers:
