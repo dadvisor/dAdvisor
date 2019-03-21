@@ -4,15 +4,17 @@ from time import sleep
 import requests
 
 from peers.peer import Peer
+from web import IP
 
 
 class PeersThread(Thread):
 
-    def __init__(self):
+    def __init__(self, port):
         Thread.__init__(self)
         self.running = True
         self.sleep_time = 10
-        self.peers = []
+        self.my_peer = Peer(IP, port)
+        self.peers = [self.my_peer]
 
     def run(self):
         while self.running:
@@ -25,8 +27,12 @@ class PeersThread(Thread):
     def validate_peers(self):
         print('Validating peers: {}'.format(len(self.peers)))
         for p in self.peers:
+            if p == self.my_peer:  # don't validate its own peer
+                continue
             try:
                 other_peers = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
+
+                # Add new peers (if they're not in the list)
                 for p2 in other_peers:
                     p2 = Peer(p2.host, p2.port)
                     if p2 not in self.peers:
