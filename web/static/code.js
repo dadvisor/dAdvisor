@@ -1,14 +1,14 @@
 $(function () { // on dom ready
 
-    $.getJSON('/peers', function (result) {
+    $.getJSON('/peers', function (peers) {
         let data = {'edges': [], 'nodes': []};
 
-        for (let i = 0; i < result.length; i++) {
-            let host = result[i].host;
-            let port = result[i].port;
+        for (let i = 0; i < peers.length; i++) {
+            let host = peers[i].host;
+            let port = peers[i].port;
             $.getJSON(`http://${host}:${port}/data`, function(peer_data){
-                data.edges += peer_data.edges;
-                data.nodes += peer_data.nodes;
+                data.edges.push.apply(data.edges, peer_data.edges);
+                data.nodes.push.apply(data.nodes, peer_data.nodes);
             });
         }
         console.log(data);
