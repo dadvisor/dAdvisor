@@ -48,7 +48,6 @@ class InspectorThread(Thread):
         :return: A list with a dict per data-flow of the containers
         """
         edges = []
-        count = 0
         containers = container_thread.containers_filtered()
         ip_set = set([v.ip for v in containers.values()])
         for container_info in containers.values():
@@ -56,12 +55,10 @@ class InspectorThread(Thread):
             if src in self.data:
                 for dst in set(self.data[src].keys()) & ip_set:
                     edges.append({'data': {
-                        'id': count,
                         'source': container_thread.get_hash_from_ip(src)[:hash_length],
                         'target': container_thread.get_hash_from_ip(dst)[:hash_length],
                         'bytes': self.data[src][dst]
                     }})
-                    count += 1
         return self.adjust_width(edges)
 
     @staticmethod

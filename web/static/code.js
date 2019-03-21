@@ -1,7 +1,19 @@
 $(function () { // on dom ready
 
-    $.getJSON('/data', function (result) {
-        displayGraph(result);
+    $.getJSON('/peers', function (result) {
+        let data = {'edges': [], 'nodes': []};
+
+        for (let i = 0; i < result.length; i++) {
+            let host = result[i].host;
+            let port = result[i].port;
+            $.getJSON(`http://${host}:${port}/data`, function(peer_data){
+                data.edges += peer_data.edges;
+                data.nodes += peer_data.nodes;
+            });
+        }
+        console.log(data);
+
+        displayGraph(data);
     });
 
     let bytesToSize = function (bytes) {
@@ -41,7 +53,9 @@ $(function () { // on dom ready
                         'curve-style': 'bezier',
                         'target-arrow-shape': 'triangle',
                         'width': 'data(width)',
-                        'label': function(ele){ return bytesToSize(parseInt(ele.data('bytes'))); }
+                        'label': function (ele) {
+                            return bytesToSize(parseInt(ele.data('bytes')));
+                        }
                     }
                 }
             ],
