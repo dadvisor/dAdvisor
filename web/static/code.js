@@ -7,9 +7,11 @@ $(function () { // on dom ready
         for (let i = 0; i < peers.length; i++) {
             let host = peers[i].host;
             let port = peers[i].port;
-            gets.push($.ajax(`http://${host}:${port}/data`));
+            gets.push($.getJSON(`http://${host}:${port}/data`));
         }
+        console.log(gets);
         $.when(gets).done(function (other_peer_list) {
+            console.log(other_peer_list);
             for (let i = 0; i < other_peer_list.length; i++) {
                 data.edges.push.apply(data.edges, other_peer_list[i].edges);
                 data.nodes.push.apply(data.nodes, other_peer_list[i].nodes);
