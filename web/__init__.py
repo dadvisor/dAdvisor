@@ -2,10 +2,9 @@ import requests
 from flask import Flask, jsonify, render_template, request
 
 IP = requests.get('https://api.ipify.org').text
-PEERS = []
 
 
-def create_web_app(container_thread, inspector_thread):
+def create_web_app(container_thread, inspector_thread, peers_thread):
     app = Flask(__name__)
 
     @app.route('/containers')
@@ -38,12 +37,11 @@ def create_web_app(container_thread, inspector_thread):
 
     @app.route('/peers')
     def peers():
-        return jsonify(PEERS)
+        return jsonify([p.__dict__ for p in peers_thread.peers])
 
-    @app.route('/peer/<host>/<port>')
-    def peer(host, port):
-        p = {'host': host, 'port': port}
-        peers.add(p)
-        return jsonify(p)
+    @app.route('/peers/add/<host>/<port>')
+    def peers_add(host, port):
+        p = peers_thread.add_peer(host, port)
+        return jsonify(p.__dict__)
 
     return app
