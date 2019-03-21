@@ -5,6 +5,7 @@ import requests
 
 from peers.peer import Peer
 from web import IP
+import os
 
 
 class PeersThread(Thread):
@@ -16,6 +17,8 @@ class PeersThread(Thread):
         self.my_peer = Peer(IP, port)
         self.peers = [self.my_peer]
 
+        self.init_peers()
+
     def run(self):
         while self.running:
             try:
@@ -23,6 +26,16 @@ class PeersThread(Thread):
             except Exception as e:
                 print(e)
             sleep(self.sleep_time)
+
+    def init_peers(self):
+        """ Read peers from the environment variable and add them to the list.
+            input: OTHER_PEERS=35.204.153.106:8800,35.204.153.106:8800
+        """
+        peers = os.environ.get('OTHER_PEERS', '')
+        if peers != '':
+            for peer in peers.split(','):
+                host, port = peer.split(':')
+                self.add_peer(host, port)
 
     def validate_peers(self):
         print('Validating peers: {}'.format(len(self.peers)))
