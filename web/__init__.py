@@ -1,11 +1,13 @@
 import requests
 from flask import Flask, jsonify, render_template, request
+from flask_cors import CORS
 
 IP = requests.get('https://api.ipify.org').text
 
 
 def create_web_app(container_thread, inspector_thread, peers_thread):
     app = Flask(__name__)
+    CORS(app)
 
     @app.route('/containers')
     def containers():
