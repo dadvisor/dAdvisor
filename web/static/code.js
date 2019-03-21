@@ -12,7 +12,7 @@ $(function () { // on dom ready
             });
         }
         for (let i = 0; i<data.edges; i++){
-            data.edges[i].id = i;
+            data.edges[i].data.id = i;
         }
         console.log(data);
 
