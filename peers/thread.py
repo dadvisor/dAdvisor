@@ -1,7 +1,7 @@
 from threading import Thread
 from time import sleep
 
-from peers import Peer
+from peers.peer import Peer
 
 
 class PeersThread(Thread):
