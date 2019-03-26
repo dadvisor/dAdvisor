@@ -1,3 +1,5 @@
+import re
+
 def remove_port(s):
     """
     Removes the last part of the string, which is the port.
@@ -15,22 +17,20 @@ def parse_size(s):
     Example output: 1234
     """
     s = s.replace('(', '').replace(')', '')
-    try:
-        return int(s)
-    except ValueError:
-        print('Cannot parse {}'.format(s))
-        return 0
+    return int(s)
 
 
 def parse_row(row):
-    parts = row.rstrip().split(' ')
+    row = row.rstrip()
+    parts = row.split(' ')
     src = remove_port(parts[2])
     dst = remove_port(parts[4])
 
-    if parts[-3] == 'HTTP/1.1':
-        size = parse_size(parts[-6].replace(':', ''))
-    elif parts[-1] == 'HTTP/1.1':
-        size = parse_size(parts[-6].replace(':', ''))
-    else:
+    try:
         size = parse_size(parts[-1])
+    except ValueError:
+        span = re.search('length: \d', row).span()
+        span[0] += len('length: ')
+        print(row[span[0]:span[1]])
+        size = parse_size(row[span[0]:span[1]])
     return src, dst, size
