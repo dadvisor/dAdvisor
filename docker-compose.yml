@@ -9,3 +9,5 @@ services:
     image: dadvisor/req:latest
     depends_on:
     - web
+    environment:
+    - HOST=35.204.201.38:5000
