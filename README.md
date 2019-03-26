@@ -18,6 +18,7 @@ In order to find out the traffic, you'll need the use the following command:
 	  --volume=/:/rootfs:ro \
 	  --volume=/var/run:/var/run:ro \
 	  --volume=/sys:/sys:ro \
+	  --volume=/var/run/docker.sock:/var/run/docker.sock \
 	  --volume=/var/lib/docker/:/var/lib/docker:ro \
 	  --volume=/dev/disk/:/dev/disk:ro \
 	  --detach=true \
