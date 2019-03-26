@@ -25,6 +25,17 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     def ip():
         return IP
 
+    @app.route('/ip/name')
+    def ip_name(name):
+        import subprocess
+        cmd = "docker ps -q | " \
+              "xargs -n 1 docker inspect --format '{{ .NetworkSettings.IPAddress }} {{ .Name }}' | " \
+              "grep " + name
+
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+
+        return jsonify([p.communicate()[0].split(' ')[0]])
+
     @app.route('/graph')
     def graph():
         return render_template('index.html')
