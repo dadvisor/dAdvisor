@@ -14,10 +14,13 @@ class ContainerInfo(object):
     def discover_ip(self):
         for name in self.aliases:
             try:
-                p = subprocess.Popen(('docker', 'ps', '', '-q', '|', 'xargs', '-n', '1', 'docker', 'inspect',
-                                      "--format '{{ .NetworkSettings.IPAddress }} {{ .Name }}'", '|', 'grep', name),
-                                     stdout=subprocess.PIPE)
-                return p.communicate()[0]
+                cmd = "docker ps -q | " \
+                      "xargs -n 1 docker inspect --format '{{ .NetworkSettings.IPAddress }} {{ .Name }}' | " \
+                      "grep " + name
+
+                p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+
+                return p.communicate()[0].split(' ')[0]
             except Exception as e:
                 print(e)
                 continue
