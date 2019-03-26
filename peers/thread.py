@@ -65,7 +65,7 @@ class PeersThread(Thread):
             requests.get(
                 'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port, self.my_peer.host,
                                                       self.my_peer.port)).json()
-        except ValueError:
+        except Exception:
             print('Cannot send an address to {}'.format(p))
 
     def add_peer(self, host, port):
