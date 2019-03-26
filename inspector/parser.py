@@ -15,7 +15,11 @@ def parse_size(s):
     Example output: 1234
     """
     s = s.replace('(', '').replace(')', '')
-    return int(s)
+    try:
+        return int(s)
+    except ValueError:
+        print('Cannot parse {}'.format(s))
+        return 0
 
 
 def parse_row(row):
