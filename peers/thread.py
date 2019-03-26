@@ -1,3 +1,4 @@
+import os
 from threading import Thread
 from time import sleep
 
@@ -5,7 +6,6 @@ import requests
 
 from peers.peer import Peer
 from web import IP
-import os
 
 
 class PeersThread(Thread):
@@ -49,9 +49,7 @@ class PeersThread(Thread):
                 other_peers = [Peer(p2['host'], p2['port']) for p2 in other_peers]
                 # Expose own node if it is not in the other_peers-list
                 if self.my_peer not in other_peers:
-                    requests.get(
-                        'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port, self.my_peer.host,
-                                                              self.my_peer.port)).json()
+                    self.request_other_peer(p)
 
                 # Add new peers (if they're not in the list)
                 for p2 in other_peers:
@@ -62,11 +60,17 @@ class PeersThread(Thread):
                 if p.can_be_removed:
                     self.peers.remove(p)
 
+    def request_other_peer(self, p):
+        try:
+            requests.get(
+                'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port, self.my_peer.host,
+                                                      self.my_peer.port)).json()
+        except ValueError:
+            print('Cannot send an address to {}'.format(p))
+
     def add_peer(self, host, port):
         p = Peer(host, port)
         if p not in self.peers:
             self.peers.append(p)
-            requests.get(
-                'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port, self.my_peer.host,
-                                                      self.my_peer.port)).json()
+            self.request_other_peer(p)
         return p
