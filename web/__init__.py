@@ -25,7 +25,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     def ip():
         return IP
 
-    @app.route('/ip/name')
+    @app.route('/ip/<name>')
     def ip_name(name):
         import subprocess
         cmd = "docker ps -q | " \
