@@ -9,10 +9,13 @@ class ContainerInfo(object):
         self.creation_time = str(load['creation_time'])
         self.aliases = [str(s) for s in load['aliases']]
         self.image = str(load['image'])
-        self.ip = ''
-        self.discover_ip()
+        self.__ip = ''
 
-    def discover_ip(self):
+    @property
+    def ip(self):
+        if self.__ip:
+            return self.__ip
+
         for name in self.aliases:
             try:
                 cmd = "curl --unix-socket /var/run/docker.sock http://localhost/containers/{}/json".format(name)
@@ -20,8 +23,9 @@ class ContainerInfo(object):
                 p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
                 data = json.loads(p.communicate()[0])
                 print(data)
-                return str(data['NetworkSettings']['IPAddress'])
+                self.__ip = str(data['NetworkSettings']['IPAddress'])
+                return self.__ip
             except Exception as e:
                 print(e)
                 continue
-        return ''
+        return self.__ip
