@@ -2,6 +2,7 @@ FROM google/cadvisor:latest
 
 # Install inspector
 RUN apk add --update tcpdump
+RUN apk add curl
 
 # Install pip and python
 RUN apk add --no-cache python3
