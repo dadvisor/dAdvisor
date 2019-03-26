@@ -10,22 +10,7 @@ It'll boot up a web-service (*web*) and a request-maker (*req*). Use the followi
 	docker-compose up -d
 
 ## Find out the network traffic
-In order to find out the traffic, you'll need two new containers:
-1. A container inside the network to perform a DNS translation from container-ID to IP-address.
-2. A container to inspect the network traffic.
-
-For 1. you'll need the following commands:
-
-Note: change `--net` to the network in which you want to find out the traffic
-
-	docker run \
-	  --net=dadvisor_default \
-	  --publish=5001:5001 \
-	  --name=dns \
-	  --detach=true \
-	  dadvisor/dns:latest 
-
-For 2. you'll need the following commands:
+In order to find out the traffic, you'll need the use the following command:
 
 	docker run \
 	  --name=dadvisor \
@@ -37,3 +22,9 @@ For 2. you'll need the following commands:
 	  --volume=/dev/disk/:/dev/disk:ro \
 	  --detach=true \
 	  dadvisor/dadvisor:latest
+
+## Output
+When the containers are up and running, it generates a graph that can be visualized on: [localhost:8800/graph](localhost:8800/graph).
+
+A possible graph for two contains that produces requests and one web-service is shown below.
+

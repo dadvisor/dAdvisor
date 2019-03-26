@@ -1,6 +1,4 @@
-import json
-
-import requests
+import subprocess
 
 
 class ContainerInfo(object):
@@ -16,12 +14,11 @@ class ContainerInfo(object):
     def discover_ip(self):
         for name in self.aliases:
             try:
-                if not self.ip:
-                    r = requests.get('http://localhost:5001/{}'.format(name))
-                    array = json.loads(r.text)
-                    print(array)
-                    print('{}: {}'.format(name, array[0]))
-                    self.ip = str(array[0])
+                p = subprocess.Popen(('docker', 'ps', '', '-q', '|', 'xargs', '-n', '1', 'docker', 'inspect',
+                                      "--format '{{ .NetworkSettings.IPAddress }} {{ .Name }}'", '|', 'grep', name),
+                                     stdout=subprocess.PIPE)
+                return p.communicate()[0]
             except Exception as e:
                 print(e)
                 continue
+        return ''
