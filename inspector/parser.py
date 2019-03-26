@@ -25,6 +25,8 @@ def parse_row(row):
 
     if parts[-3] == 'HTTP/1.1':
         size = parse_size(parts[-5].replace(':', ''))
+    elif parts[-1] == 'HTTP/1.1':
+        size = parse_size(parts[-6].replace(':', ''))
     else:
         size = parse_size(parts[-1])
     return src, dst, size

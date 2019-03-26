@@ -64,5 +64,9 @@ class PeersThread(Thread):
 
     def add_peer(self, host, port):
         p = Peer(host, port)
-        self.peers.append(p)
+        if p not in self.peers:
+            self.peers.append(p)
+            requests.get(
+                'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port, self.my_peer.host,
+                                                      self.my_peer.port)).json()
         return p
