@@ -15,7 +15,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
             c = container_thread.containers_filtered()
         else:
             c = container_thread.containers
-        return jsonify({k: v.__dict__ for k, v, in c.items()})
+        return jsonify({k: v.get_dict() for k, v, in c.items()})
 
     @app.route('/inspect/<src>')
     def inspect(src):

@@ -53,8 +53,8 @@ class ContainerThread(Thread):
         """
         :return: A dict without the keys for its own container and the DNS-container
         """
-        filter_set = {'dadvisor', 'dns'}
-        return {k: v for k, v in self.containers.items() if set(v.aliases) & filter_set == set()}
+        skip = 'dadvisor'
+        return {k: v for k, v in self.containers.items() if skip in v.aliases}
 
     def get_hash_from_ip(self, ip):
         """

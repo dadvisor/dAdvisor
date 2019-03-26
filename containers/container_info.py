@@ -29,3 +29,12 @@ class ContainerInfo(object):
                 print(e)
                 continue
         return self.__ip
+
+    def get_dict(self):
+        return {
+            'hash': self.hash,
+            'creation_time': self.creation_time,
+            'aliases': self.aliases,
+            'image': self.image,
+            'ip': self.ip
+        }
