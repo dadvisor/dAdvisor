@@ -1,5 +1,3 @@
-import re
-
 def remove_port(s):
     """
     Removes the last part of the string, which is the port.
@@ -29,8 +27,6 @@ def parse_row(row):
     try:
         size = parse_size(parts[-1])
     except ValueError:
-        span = re.search('length: \d', row).span()
-        span[0] += len('length: ')
-        print(row[span[0]:span[1]])
-        size = parse_size(row[span[0]:span[1]])
+        parts = row.split('length')[1]
+        size = parse_size(parts.split(':')[0])
     return src, dst, size
