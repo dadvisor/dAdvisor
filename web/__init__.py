@@ -20,16 +20,16 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
             c = container_thread.containers
         return jsonify({k: v.get_dict() for k, v, in c.items()})
 
-    @app.route('/inspect')
-    def inspect():
-        return jsonify(inspector_thread.data)
-
     @app.route('/info')
     def info():
         return jsonify({
             'internal': socket.gethostbyname(socket.gethostname()),
             'external': IP
         })
+
+    @app.route('/inspect')
+    def inspect():
+        return jsonify(inspector_thread.get_data())
 
     @app.route('/inspect/<src>')
     def inspect_src(src):

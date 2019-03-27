@@ -1,3 +1,4 @@
+import socket
 import subprocess
 import sys
 from threading import Thread
@@ -60,6 +61,24 @@ class InspectorThread(Thread):
                         'bytes': self.data[src][dst]
                     }})
         return self.adjust_width(edges)
+
+    def get_data(self):
+        return {k: {self.lookup(k2): v2 for k2, v2 in v.items()} for k, v in self.data.items()}
+
+    @staticmethod
+    def lookup(name):
+        """
+        Returns the IP-address from a given name
+        """
+        ip_list = []
+        try:
+            ais = socket.getaddrinfo(name, 0, 0, 0, 0)
+            for result in ais:
+                ip_list.append(result[-1][0])
+        except (socket.gaierror, UnicodeError) as e:
+            print(e)
+
+        return str(ip_list)
 
     @staticmethod
     def check_installation():
