@@ -7,8 +7,9 @@ class ContainerInfo(object):
     def __init__(self, hash, load):
         self.hash = hash
         self.created = str(load['Created'])
-        self.names = load['Names']
+        self.names = load['Names'].decode('utf-8')
         self.image = str(load['Image'])
+        self.ports = str(load['Ports'])
         self.__ip = ''
 
     @property
@@ -34,6 +35,7 @@ class ContainerInfo(object):
             'hash': self.hash,
             'creation_time': self.created,
             'names': self.names,
+            'ports': self.ports,
             'image': self.image,
             'ip': self.ip
         }
