@@ -7,4 +7,7 @@ class JSONCustomEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Database):
             return obj.data
-        return JSONEncoder.default(self, obj)
+        try:
+            return JSONEncoder.default(self, obj)
+        except TypeError:
+            return obj.__repr__
