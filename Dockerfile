@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 
 EXPOSE 8800
 
-CMD ["python", "start.py"]
+CMD ["python", "main.py"]
