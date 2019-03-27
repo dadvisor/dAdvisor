@@ -20,8 +20,12 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
             c = container_thread.containers
         return jsonify({k: v.get_dict() for k, v, in c.items()})
 
+    @app.route('/inspect')
+    def inspect():
+        return jsonify(inspector_thread.inspect)
+
     @app.route('/inspect/<src>')
-    def inspect(src):
+    def inspect_src(src):
         return jsonify(inspector_thread.inspect(src))
 
     @app.route('/ip')
