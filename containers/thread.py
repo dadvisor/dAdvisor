@@ -50,7 +50,7 @@ class ContainerThread(Thread):
         :return: A dict without the key for its own container
         """
         skip = '/dadvisor'
-        return {k: v for k, v in self.containers.items() if skip in v.names}
+        return {k: v for k, v in self.containers.items() if skip not in v.names}
 
     def get_hash_from_ip(self, ip):
         """
