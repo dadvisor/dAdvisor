@@ -21,7 +21,7 @@ class Database(object):
         return self.data[index]
 
     def __repr__(self):
-        return self.data
+        return [item.__repr__ for item in self.data]
 
     def __len__(self):
         return self.length
