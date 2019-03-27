@@ -1,4 +1,4 @@
-import json
+import socket
 import subprocess
 
 import requests
@@ -23,6 +23,13 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     @app.route('/inspect')
     def inspect():
         return jsonify(inspector_thread.data)
+
+    @app.route('/info')
+    def info():
+        return jsonify({
+            'internal': socket.gethostbyname(socket.gethostname()),
+            'external': IP
+        })
 
     @app.route('/inspect/<src>')
     def inspect_src(src):
