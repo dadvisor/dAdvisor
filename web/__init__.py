@@ -22,7 +22,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
 
     @app.route('/inspect')
     def inspect():
-        return jsonify(inspector_thread.inspect)
+        return jsonify(inspector_thread.data)
 
     @app.route('/inspect/<src>')
     def inspect_src(src):
