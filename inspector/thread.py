@@ -36,7 +36,7 @@ class InspectorThread(Thread):
                         self.data[src][dst] = size
 
             except Exception:
-                print('Cannot parse row: %s' % row)
+                print('Cannot parse row: %s' % row.decode('utf-8'))
 
     def inspect(self, src):
         if src in self.data:
