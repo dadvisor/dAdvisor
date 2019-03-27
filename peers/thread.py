@@ -4,6 +4,7 @@ from time import sleep
 
 import requests
 
+from peers.database import Database
 from peers.peer import Peer
 from web import IP
 
@@ -16,7 +17,7 @@ class PeersThread(Thread):
         self.sleep_time = 10
         self.my_peer = Peer(IP, port)
         self.my_peer.can_be_removed = False
-        self.peers = [self.my_peer]
+        self.peers = Database(self.my_peer)
 
         self.init_peers()
 
@@ -54,7 +55,7 @@ class PeersThread(Thread):
                 # Add new peers (if they're not in the list)
                 for p2 in other_peers:
                     if p2 not in self.peers:
-                        self.peers.append(p2)
+                        self.peers.add(p2)
             except requests.ConnectionError as e:
                 print('Connection error: {}'.format(e))
                 if p.can_be_removed:
@@ -63,14 +64,15 @@ class PeersThread(Thread):
     def request_other_peer(self, p):
         try:
             requests.get(
-                'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port, self.my_peer.host,
-                                                      self.my_peer.port)).json()
+                'http://{}:{}/peers/add/{}:{}'.format(p.address.host, p.address.port,
+                                                      self.my_peer.address.host,
+                                                      self.my_peer.address.port)).json()
         except Exception:
             print('Cannot send an address to {}'.format(p))
 
     def add_peer(self, host, port):
         p = Peer(host, port)
         if p not in self.peers:
-            self.peers.append(p)
+            self.peers.add(p)
             self.request_other_peer(p)
         return p

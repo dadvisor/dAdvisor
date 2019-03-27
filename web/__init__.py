@@ -59,7 +59,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
 
     @app.route('/peers')
     def peers():
-        return jsonify([p.__dict__ for p in peers_thread.peers])
+        return jsonify(peers_thread.peers)
 
     @app.route('/peers/add/<host_port>')
     def peers_add(host_port):
