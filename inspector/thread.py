@@ -23,7 +23,7 @@ class InspectorThread(Thread):
 
         for row in iter(p.stdout.readline, b''):
             try:
-                src, dst, size = parse_row(row)
+                src, dst, size = parse_row(row.decode('utf-8'))
                 if src.startswith('172'):
                     if src in self.data:
                         src_dict = self.data[src]
