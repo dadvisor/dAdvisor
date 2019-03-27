@@ -1,17 +1,13 @@
-FROM google/cadvisor:latest
+FROM python:3.7-alpine
 
 # Install inspector
 RUN apk add --update tcpdump
 RUN apk add curl
 
-# Install pip and python
-RUN apk add --no-cache python3
-RUN apk add --update py-pip
-RUN pip install --upgrade pip
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 COPY . .
 RUN pip install -r requirements.txt
 
-EXPOSE 8080 8800
+EXPOSE 8800
 
-ENTRYPOINT ["./start.sh"]
+CMD ["python", "start.py"]
