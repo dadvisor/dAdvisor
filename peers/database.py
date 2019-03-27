@@ -20,14 +20,14 @@ class Database(object):
     def get(self, index):
         return self.data[index]
 
-    def __repr__(self):
-        return [item.__repr__ for item in self.data]
-
     def __len__(self):
         return self.length
 
     def __iter__(self):
         return iter(self.data)
+
+    def to_json(self):
+        return [item.to_json() for item in self.data]
 
     def remove(self, item):
         self.data.remove(item)

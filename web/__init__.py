@@ -72,6 +72,6 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
         """
         host, port = host_port.split(':')
         p = peers_thread.add_peer(host, port)
-        return jsonify(p.__dict__)
+        return jsonify(p)
 
     return app
