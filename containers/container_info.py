@@ -7,7 +7,7 @@ class ContainerInfo(object):
     def __init__(self, hash, load):
         self.hash = hash
         self.created = str(load['Created'])
-        self.aliases = [str(s) for s in load['Names']]
+        self.names = load['Names']
         self.image = str(load['Image'])
         self.__ip = ''
 
@@ -16,7 +16,7 @@ class ContainerInfo(object):
         if self.__ip:
             return self.__ip
 
-        for name in self.aliases:
+        for name in self.names:
             try:
                 cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/{}/json'.format(name)
 
@@ -33,7 +33,7 @@ class ContainerInfo(object):
         return {
             'hash': self.hash,
             'creation_time': self.created,
-            'aliases': self.aliases,
+            'names': self.names,
             'image': self.image,
             'ip': self.ip
         }
