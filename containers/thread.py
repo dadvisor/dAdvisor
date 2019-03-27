@@ -27,7 +27,7 @@ class ContainerThread(Thread):
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         data = json.loads(p.communicate()[0].decode('utf-8'))
         for c in data:
-            c = {str(k): str(v) for k, v in c.items()}
+            print(c)
             if c['Id'] not in self.containers:
                 self.containers[c['Id']] = ContainerInfo(c['Id'], c)
 
