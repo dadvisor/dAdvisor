@@ -7,7 +7,7 @@ class ContainerInfo(object):
     def __init__(self, hash, load):
         self.hash = hash
         self.created = str(load['Created'])
-        self.names = load['Names'].decode('utf-8')
+        self.names = load['Names']
         self.image = str(load['Image'])
         self.ports = str(load['Ports'])
         self.__ip = ''
@@ -22,7 +22,7 @@ class ContainerInfo(object):
                 cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/{}/json'.format(name)
 
                 p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-                data = json.loads(p.communicate()[0])
+                data = json.loads(p.communicate()[0].decode('utf-8'))
                 print(data)
                 self.__ip = str(data['NetworkSettings']['IPAddress'])
                 return self.__ip
