@@ -27,7 +27,7 @@ class Database(object):
         return self.length
 
     def __iter__(self):
-        return self.data
+        return iter(self.data)
 
     def remove(self, item):
         self.data.remove(item)
