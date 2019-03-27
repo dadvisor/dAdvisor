@@ -5,6 +5,8 @@ import requests
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
+from peers.database import JSONDatabaseEncode
+
 IP = requests.get('https://api.ipify.org').text
 
 
@@ -59,7 +61,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
 
     @app.route('/peers')
     def peers():
-        return jsonify(peers_thread.peers)
+        return jsonify(peers_thread.peers, cls=JSONDatabaseEncode)
 
     @app.route('/peers/add/<host_port>')
     def peers_add(host_port):
