@@ -1,6 +1,3 @@
-import json
-
-
 class Database(object):
     def __init__(self, item=None):
         self.data = []
@@ -34,9 +31,3 @@ class Database(object):
 
     def remove(self, item):
         self.data.remove(item)
-
-
-class JSONDatabaseEncode(json.JSONEncoder):
-    def default(self, value):
-        if isinstance(value, Database):
-            return value.data
