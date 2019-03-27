@@ -10,7 +10,7 @@ class ContainerInfo(object):
         self.created = str(load['Created'])
         self.names = load['Names']
         self.image = str(load['Image'])
-        self.ports = ast.literal_eval(load['Ports'])
+        self.ports = load['Ports']
         self.__ip = ''
 
     @property
