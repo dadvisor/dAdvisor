@@ -28,8 +28,8 @@ class ContainerThread(Thread):
     def collect_container_info(self):
         cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/json'
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-        data = json.loads(str(p.communicate()[0]))
-        
+        data = json.loads(p.communicate()[0].decode('utf-8'))
+
         for c in data:
             print(c)
             if c.Id not in self.containers:
