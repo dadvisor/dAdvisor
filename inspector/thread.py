@@ -70,15 +70,13 @@ class InspectorThread(Thread):
         """
         Returns the IP-address from a given name
         """
-        ip_list = []
         try:
             ais = socket.getaddrinfo(name, 0, 0, 0, 0)
             for result in ais:
-                ip_list.append(result[-1][0])
-        except (socket.gaierror, UnicodeError) as e:
-            print(e)
-
-        return str(set(ip_list))
+                return result[-1][0]
+        except (socket.gaierror, UnicodeError):
+            return name
+        return name
 
     @staticmethod
     def check_installation():
