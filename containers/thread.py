@@ -3,10 +3,7 @@ import subprocess
 from threading import Thread
 from time import sleep
 
-import requests
-
 from containers.container_info import ContainerInfo
-from containers.parser import parse_hash
 
 
 class ContainerThread(Thread):
@@ -29,6 +26,7 @@ class ContainerThread(Thread):
         cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/json'
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         data = json.loads(p.communicate()[0].decode('utf-8'))
+        data = {str(k): str(v) for k, v in data.items()}
 
         for c in data:
             print(c)
