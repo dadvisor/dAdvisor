@@ -70,8 +70,10 @@ class InspectorThread(Thread):
         """
         Returns the IP-address from a given name
         """
+        parts = name.split(':')
+
         try:
-            ais = socket.getaddrinfo(name, 0, 0, 0, 0)
+            ais = socket.getaddrinfo(':'.join(parts[:-1]), 0, 0, 0, 0)
             for result in ais:
                 return result[-1][0]
         except (socket.gaierror, UnicodeError):

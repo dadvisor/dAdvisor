@@ -15,7 +15,7 @@ def decouple(address):
     Example output: (9d75df8be4c2, 46622)
     """
     array = address.split('.')
-    return '.'.join(array[:len(array) - 1])+':' + array[-1]
+    return '.'.join(array[:-1]) + ':' + array[-1]
 
 
 def parse_size(s):
