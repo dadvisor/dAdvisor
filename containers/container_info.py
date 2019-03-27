@@ -18,7 +18,7 @@ class ContainerInfo(object):
 
         for name in self.aliases:
             try:
-                cmd = "curl --unix-socket /var/run/docker.sock http://localhost/containers/{}/json".format(name)
+                cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/{}/json'.format(name)
 
                 p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
                 data = json.loads(p.communicate()[0])

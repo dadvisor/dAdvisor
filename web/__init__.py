@@ -27,7 +27,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     def ip():
         return IP
 
-    @app.route('/api/<command>')
+    @app.route('/api/<path:command>')
     def api(command):
         cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/' + command
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
