@@ -8,6 +8,16 @@ def remove_port(s):
     return '.'.join(array[:len(array) - 1])
 
 
+def decouple(address):
+    """
+    Returns a tuple of host and port
+    Example input: 9d75df8be4c2.46622
+    Example output: (9d75df8be4c2, 46622)
+    """
+    array = address.split('.')
+    return '.'.join(array[:len(array) - 1]), array[-1]
+
+
 def parse_size(s):
     """
     Converts a string to an integer
@@ -21,8 +31,8 @@ def parse_size(s):
 def parse_row(row):
     row = row.rstrip()
     parts = row.split(' ')
-    src = parts[2]
-    dst = remove_port(parts[4])
+    src = decouple(parts[2])
+    dst = decouple(parts[4])
 
     try:
         size = parse_size(parts[-1])
