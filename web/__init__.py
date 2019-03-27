@@ -1,3 +1,5 @@
+import subprocess
+
 import requests
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
@@ -24,6 +26,12 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     @app.route('/ip')
     def ip():
         return IP
+
+    @app.route('/api/<command>')
+    def api(command):
+        cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/' + command
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        return jsonify(p.communicate()[0])
 
     @app.route('/graph')
     def graph():

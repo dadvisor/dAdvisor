@@ -1,4 +1,5 @@
 import json
+import subprocess
 from threading import Thread
 from time import sleep
 
@@ -25,14 +26,13 @@ class ContainerThread(Thread):
             sleep(self.sleep_time)
 
     def collect_container_info(self):
-        print('Collecting container info from cAdvisor')
-        r = requests.get('http://localhost:8080/api/v2.0/spec/?type=docker&recursive=true')
-        obj = json.loads(r.text)
+        cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/json'
 
-        for key in obj.keys():
-            h = parse_hash(str(key))
-            if h not in self.containers:
-                self.containers[h] = ContainerInfo(h, obj[key])
+        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        data = json.loads(p.communicate()[0])
+        for c in data:
+            if c.Id not in self.containers:
+                self.containers[c.Id] = ContainerInfo(c.Id, c)
 
     def get_nodes(self, ip, hash_length):
         """
@@ -51,7 +51,7 @@ class ContainerThread(Thread):
 
     def containers_filtered(self):
         """
-        :return: A dict without the keys for its own container and the DNS-container
+        :return: A dict without the key for its own container
         """
         skip = 'dadvisor'
         return {k: v for k, v in self.containers.items() if skip in v.aliases}
