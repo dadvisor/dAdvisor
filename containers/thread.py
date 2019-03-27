@@ -27,7 +27,6 @@ class ContainerThread(Thread):
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         data = json.loads(p.communicate()[0].decode('utf-8'))
         for c in data:
-            print(c)
             if c['Id'] not in self.containers:
                 self.containers[c['Id']] = ContainerInfo(c['Id'], c)
 
@@ -50,8 +49,8 @@ class ContainerThread(Thread):
         """
         :return: A dict without the key for its own container
         """
-        skip = 'dadvisor'
-        return {k: v for k, v in self.containers.items() if skip in v.aliases}
+        skip = '/dadvisor'
+        return {k: v for k, v in self.containers.items() if skip in v.names}
 
     def get_hash_from_ip(self, ip):
         """
