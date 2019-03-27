@@ -32,7 +32,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     def api(command):
         cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/' + command
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-        return json.loads(p.communicate()[0].decode('utf-8'))
+        return jsonify(json.loads(str(p.communicate()[0])))
 
     @app.route('/graph')
     def graph():

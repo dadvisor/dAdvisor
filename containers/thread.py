@@ -26,12 +26,10 @@ class ContainerThread(Thread):
         cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/json'
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         data = json.loads(p.communicate()[0].decode('utf-8'))
-        data = {str(k): str(v) for k, v in data.items()}
-
         for c in data:
-            print(c)
-            if c.Id not in self.containers:
-                self.containers[c.Id] = ContainerInfo(c.Id, c)
+            c = {str(k): str(v) for k, v in c.items()}
+            if c['Id'] not in self.containers:
+                self.containers[c['Id']] = ContainerInfo(c['Id'], c)
 
     def get_nodes(self, ip, hash_length):
         """
