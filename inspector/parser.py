@@ -22,7 +22,7 @@ def parse_row(row):
     row = row.rstrip()
     parts = row.split(' ')
     src = remove_port(parts[2])
-    dst = remove_port(parts[4])
+    dst = parts[4]
 
     try:
         size = parse_size(parts[-1])

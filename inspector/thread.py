@@ -78,7 +78,7 @@ class InspectorThread(Thread):
         except (socket.gaierror, UnicodeError) as e:
             print(e)
 
-        return str(ip_list)
+        return str(set(ip_list))
 
     @staticmethod
     def check_installation():
