@@ -70,6 +70,7 @@ class InspectorThread(Thread):
         """
         Returns the IP-address from a given name
         """
+        print(name)
         parts = name.split(':')
 
         try:
