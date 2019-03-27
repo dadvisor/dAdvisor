@@ -30,7 +30,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
 
     @app.route('/api/<path:command>')
     def api(command):
-        cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/' + command
+        cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/' + request.full_path
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         return jsonify(json.loads(str(p.communicate()[0])))
 

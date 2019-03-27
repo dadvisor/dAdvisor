@@ -6,9 +6,9 @@ class ContainerInfo(object):
 
     def __init__(self, hash, load):
         self.hash = hash
-        self.creation_time = str(load['creation_time'])
-        self.aliases = [str(s) for s in load['aliases']]
-        self.image = str(load['image'])
+        self.created = str(load['Created'])
+        self.aliases = [str(s) for s in load['Names']]
+        self.image = str(load['Image'])
         self.__ip = ''
 
     @property
@@ -32,7 +32,7 @@ class ContainerInfo(object):
     def get_dict(self):
         return {
             'hash': self.hash,
-            'creation_time': self.creation_time,
+            'creation_time': self.created,
             'aliases': self.aliases,
             'image': self.image,
             'ip': self.ip
