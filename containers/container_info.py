@@ -21,7 +21,7 @@ class ContainerInfo(object):
                 cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/{}/json'.format(name)
 
                 p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-                data = json.loads(json.loads(p.communicate()[0]))
+                data = json.loads(str(p.communicate()[0]))
                 self.__ip = str(data['NetworkSettings']['IPAddress'])
                 return self.__ip
             except Exception as e:
