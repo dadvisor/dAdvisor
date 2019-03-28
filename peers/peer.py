@@ -7,6 +7,14 @@ class Peer(object):
         self.address = Address(host, port)
         self.can_be_removed = True
 
+    @property
+    def host(self):
+        return self.address.host
+
+    @property
+    def port(self):
+        return self.address.port
+
     def __dict__(self):
         return self.address.__dict__()
 

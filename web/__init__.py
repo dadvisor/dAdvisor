@@ -1,6 +1,7 @@
 import socket
 import subprocess
 
+import requests
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
@@ -47,6 +48,16 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
             'nodes': container_thread.get_nodes(IP, hash_length),
             'edges': inspector_thread.get_edges(container_thread, hash_length)
         })
+
+    @app.route('/full_data')
+    def full_data():
+        nodes = []
+        edges = []
+        for p in peers_thread.peers:
+            json = requests.get('http://{}:{}/data'.format(p.host, p.port)).json()
+            nodes += json['nodes']
+            edges += json['edges']
+        return jsonify({'nodes': nodes, 'edges': edges})
 
     @app.route('/peers')
     def peers():

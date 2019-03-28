@@ -46,8 +46,7 @@ class PeersThread(Thread):
             if p == self.my_peer:  # don't validate its own peer
                 continue
             try:
-                other_peers = requests.get('http://{}:{}/peers'.
-                                           format(p.address.host, p.address.port)).json()
+                other_peers = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
                 other_peers = [Peer(p2['host'], p2['port']) for p2 in other_peers]
                 # Expose own node if it is not in the other_peers-list
                 if self.my_peer not in other_peers:
@@ -65,9 +64,8 @@ class PeersThread(Thread):
     def request_other_peer(self, p):
         try:
             requests.get(
-                'http://{}:{}/peers/add/{}:{}'.format(p.address.host, p.address.port,
-                                                      self.my_peer.address.host,
-                                                      self.my_peer.address.port)).json()
+                'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port,
+                                                      self.my_peer.host, self.my_peer.port)).json()
         except Exception:
             print('Cannot send an address to {}'.format(p))
 
