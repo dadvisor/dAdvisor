@@ -27,7 +27,7 @@ class InspectorThread(Thread):
         for row in iter(p.stdout.readline, b''):
             try:
                 src, dst, size = parse_row(row.decode('utf-8'))
-                if src.is_local():
+                if src.is_local() or dst.is_local():
                     src_id = self.addresses.get_id(src)
                     dst_id = self.addresses.get_id(dst)
                     if src_id in self.data:

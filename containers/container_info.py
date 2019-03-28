@@ -34,7 +34,7 @@ class ContainerInfo(object):
     def get_dict(self):
         return {
             'hash': self.hash,
-            'creation_time': self.created,
+            'created': self.created,
             'names': self.names,
             'ports': self.ports,
             'image': self.image,
