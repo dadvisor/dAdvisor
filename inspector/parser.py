@@ -7,7 +7,7 @@ def to_address(address):
     Example input: 9d75df8be4c2.46622
     Example output: Address(9d75df8be4c2, 46622)
     """
-    address = address.rstrip('.:')  # remove last .
+    address = address.rstrip('.:')  # remove last . and :
     array = address.split('.')
     return Address('.'.join(array[:-1]), array[-1])
 

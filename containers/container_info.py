@@ -23,8 +23,8 @@ class ContainerInfo(object):
 
                 p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
                 data = json.loads(p.communicate()[0].decode('utf-8'))
-                print(data)
                 self.__ip = str(data['NetworkSettings']['IPAddress'])
+                print('IP Found: ' + self.__ip + ' for ' + name)
                 return self.__ip
             except Exception as e:
                 print(e)
