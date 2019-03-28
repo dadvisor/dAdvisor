@@ -63,10 +63,7 @@ class InspectorThread(Thread):
 
     def get_data(self):
         return {'data': self.data,
-                'addresses': [{
-                    'host': self.lookup(a.host),
-                    'port': a.port} for a in self.addresses]
-                }
+                'addresses': self.addresses}
 
     @staticmethod
     def lookup(host):
