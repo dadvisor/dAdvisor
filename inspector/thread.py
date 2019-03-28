@@ -49,7 +49,7 @@ class InspectorThread(Thread):
     def map(self, container_thread, port):
         ip_set = set()
 
-        for container, data in list(container_thread.containers_filtered()):
+        for container, data in list(container_thread.containers_filtered().items()):
             for port_obj in data.ports:
                 if str(port_obj['PublicPort']) == port:
                     ip_set.add(data.ip)
