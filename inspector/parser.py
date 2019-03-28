@@ -1,21 +1,15 @@
-def remove_port(s):
-    """
-    Removes the last part of the string, which is the port.
-    Example input: 9d75df8be4c2.46622
-    Example output: 9d75df8be4c2
-    """
-    array = s.split('.')
-    return '.'.join(array[:len(array) - 1])
+from peers.address import Address
 
 
-def decouple(address):
+def to_address(address):
     """
-    Returns a tuple of host and port
+    Returns an Address-obj containing the host and the port
     Example input: 9d75df8be4c2.46622
-    Example output: (9d75df8be4c2, 46622)
+    Example output: Address(9d75df8be4c2, 46622)
     """
+    address = address.rstrip('.')  # remove last .
     array = address.split('.')
-    return '.'.join(array[:-1]) + ':' + array[-1]
+    return Address('.'.join(array[:-1]), array[-1])
 
 
 def parse_size(s):
@@ -31,8 +25,8 @@ def parse_size(s):
 def parse_row(row):
     row = row.rstrip()
     parts = row.split(' ')
-    src = decouple(parts[2])
-    dst = decouple(parts[4])
+    src = to_address(parts[2])
+    dst = to_address(parts[4])
 
     try:
         size = parse_size(parts[-1])

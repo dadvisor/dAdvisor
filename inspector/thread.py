@@ -27,24 +27,21 @@ class InspectorThread(Thread):
         for row in iter(p.stdout.readline, b''):
             try:
                 src, dst, size = parse_row(row.decode('utf-8'))
-                if src.startswith('172'):
-                    if src in self.data:
-                        src_dict = self.data[src]
-                        if dst in src_dict:
-                            src_dict[dst] += size
-                        else:
-                            src_dict[dst] = size
-                    else:
-                        self.data[src] = {}
-                        self.data[src][dst] = size
+                if src.is_local():
+                    src_id = self.addresses.get_id(src)
+                    dst_id = self.addresses.get_id(dst)
+                    if src_id in self.data:
+                        src_dict = self.data[src_id]
 
+                        if dst_id in src_dict:
+                            src_dict[dst_id] += size
+                        else:
+                            src_dict[dst_id] = size
+                    else:
+                        self.data[src_id] = {}
+                        self.data[src_id][dst_id] = size
             except Exception:
                 print('Cannot parse row: %s' % row.decode('utf-8'))
-
-    def inspect(self, src):
-        if src in self.data:
-            return self.data[src]
-        return []
 
     def get_edges(self, container_thread, hash_length):
         """
@@ -67,21 +64,19 @@ class InspectorThread(Thread):
     def get_data(self):
         return {k: {self.lookup(k2): v2 for k2, v2 in v.items()} for k, v in list(self.data.items())}
 
-    @staticmethod
-    def lookup(name):
+    def lookup(self, index):
         """
         Returns the IP-address from a given name
         """
-        print(name)
-        parts = name.split(':')
+        address = self.addresses.get(index)
 
         try:
-            ais = socket.getaddrinfo(':'.join(parts[:-1]), 0, 0, 0, 0)
+            ais = socket.getaddrinfo(address.host, 0, 0, 0, 0)
             for result in ais:
                 return result[-1][0]
         except (socket.gaierror, UnicodeError):
-            return name
-        return name
+            return address.host
+        return address.host
 
     @staticmethod
     def check_installation():

@@ -34,10 +34,6 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     def inspect():
         return jsonify(inspector_thread.get_data())
 
-    @app.route('/inspect/<src>')
-    def inspect_src(src):
-        return jsonify(inspector_thread.inspect(src))
-
     @app.route('/ip')
     def ip():
         return IP

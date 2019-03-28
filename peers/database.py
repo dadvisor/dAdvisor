@@ -12,7 +12,10 @@ class Database(object):
         return item in self.data
 
     def get_id(self, item):
-        return self.data.index(item)
+        if item in self.data:
+            return self.data.index(item)
+        self.add(item)
+        return len(self.data) - 1
 
     def add(self, item):
         self.data.append(item)

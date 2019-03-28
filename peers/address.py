@@ -15,3 +15,6 @@ class Address(object):
 
     def to_json(self):
         return {'host': self.host, 'port': self.port}
+
+    def is_local(self):
+        return self.host.startswith('172')
