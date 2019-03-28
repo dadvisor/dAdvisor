@@ -63,21 +63,24 @@ class InspectorThread(Thread):
 
     def get_data(self):
         return {'data': self.data,
-                'addresses': self.addresses}
+                'addresses': [{
+                    'host': self.lookup(a.host),
+                    'port': a.port} for a in self.addresses]
+                }
 
-    def lookup(self, index):
+    @staticmethod
+    def lookup(host):
         """
         Returns the IP-address from a given name
         """
-        address = self.addresses.get(index)
 
         try:
-            ais = socket.getaddrinfo(address.host, 0, 0, 0, 0)
+            ais = socket.getaddrinfo(host, 0, 0, 0, 0)
             for result in ais:
                 return result[-1][0]
         except (socket.gaierror, UnicodeError):
-            return address.host
-        return address.host
+            return host
+        return host
 
     @staticmethod
     def check_installation():
