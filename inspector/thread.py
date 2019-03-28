@@ -49,10 +49,10 @@ class InspectorThread(Thread):
             src = self.addresses.get(src_id)
             if src.port == port:
                 ip_list.add(src.host)
-            for dst_id in list(self.data.keys()):
+            for dst_id in list(v.keys()):
                 dst = self.addresses.get(dst_id)
                 if dst.port == port:
-                    ip_list.add(dst.port)
+                    ip_list.add(dst.host)
         return list(ip_list)
 
     def get_edges(self, container_thread, hash_length):
