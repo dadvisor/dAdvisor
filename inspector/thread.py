@@ -28,6 +28,9 @@ class InspectorThread(Thread):
             try:
                 src, dst, size = parse_row(row.decode('utf-8'))
                 if src.is_local() or dst.is_local():
+                    if src.port == 'Request' or dst.port == 'Request':
+                        print(row.decode('utf-8'))
+
                     src_id = self.addresses.get_id(src)
                     dst_id = self.addresses.get_id(dst)
                     if src_id in self.data:
@@ -43,17 +46,23 @@ class InspectorThread(Thread):
             except Exception:
                 print('Cannot parse row: %s' % row.decode('utf-8'))
 
-    def map(self, port):
-        ip_list = set()
+    def map(self, container_thread, port):
+        ip_set = set()
+
+        for container, data in list(container_thread.containers_filtered()):
+            for port_obj in data.ports:
+                if str(port_obj['PublicPort']) == port:
+                    ip_set.add(data['Ip'])
+
         for src_id, v in list(self.data.items()):
             src = self.addresses.get(src_id)
             if src.port == port:
-                ip_list.add(src.host)
+                ip_set.add(src.host)
             for dst_id in list(v.keys()):
                 dst = self.addresses.get(dst_id)
                 if dst.port == port:
-                    ip_list.add(dst.host)
-        return list(ip_list)
+                    ip_set.add(dst.host)
+        return list(ip_set)
 
     def get_edges(self, container_thread, hash_length):
         """

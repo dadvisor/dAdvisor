@@ -51,7 +51,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
 
     @app.route('/mapping/<port>')
     def mapping(port):
-        return jsonify(inspector_thread.map(port))
+        return jsonify(inspector_thread.map(container_thread, port))
 
     @app.route('/full_data')
     def full_data():
