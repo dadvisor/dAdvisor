@@ -52,7 +52,7 @@ class InspectorThread(Thread):
         for container, data in list(container_thread.containers_filtered()):
             for port_obj in data.ports:
                 if str(port_obj['PublicPort']) == port:
-                    ip_set.add(data['Ip'])
+                    ip_set.add(data.ip)
 
         for src_id, v in list(self.data.items()):
             src = self.addresses.get(src_id)
