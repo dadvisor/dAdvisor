@@ -49,6 +49,10 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
             'edges': inspector_thread.get_edges(container_thread, hash_length)
         })
 
+    @app.route('/mapping/<port>')
+    def mapping(port):
+        return jsonify(inspector_thread.map(port))
+
     @app.route('/full_data')
     def full_data():
         nodes = []

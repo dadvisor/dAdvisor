@@ -43,6 +43,18 @@ class InspectorThread(Thread):
             except Exception:
                 print('Cannot parse row: %s' % row.decode('utf-8'))
 
+    def map(self, port):
+        ip_list = set()
+        for src_id, v in list(self.data.items()):
+            src = self.addresses.get(src_id)
+            if src.port == port:
+                ip_list.add(src.host)
+            for dst_id in list(self.data.keys()):
+                dst = self.addresses.get(dst_id)
+                if dst.port == port:
+                    ip_list.add(dst.port)
+        return list(ip_list)
+
     def get_edges(self, container_thread, hash_length):
         """
         :return: A list with a dict per data-flow of the containers
