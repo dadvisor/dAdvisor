@@ -4,6 +4,7 @@ import sys
 from threading import Thread
 
 from inspector.parser import parse_row
+from peers.database import Database
 
 MAX_WIDTH = 10.0
 
@@ -17,6 +18,7 @@ class InspectorThread(Thread):
             self.data[src][dst] = size
         """
         self.data = {}
+        self.addresses = Database()
 
     def run(self):
         self.check_installation()
@@ -63,7 +65,7 @@ class InspectorThread(Thread):
         return self.adjust_width(edges)
 
     def get_data(self):
-        return {k: {self.lookup(k2): v2 for k2, v2 in v.items()} for k, v in self.data.items()}
+        return {k: {self.lookup(k2): v2 for k2, v2 in v.items()} for k, v in list(self.data.items())}
 
     @staticmethod
     def lookup(name):

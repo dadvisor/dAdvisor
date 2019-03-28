@@ -1,5 +1,4 @@
 from peers.address import Address
-from peers.database import Database
 
 
 class Peer(object):
@@ -19,19 +18,3 @@ class Peer(object):
 
     def __str__(self):
         return self.address.__str__()
-
-
-if __name__ == '__main__':
-    from flask import jsonify, Flask
-    from web.encoder import JSONCustomEncoder
-
-    app = Flask(__name__)
-    app.json_encoder = JSONCustomEncoder
-
-
-    @app.route('/')
-    def home():
-        d = Database(Peer('localhost', 5000))
-        return jsonify(d)
-
-    app.run(debug=True)
