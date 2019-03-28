@@ -1,13 +1,12 @@
 import socket
 import subprocess
 
-import requests
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
 from web.encoder import JSONCustomEncoder
 
-IP = requests.get('https://api.ipify.org').text
+IP = socket.gethostbyname(socket.gethostname())
 
 
 def create_web_app(container_thread, inspector_thread, peers_thread):
@@ -22,13 +21,6 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
         else:
             c = container_thread.containers
         return jsonify({k: v.get_dict() for k, v, in c.items()})
-
-    @app.route('/info')
-    def info():
-        return jsonify({
-            'internal': socket.gethostbyname(socket.gethostname()),
-            'external': IP
-        })
 
     @app.route('/inspect')
     def inspect():
