@@ -62,7 +62,8 @@ class InspectorThread(Thread):
         return self.adjust_width(edges)
 
     def get_data(self):
-        return {k: {self.lookup(k2): v2 for k2, v2 in v.items()} for k, v in list(self.data.items())}
+        return {'data': self.data,
+                'addresses': self.addresses}
 
     def lookup(self, index):
         """
