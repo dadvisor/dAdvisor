@@ -68,7 +68,7 @@ class InspectorThread(Thread):
     def get_data_for_host(self, host):
         addresses = Database()
         data = {}
-        for src_old_id, dst_dict in self.data:
+        for src_old_id, dst_dict in list(self.data.items()):
             src = self.addresses.get(src_old_id)
             if src.host == host:
                 src_new_id = addresses.get_id(src)
