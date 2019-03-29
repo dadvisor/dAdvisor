@@ -1,10 +1,9 @@
-from peers.address import Address
-
-
 def to_address(address):
     """
     Returns an Address-obj containing the host, port, and possibly container
     """
+    from peers.address import Address
+
     address = address.rstrip('.:')  # remove last . and :
     array = address.split('.')
     return Address.decode('.'.join(array[:-1]), array[-1])
