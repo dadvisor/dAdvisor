@@ -5,9 +5,9 @@ import requests
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
-from web.encoder import JSONCustomEncoder
-
 IP = socket.gethostbyname(socket.gethostname())
+
+from web.encoder import JSONCustomEncoder
 
 
 def create_web_app(container_thread, inspector_thread, peers_thread):
