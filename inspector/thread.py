@@ -16,6 +16,7 @@ class InspectorThread(Thread):
         """
         A 2D dictionary, which is structured the following:
             self.data[src][dst] = size
+            src and dst are an index in the addresses Database
         """
         self.data = {}
         self.addresses = Database()
@@ -49,7 +50,7 @@ class InspectorThread(Thread):
     def map(self, container_thread, port):
         ip_set = set()
 
-        for container, data in list(container_thread.containers_filtered().items()):
+        for container, data in list(container_thread.containers_filtered.items()):
             for port_obj in data.ports:
                 if str(port_obj['PublicPort']) == port:
                     ip_set.add(data.ip)
@@ -64,12 +65,40 @@ class InspectorThread(Thread):
                     ip_set.add(dst.host)
         return list(ip_set)
 
+    def get_data_for_host(self, host):
+        addresses = Database()
+        data = {}
+        for src_old_id, dst_dict in self.data:
+            src = self.addresses.get(src_old_id)
+            if src.host == host:
+                src_new_id = addresses.get_id(src)
+                if src_new_id not in data:
+                    data[src_new_id] = {}
+                for dst_old_id in dst_dict.keys():
+                    dst_new_id = addresses.get_id(self.addresses.get(dst_old_id))
+                    data[src_new_id][dst_new_id] = self.data[src_old_id][dst_old_id]
+            else:
+                for dst_old_id in dst_dict.keys():
+                    if self.addresses.get(dst_old_id).host == host:
+                        src_new_id = addresses.get_id(src)
+                        if src_new_id not in data:
+                            data[src_new_id] = {}
+                        dst_new_id = addresses.get_id(self.addresses.get(dst_old_id))
+                        data[src_new_id][dst_new_id] = self.data[src_old_id][dst_old_id]
+
+        return {'data': data, 'addresses': addresses}
+
+    def get_external_edges(self, peer_thread, hash_length):
+        edges = []
+        for peer in peer_thread.other_peers:
+            pass
+
     def get_edges(self, container_thread, hash_length):
         """
         :return: A list with a dict per data-flow of the containers
         """
         edges = []
-        containers = container_thread.containers_filtered()
+        containers = container_thread.containers_filtered
         ip_set = set([v.ip for v in containers.values()])
         for container_info in containers.values():
             src = container_info.ip

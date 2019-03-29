@@ -34,7 +34,7 @@ class ContainerThread(Thread):
         """
         :return: A list of dicts with the containers
         """
-        nodes = self.containers_filtered()
+        nodes = self.containers_filtered
         images = set(v.image for v in nodes.values())
         return [{'data': {'id': ip,
                           'name': ip}}] + \
@@ -45,6 +45,7 @@ class ContainerThread(Thread):
                           'parent': ip + v.image,
                           'name': k[:hash_length]}} for k, v in nodes.items()]
 
+    @property
     def containers_filtered(self):
         """
         :return: A dict without the key for its own container

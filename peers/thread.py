@@ -29,6 +29,10 @@ class PeersThread(Thread):
                 print(e)
             sleep(self.sleep_time)
 
+    @property
+    def other_peers(self):
+        return [p for p in self.peers if p != self.my_peer]
+
     def init_peers(self):
         """ Read peers from the environment variable and add them to the list.
             input: OTHER_PEERS=35.204.153.106:8800,35.204.153.106:8800
@@ -42,18 +46,16 @@ class PeersThread(Thread):
 
     def validate_peers(self):
         print('Validating peers: {}'.format(len(self.peers)))
-        for p in self.peers:
-            if p == self.my_peer:  # don't validate its own peer
-                continue
+        for p in self.other_peers:
             try:
-                other_peers = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
-                other_peers = [Peer(p2['host'], p2['port']) for p2 in other_peers]
+                peer_list = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
+                peer_list = [Peer(p2['host'], p2['port']) for p2 in peer_list]
                 # Expose own node if it is not in the other_peers-list
-                if self.my_peer not in other_peers:
+                if self.my_peer not in peer_list:
                     self.request_other_peer(p)
 
                 # Add new peers (if they're not in the list)
-                for p2 in other_peers:
+                for p2 in peer_list:
                     if p2 not in self.peers:
                         self.peers.add(p2)
             except requests.ConnectionError as e:

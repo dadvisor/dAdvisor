@@ -49,12 +49,12 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
             'edges': inspector_thread.get_edges(container_thread, hash_length)
         })
 
-    @app.route('/mapping/<port>')
-    def mapping(port):
-        return jsonify(inspector_thread.map(container_thread, port))
+    @app.route('/mapping/<host>')
+    def mapping(host):
+        return jsonify(inspector_thread.get_data_for_host(host))
 
-    @app.route('/full_data')
-    def full_data():
+    @app.route('/full_graph')
+    def full_graph():
         nodes = []
         edges = []
         for p in peers_thread.peers:
