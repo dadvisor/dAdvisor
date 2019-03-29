@@ -6,7 +6,7 @@ import requests
 
 from peers.database import Database
 from peers.peer import Peer
-from web import IP
+from web.const import IP
 
 
 class PeersThread(Thread):

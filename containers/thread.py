@@ -30,19 +30,20 @@ class ContainerThread(Thread):
             if c['Id'] not in self.containers:
                 self.containers[c['Id']] = ContainerInfo(c['Id'], c)
 
-    def get_nodes(self, ip, hash_length):
+    def get_nodes(self, hash_length):
         """
         :return: A list of dicts with the containers
         """
+        from web.const import IP
         nodes = self.containers_filtered
         images = set(v.image for v in nodes.values())
-        return [{'data': {'id': ip,
-                          'name': ip}}] + \
-               [{'data': {'id': ip + i,
-                          'parent': ip,
+        return [{'data': {'id': IP,
+                          'name': IP}}] + \
+               [{'data': {'id': IP + i,
+                          'parent': IP,
                           'name': i}} for i in images] + \
                [{'data': {'id': k[:hash_length],
-                          'parent': ip + v.image,
+                          'parent': IP + v.image,
                           'name': k[:hash_length]}} for k, v in nodes.items()]
 
     @property
