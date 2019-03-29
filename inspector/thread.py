@@ -1,4 +1,3 @@
-import socket
 import subprocess
 import sys
 from threading import Thread
@@ -29,9 +28,6 @@ class InspectorThread(Thread):
             try:
                 src, dst, size = parse_row(row.decode('utf-8'))
                 if src.is_local() or dst.is_local():
-                    if src.port == 'Request' or dst.port == 'Request':
-                        print(row.decode('utf-8'))
-
                     src_id = self.addresses.get_id(src)
                     dst_id = self.addresses.get_id(dst)
                     if src_id in self.data:
@@ -88,11 +84,6 @@ class InspectorThread(Thread):
 
         return {'data': data, 'addresses': addresses}
 
-    def get_external_edges(self, peer_thread, hash_length):
-        edges = []
-        for peer in peer_thread.other_peers:
-            pass
-
     def get_edges(self, container_thread, hash_length):
         """
         :return: A list with a dict per data-flow of the containers
@@ -114,20 +105,6 @@ class InspectorThread(Thread):
     def get_data(self):
         return {'data': self.data,
                 'addresses': self.addresses}
-
-    @staticmethod
-    def lookup(host):
-        """
-        Returns the IP-address from a given name
-        """
-
-        try:
-            ais = socket.getaddrinfo(host, 0, 0, 0, 0)
-            for result in ais:
-                return result[-1][0]
-        except (socket.gaierror, UnicodeError):
-            return host
-        return host
 
     @staticmethod
     def check_installation():

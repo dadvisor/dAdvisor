@@ -3,13 +3,11 @@ from peers.address import Address
 
 def to_address(address):
     """
-    Returns an Address-obj containing the host and the port
-    Example input: 9d75df8be4c2.46622
-    Example output: Address(9d75df8be4c2, 46622)
+    Returns an Address-obj containing the host, port, and possibly container
     """
     address = address.rstrip('.:')  # remove last . and :
     array = address.split('.')
-    return Address('.'.join(array[:-1]), array[-1])
+    return Address.decode('.'.join(array[:-1]), array[-1])
 
 
 def parse_size(s):

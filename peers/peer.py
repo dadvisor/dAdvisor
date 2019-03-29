@@ -4,7 +4,7 @@ from peers.address import Address
 class Peer(object):
 
     def __init__(self, host, port):
-        self.address = Address(host, port)
+        self.address = Address(host, '', port)
         self.can_be_removed = True
 
     @property
