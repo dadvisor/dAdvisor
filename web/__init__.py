@@ -1,12 +1,10 @@
-import socket
 import subprocess
 
 import requests
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
-IP = socket.gethostbyname(socket.gethostname())
-
+from web.const import IP
 from web.encoder import JSONCustomEncoder
 
 
