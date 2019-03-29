@@ -20,7 +20,7 @@ class Address(object):
         return self.host + ':' + str(self.port)
 
     def to_json(self):
-        return self.__dict__()
+        return {'host': self.host, 'container': self.container, 'port': self.port}
 
     def is_local(self):
         return self.host == IP and self.container.startswith('172')
