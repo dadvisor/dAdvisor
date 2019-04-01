@@ -20,6 +20,7 @@ class AnalyserThread(Thread):
         while self.running:
             dataflow = self.inspector_thread.data.get()
             self.add_port(dataflow.src)
+            self.add_port(dataflow.dst)
 
             dataflow.dst = self.resolve_address(dataflow.dst)
             src_id = self.address_id(dataflow.src)
