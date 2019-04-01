@@ -47,7 +47,7 @@ class ContainerThread(Thread):
             containers = requests.get('http://{}:{}/containers'.format(p.host, p.port)).json()
             id_set = set([c.id for c in self.all_containers])
             for c in containers:
-                if c['id'] not in id_set and c['ip']:
+                if c['hash'] not in id_set and c['ip']:
                     self.all_containers.add(ContainerMapping(p.host, c['ip'], c['image'], c['hash']))
 
     def get_nodes(self, hash_length):
