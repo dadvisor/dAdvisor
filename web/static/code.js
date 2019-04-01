@@ -1,31 +1,10 @@
 $(function () { // on dom ready
 
-    $.getJSON('/peers', function (peers) {
-        let data = {edges: [], nodes: []};
-
-        let gets = [];
-        let result = [];
-        for (let i = 0; i < peers.length; i++) {
-            let host = peers[i].host;
-            let port = peers[i].port;
-            gets.push($.getJSON(`http://${host}:${port}/data`, function(success){
-                result.push(success);
-            }));
-        }
-        $.when.apply($, gets).then(function () {
-            for (let i = 0; i < result.length; i++) {
-                console.log(result[i]);
-                data.edges.push.apply(data.edges, result[i].edges);
-                data.nodes.push.apply(data.nodes, result[i].nodes);
-            }
-            for (let i = 0; i < data.edges.length; i++) {
-                data.edges[i].data.id = i;
-            }
-            console.log(data);
-            displayGraph(data);
-        }).fail(function(){
-            console.log('Something failed', data);
-        });
+    $.getJSON('/full_graph', function (data) {
+        displayGraph(data);
+        console.log(data);
+    }).fail(function(){
+        console.log('Something failed', data);
     });
 
     let bytesToSize = function (bytes) {
