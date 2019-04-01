@@ -14,14 +14,12 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     CORS(app)
 
     @app.route('/containers')
-    def get_containers():
-        if request.args.get('filtered', default=False, type=bool):
-            containers = container_thread.containers_filtered
-        elif request.args.get('all', default=False, type=bool):
-            containers = container_thread.all_containers
-        else:
-            containers = container_thread.containers
-        return jsonify([c.to_json() for c in containers])
+    def containers():
+        return jsonify([c.get_dict() for c in container_thread.containers_filtered])
+
+    @app.route('/containers/all')
+    def containers_all():
+        return jsonify([c.get_dict() for c in container_thread.all_containers])
 
     @app.route('/inspect')
     def inspect():

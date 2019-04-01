@@ -3,6 +3,8 @@ import subprocess
 from threading import Thread
 from time import sleep
 
+import requests
+
 from datatypes.address import IP
 from datatypes.container_mapping import ContainerMapping
 from datatypes.container_info import ContainerInfo
@@ -11,8 +13,9 @@ from datatypes.database import Database
 
 class ContainerThread(Thread):
 
-    def __init__(self):
+    def __init__(self, peers_thread):
         Thread.__init__(self)
+        self.peers_thread = peers_thread
         self.running = True
         self.sleep_time = 10
         self.own_containers = Database()  # database of ContainerInfo objects
@@ -21,12 +24,13 @@ class ContainerThread(Thread):
     def run(self):
         while self.running:
             try:
-                self.collect_container_info()
+                self.collect_own_containers()
+                self.collect_remote_containers()
             except Exception as e:
                 print(e)
             sleep(self.sleep_time)
 
-    def collect_container_info(self):
+    def collect_own_containers(self):
         cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/json'
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         data = json.loads(p.communicate()[0].decode('utf-8'))
@@ -34,7 +38,15 @@ class ContainerThread(Thread):
             if c['Id'] not in [c.hash for c in self.own_containers]:
                 container_info = ContainerInfo(c['Id'], c)
                 self.own_containers.add(container_info)
-                self.all_containers.add(ContainerMapping.decode(c, container_info))
+                self.all_containers.add(ContainerMapping.decode(c, IP, container_info))
+
+    def collect_remote_containers(self):
+        for p in self.peers_thread.other_peers:
+            containers = requests.get('http://{}:{}/containers'.format(p.host, p.port)).json()
+            id_set = set([c.id for c in self.all_containers])
+            for c in containers:
+                if c['id'] not in id_set and c['ip']:
+                    self.all_containers.add(ContainerMapping(p.host, c['ip'], c['image'], c['hash']))
 
     def get_nodes(self, hash_length):
         """
