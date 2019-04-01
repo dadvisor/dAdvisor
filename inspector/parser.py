@@ -1,3 +1,6 @@
+from datatypes.dataflow import DataFlow
+
+
 def to_address(address):
     """
     Returns an Address-obj containing the host, port, and possibly container
@@ -30,4 +33,4 @@ def parse_row(row):
     except ValueError:
         parts = row.split('length')[1]
         size = parse_size(parts.split(':')[0])
-    return src, dst, size
+    return DataFlow(src, dst, size)

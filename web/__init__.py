@@ -1,5 +1,3 @@
-import subprocess
-
 import requests
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
@@ -8,7 +6,7 @@ from datatypes.address import IP
 from datatypes.encoder import JSONCustomEncoder
 
 
-def create_web_app(container_thread, inspector_thread, peers_thread):
+def create_web_app(container_thread, inspector_thread, peers_thread, analyser_thread):
     app = Flask(__name__)
     app.json_encoder = JSONCustomEncoder
     CORS(app)
@@ -23,7 +21,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
 
     @app.route('/inspect')
     def inspect():
-        return jsonify(inspector_thread.get_data())
+        return jsonify(analyser_thread.data)
 
     @app.route('/ip')
     def ip():
@@ -40,15 +38,6 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
             'nodes': container_thread.get_nodes(hash_length),
             'edges': inspector_thread.get_edges(container_thread, hash_length)
         })
-
-    @app.route('/container/<port>')
-    def container(port):
-        """
-        Returns the corresponding container-address (e.g. 172.12.0.1) belonging to the given port
-        :param port:
-        :return:
-        """
-        return jsonify(inspector_thread.get_container(container_thread, port))
 
     @app.route('/full_graph')
     def full_graph():
