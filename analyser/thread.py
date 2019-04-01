@@ -19,9 +19,9 @@ class AnalyserThread(Thread):
     def run(self):
         while self.running:
             dataflow = self.inspector_thread.data.get()
-            self.add_port(dataflow.dst)
+            self.add_port(dataflow.src)
 
-            dataflow.src = self.resolve_address(dataflow.src)
+            dataflow.dst = self.resolve_address(dataflow.dst)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
 
@@ -34,12 +34,12 @@ class AnalyserThread(Thread):
                 else:
                     self.data[src_id][dst_id] = dataflow.size
             else:
+                self.data[src_id] = {}
                 self.data[src_id][dst_id] = dataflow.size
 
     def add_port(self, address):
         if address.is_local():
-            port = self.container_thread.to_internal_port(address.port)
-            self.ports[port] = address.container
+            self.ports[address.port] = address.container
 
     def resolve_address(self, address):
         if not address.is_local():
