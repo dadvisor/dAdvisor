@@ -15,8 +15,8 @@ class AnalyserThread(Thread):
     def run(self):
         while self.running:
             dataflow = self.inspector_thread.data.get()
-            src_id = self.resolve_address(dataflow.src)
-            dst_id = self.resolve_address(dataflow.dst)
+            src_id = self.address_id(dataflow.src)
+            dst_id = self.address_id(dataflow.dst)
             if src_id == -1 or dst_id == -1:
                 print('Skipping: {}'.format(dataflow))
                 continue
@@ -28,7 +28,8 @@ class AnalyserThread(Thread):
             else:
                 self.data[src_id][dst_id] = dataflow.size
 
-    def resolve_address(self, address):
+
+    def address_id(self, address):
         """
         Get the local address from a given host (assuming that this host is a peer)
         :param address:

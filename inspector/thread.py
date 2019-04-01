@@ -24,8 +24,9 @@ class InspectorThread(Thread):
 
         for row in iter(p.stdout.readline, b''):
             try:
-                dataflow = parse_row(row.decode('utf-8'))
-                self.data.put(dataflow)
+                data_flow = parse_row(row.decode('utf-8'))
+                if data_flow.size > 0:
+                    self.data.put(data_flow)
             except Exception:
                 print('Cannot parse row: %s' % row.decode('utf-8'))
 
@@ -46,10 +47,6 @@ class InspectorThread(Thread):
     #                     'bytes': self.data[src][dst]
     #                 }})
     #     return self.adjust_width(edges)
-
-    # def get_data(self):
-    #     return {'data': self.data,
-    #             'addresses': self.addresses}
 
     @staticmethod
     def check_installation():

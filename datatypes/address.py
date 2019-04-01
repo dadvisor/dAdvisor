@@ -19,7 +19,7 @@ class Address(object):
                self.container == other.container
 
     def __str__(self):
-        return self.host + ':' + str(self.port)
+        return '{}:{}:{}'.format(self.host, self.container, self.port)
 
     def to_json(self):
         return {'host': self.host, 'container': self.container, 'port': self.port}
