@@ -62,6 +62,21 @@ class AnalyserThread(Thread):
                     raise
         return address
 
+    def get_edges(self, hash_length):
+        """
+        :return: A list with a dict per data-flow of the containers
+        """
+        edges = []
+        containers = self.container_thread.get_all_containers()
+        for src_id in self.data:
+            for dst_id in self.data:
+                edges.append({'data': {
+                    'source': containers[src_id].id[:hash_length],
+                    'target': containers[dst_id].id[:hash_length],
+                    'bytes': self.data[src_id][dst_id]
+                }})
+        return self.adjust_width(edges)
+
     def address_id(self, address):
         """
         Get the local address from a given host (assuming that this host is a peer)

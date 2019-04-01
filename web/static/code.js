@@ -1,6 +1,6 @@
 $(function () { // on dom ready
 
-    $.getJSON('/full_graph', function (data) {
+    $.getJSON('/data', function (data) {
         displayGraph(data);
         console.log(data);
     }).fail(function(){

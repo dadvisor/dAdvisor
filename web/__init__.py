@@ -1,4 +1,3 @@
-import requests
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 
@@ -6,7 +5,7 @@ from datatypes.address import IP
 from datatypes.encoder import JSONCustomEncoder
 
 
-def create_web_app(container_thread, inspector_thread, peers_thread, analyser_thread):
+def create_web_app(container_thread, peers_thread, analyser_thread):
     app = Flask(__name__)
     app.json_encoder = JSONCustomEncoder
     CORS(app)
@@ -36,18 +35,8 @@ def create_web_app(container_thread, inspector_thread, peers_thread, analyser_th
         hash_length = 12
         return jsonify({
             'nodes': container_thread.get_nodes(hash_length),
-            'edges': inspector_thread.get_edges(container_thread, hash_length)
+            'edges': analyser_thread.get_edges(hash_length)
         })
-
-    @app.route('/full_graph')
-    def full_graph():
-        nodes = []
-        edges = []
-        for p in peers_thread.peers:
-            json = requests.get('http://{}:{}/data'.format(p.host, p.port)).json()
-            nodes += json['nodes']
-            edges += json['edges']
-        return jsonify({'nodes': nodes, 'edges': edges})
 
     @app.route('/ports')
     def ports():

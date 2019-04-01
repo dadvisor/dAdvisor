@@ -32,24 +32,6 @@ class InspectorThread(Thread):
             except Exception:
                 print('Cannot parse row: %s' % row.decode('utf-8'))
 
-    # def get_edges(self, container_thread, hash_length):
-    #     """
-    #     :return: A list with a dict per data-flow of the containers
-    #     """
-    #     edges = []
-    #     containers = container_thread.containers_filtered
-    #     ip_set = set([v.ip for v in containers.values()])
-    #     for container_info in containers.values():
-    #         src = container_info.ip
-    #         if src in self.data:
-    #             for dst in set(self.data[src].keys()) & ip_set:
-    #                 edges.append({'data': {
-    #                     'source': container_thread.get_hash_from_ip(src)[:hash_length],
-    #                     'target': container_thread.get_hash_from_ip(dst)[:hash_length],
-    #                     'bytes': self.data[src][dst]
-    #                 }})
-    #     return self.adjust_width(edges)
-
     @staticmethod
     def check_installation():
         try:
