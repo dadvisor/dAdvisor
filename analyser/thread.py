@@ -62,7 +62,7 @@ class AnalyserThread(Thread):
                     raise
         return address
 
-    def get_edges(self, hash_length):
+    def get_edges(self):
         """
         :return: A list with a dict per data-flow of the containers
         """
@@ -71,8 +71,8 @@ class AnalyserThread(Thread):
         for src_id in self.data:
             for dst_id in self.data[src_id]:
                 edges.append({'data': {
-                    'source': containers[src_id].id[:hash_length],
-                    'target': containers[dst_id].id[:hash_length],
+                    'source': containers[src_id].id,
+                    'target': containers[dst_id].id,
                     'bytes': self.data[src_id][dst_id]
                 }})
         return self.adjust_width(edges)

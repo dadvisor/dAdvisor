@@ -35,7 +35,7 @@ def create_web_app(container_thread, peers_thread, analyser_thread):
         hash_length = 12
         return jsonify({
             'nodes': container_thread.get_nodes(hash_length),
-            'edges': analyser_thread.get_edges(hash_length)
+            'edges': analyser_thread.get_edges()
         })
 
     @app.route('/ports')
