@@ -15,14 +15,14 @@ class AnalyserThread(Thread):
         self.peers_thread = peers_thread
         self.data = {}  # 2D dict, that can be used as: self.data[src][dst] = data size
         self.ports = {}  # a dict from port to container_id
-        self.init_ports()
 
-    def init_ports(self):
+    def update_ports(self):
         for info in self.container_thread.containers_filtered:
             for port_map in info.ports:
                 self.ports[port_map['PublicPort']] = info.ip
 
     def run(self):
+        self.update_ports()
         while self.running:
             dataflow = self.inspector_thread.data.get()
             self.add_port(dataflow.src)
