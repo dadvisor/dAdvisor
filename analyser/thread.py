@@ -69,7 +69,7 @@ class AnalyserThread(Thread):
         edges = []
         containers = self.container_thread.get_all_containers()
         for src_id in self.data:
-            for dst_id in self.data:
+            for dst_id in self.data[src_id]:
                 edges.append({'data': {
                     'source': containers[src_id].id[:hash_length],
                     'target': containers[dst_id].id[:hash_length],
