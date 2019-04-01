@@ -19,7 +19,7 @@ class AnalyserThread(Thread):
     def run(self):
         while self.running:
             dataflow = self.inspector_thread.data.get()
-            print(dataflow)
+            # print(dataflow)
             self.add_port(dataflow.src)
             dataflow.src = self.resolve_address(dataflow.src)
             src_id = self.address_id(dataflow.src)
@@ -51,6 +51,9 @@ class AnalyserThread(Thread):
                 except Exception:
                     print('Cannot retrieve ports from peer')
                     raise
+        else:
+            if address.container == '172.17.0.1':
+                print(address)
         return address
 
     def get_edges(self):
