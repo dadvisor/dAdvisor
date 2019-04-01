@@ -43,23 +43,12 @@ class InspectorThread(Thread):
             except Exception:
                 print('Cannot parse row: %s' % row.decode('utf-8'))
 
-    def map(self, container_thread, port):
-        ip_set = set()
-
-        for container, data in list(container_thread.containers_filtered.items()):
-            for port_obj in data.ports:
-                if str(port_obj['PublicPort']) == port:
-                    ip_set.add(data.ip)
-
-        for src_id, v in list(self.data.items()):
+    def get_container(self, port):
+        for src_id in list(self.data.items()):
             src = self.addresses.get(src_id)
             if src.port == port:
-                ip_set.add(src.host)
-            for dst_id in list(v.keys()):
-                dst = self.addresses.get(dst_id)
-                if dst.port == port:
-                    ip_set.add(dst.host)
-        return list(ip_set)
+                return src
+        return []
 
     def get_data_for_host(self, host):
         addresses = Database()

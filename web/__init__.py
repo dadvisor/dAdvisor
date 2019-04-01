@@ -47,9 +47,14 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
             'edges': inspector_thread.get_edges(container_thread, hash_length)
         })
 
-    @app.route('/mapping/<host>')
-    def mapping(host):
-        return jsonify(inspector_thread.get_data_for_host(host))
+    @app.route('/container/<port>')
+    def container(port):
+        """
+        Returns the corresponding container-address (e.g. 172.12.0.1) belonging to the given port
+        :param port:
+        :return:
+        """
+        return jsonify(inspector_thread.get_container(port))
 
     @app.route('/full_graph')
     def full_graph():
