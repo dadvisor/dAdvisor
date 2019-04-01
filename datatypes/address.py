@@ -21,9 +21,6 @@ class Address(object):
     def __str__(self):
         return '{}:{}:{}'.format(self.host, self.container, self.port)
 
-    def to_json(self):
-        return {'host': self.host, 'container': self.container, 'port': self.port}
-
     def is_local(self):
         return self.host == IP and self.container.startswith('172')
 

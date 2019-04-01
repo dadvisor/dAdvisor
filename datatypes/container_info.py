@@ -2,6 +2,7 @@ import json
 import subprocess
 import time
 
+
 class ContainerInfo(object):
 
     def __init__(self, hash, load):
@@ -26,10 +27,11 @@ class ContainerInfo(object):
             elif not self.ip:
                 self.ip = str(data['NetworkSettings']['IPAddress'])
 
-    def get_dict(self):
+    def __dict__(self):
         return {
             'hash': self.hash,
             'created': self.created,
+            'stopped': self.stopped,
             'names': self.names,
             'ports': self.ports,
             'image': self.image,

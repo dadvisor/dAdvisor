@@ -18,9 +18,3 @@ class ContainerMapping(object):
 
     def __str__(self):
         return self.host + ':' + str(self.container_ip)
-
-    def get_dict(self):
-        return {'host': self.host,
-                'image': self.image,
-                'container': self.container_ip,
-                'id': self.id}

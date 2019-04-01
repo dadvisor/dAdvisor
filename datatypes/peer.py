@@ -18,9 +18,6 @@ class Peer(object):
     def __dict__(self):
         return self.address.__dict__()
 
-    def to_json(self):
-        return self.address.to_json()
-
     def __eq__(self, other):
         return self.address.__eq__(other.address)
 
