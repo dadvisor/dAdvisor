@@ -35,7 +35,7 @@ class AnalyserThread(Thread):
         :return:
         """
         for index, item in enumerate(self.container_thread.get_all_containers()):
-            if item.host == address.host and address.container == item.container:
+            if address.host == item.host and address.container == item.container_ip:
                 return index
         return -1
 
