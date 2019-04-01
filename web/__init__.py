@@ -1,7 +1,7 @@
 import subprocess
 
 import requests
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 
 from datatypes.address import IP
@@ -28,12 +28,6 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
     @app.route('/ip')
     def ip():
         return IP
-
-    @app.route('/api/<path:command>')
-    def api(command):
-        cmd = 'curl --unix-socket /var/run/docker.sock http://localhost' + request.full_path[4:]
-        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-        return jsonify(p.communicate()[0].decode('utf-8'))
 
     @app.route('/graph')
     def graph():

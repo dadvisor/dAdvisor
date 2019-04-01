@@ -4,7 +4,7 @@ $(function () { // on dom ready
         displayGraph(data);
         console.log(data);
     }).fail(function(){
-        console.log('Something failed', data);
+        console.log('Something failed');
     });
 
     let bytesToSize = function (bytes) {

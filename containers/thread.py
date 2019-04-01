@@ -6,8 +6,8 @@ from time import sleep
 import requests
 
 from datatypes.address import IP
-from datatypes.container_mapping import ContainerMapping
 from datatypes.container_info import ContainerInfo
+from datatypes.container_mapping import ContainerMapping
 from datatypes.database import Database
 
 
@@ -54,16 +54,25 @@ class ContainerThread(Thread):
         """
         :return: A list of dicts with the containers
         """
-        nodes = self.containers_filtered
-        images = set([v.image for v in nodes])
-        return [{'data': {'id': IP,
-                          'name': IP}}] + \
-               [{'data': {'id': IP + i,
-                          'parent': IP,
-                          'name': i}} for i in images] + \
-               [{'data': {'id': node.hash[:hash_length],
-                          'parent': IP + node.image,
-                          'name': node.hash[:hash_length]}} for node in nodes]
+        all_containers = self.get_all_containers()
+        hosts = set([c.host for c in all_containers])
+        images = {}
+        for container in all_containers:
+            if container.host not in images:
+                images[container.host] = {container.image}
+            else:
+                images[container.host].add(container.image)
+
+        data = [{'data': {'id': host,
+                          'name': host}} for host in hosts]
+        for host, image_set in images.items():
+            data += [{'data': {'id': host + i,
+                               'parent': host,
+                               'name': i}} for i in image_set]
+        data += [{'data': {'id': c.id,
+                           'parent': c.host + c.image,
+                           'name': c.id[:hash_length]}} for c in all_containers]
+        return data
 
     def to_internal_port(self, port):
         """
