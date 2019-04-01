@@ -14,7 +14,7 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
     CORS(app)
 
     log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
+    log.setLevel(logging.INFO)
 
     @app.route('/containers')
     def containers():
@@ -50,6 +50,10 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
     @app.route('/edges')
     def get_edges():
         return jsonify(analyser_thread.get_edges())
+
+    @app.route('/resolve_port/<port>')
+    def resolve_port(port):
+        return jsonify(analyser_thread.resolve_port(port))
 
     @app.route('/ports')
     def ports():

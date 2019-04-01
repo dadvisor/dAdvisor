@@ -2,6 +2,8 @@ from threading import Thread
 
 import requests
 
+from datatypes.address import IP, Address
+
 MAX_WIDTH = 10.0
 
 
@@ -20,6 +22,7 @@ class AnalyserThread(Thread):
         while self.running:
             dataflow = self.inspector_thread.data.get()
             self.add_port(dataflow.src)
+            self.add_port(dataflow.dst)
             dataflow.src = self.resolve_address(dataflow.src)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
@@ -38,6 +41,11 @@ class AnalyserThread(Thread):
     def add_port(self, address):
         if address.is_local():
             self.ports[address.port] = address.container
+
+    def resolve_port(self, port):
+        if port in self.ports:
+            return Address(IP, self.ports[port], port)
+        return None
 
     def resolve_address(self, address):
         if not address.is_local():

@@ -18,7 +18,7 @@ class ContainerThread(Thread):
         self.running = True
         self.sleep_time = 10
         self.own_containers = []  # list of ContainerInfo objects
-        self.all_containers = []  # list of ContainerMapping objects
+        self.other_containers = []  # list of ContainerMapping objects
         self.analyser_thread = None
 
     def run(self):
@@ -42,16 +42,16 @@ class ContainerThread(Thread):
                 self.own_containers.append(info)
 
     def get_all_containers(self):
-        return self.all_containers + \
+        return self.other_containers + \
                [c.to_container_mapping(IP) for c in self.containers_filtered]
 
     def collect_remote_containers(self):
         for p in self.peers_thread.other_peers:
             containers = requests.get('http://{}:{}/containers'.format(p.host, p.port)).json()
-            id_set = set([c.id for c in self.all_containers])
+            id_set = set([c.id for c in self.other_containers])
             for c in containers:
-                if c['hash'] not in id_set and c['ip']:
-                    self.all_containers.append(ContainerMapping(p.host, c['ip'], c['image'], c['hash']))
+                if c['hash'] not in id_set and c['ip']:  # only add containers that have an ip
+                    self.other_containers.append(ContainerMapping(p.host, c['ip'], c['image'], c['hash']))
 
     def get_nodes(self, hash_length):
         """
@@ -96,13 +96,3 @@ class ContainerThread(Thread):
         """
         skip = '/dadvisor'
         return [info for info in self.own_containers if skip not in info.names]
-
-    def get_hash_from_ip(self, ip):
-        """
-        :param ip: the ip-address as a string
-        :return: the full hash of the container ID
-        """
-        for info in self.own_containers:
-            if info.ip == ip:
-                return info.hash
-        return ''
