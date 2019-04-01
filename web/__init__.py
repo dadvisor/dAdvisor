@@ -5,10 +5,12 @@ from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 
 from datatypes.address import IP
+from datatypes.encoder import JSONCustomEncoder
 
 
 def create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread):
     app = Flask(__name__)
+    app.json_encoder = JSONCustomEncoder
     CORS(app)
 
     log = logging.getLogger('werkzeug')
