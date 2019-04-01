@@ -25,7 +25,9 @@ class InspectorThread(Thread):
         for row in iter(p.stdout.readline, b''):
             try:
                 data_flow = parse_row(row.decode('utf-8'))
-                if data_flow.size > 0:
+                if data_flow.size > 0 and \
+                        int(data_flow.src.port) != 8800 and \
+                        int(data_flow.dst.port) != 8800:
                     self.data.put(data_flow)
             except Exception:
                 print('Cannot parse row: %s' % row.decode('utf-8'))

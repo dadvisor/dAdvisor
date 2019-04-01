@@ -19,9 +19,11 @@ class AnalyserThread(Thread):
     def run(self):
         while self.running:
             dataflow = self.inspector_thread.data.get()
+            print('Queue size: {}'.format(self.inspector_thread.data.qsize()))
             self.add_port(dataflow.src)
             self.add_port(dataflow.dst)
 
+            dataflow.src = self.resolve_address(dataflow.src)
             dataflow.dst = self.resolve_address(dataflow.dst)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
