@@ -88,6 +88,9 @@ class AnalyserThread(Thread):
         for index, item in enumerate(self.container_thread.get_all_containers()):
             if address.host == item.host and address.container == item.container_ip:
                 return index
+
+        if address.container == '172.17.0.1':
+            return 0
         return -1
 
     @staticmethod

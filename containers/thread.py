@@ -1,7 +1,7 @@
 import json
 import subprocess
 from threading import Thread
-from time import sleep
+from time import sleep, time
 
 import requests
 
@@ -26,6 +26,7 @@ class ContainerThread(Thread):
             try:
                 self.collect_own_containers()
                 self.collect_remote_containers()
+                self.validate_own_containers()
             except Exception as e:
                 print(e)
             sleep(self.sleep_time)
@@ -40,6 +41,10 @@ class ContainerThread(Thread):
                 for port_map in info.ports:
                     self.analyser_thread.ports[str(port_map['PublicPort'])] = info.ip
                 self.own_containers.append(info)
+
+    def validate_own_containers(self):
+        for info in self.own_containers:
+            info.validate()
 
     def get_all_containers(self):
         return self.other_containers + \
@@ -95,4 +100,4 @@ class ContainerThread(Thread):
         :return: A dict without the key for its own container
         """
         skip = '/dadvisor'
-        return [info for info in self.own_containers if skip not in info.names]
+        return [info for info in self.own_containers if skip not in info.names and not info.stopped]

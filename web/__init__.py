@@ -18,7 +18,7 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
 
     @app.route('/containers')
     def containers():
-        return jsonify([c.get_dict() for c in container_thread.containers_filtered])
+        return jsonify(container_thread.containers_filtered)
 
     @app.route('/containers/all')
     def containers_all():
