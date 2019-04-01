@@ -81,6 +81,7 @@ class PeersThread(Thread):
             return Address(data['host'], data['container'], data['port'])
         except Exception:
             print('Cannot validate data from {}'.format(p))
+            raise
 
     def get_peer_from_host(self, host):
         for peer in self.other_peers:

@@ -59,7 +59,7 @@ class InspectorThread(Thread):
         :param address:
         :return:
         """
-        if not address.is_local() and self.peers_thread.is_other_peer(address):
+        if not address.is_local() and self.peers_thread.is_other_peer(address.host):
             address = self.peers_thread.resolve_address(address)
         return self.addresses.get_id(address)
 
