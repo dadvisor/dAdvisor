@@ -22,7 +22,7 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
 
     @app.route('/containers/all')
     def containers_all():
-        return jsonify([c.get_dict() for c in container_thread.get_all_containers()])
+        return jsonify(container_thread.get_all_containers())
 
     @app.route('/ip')
     def ip():
