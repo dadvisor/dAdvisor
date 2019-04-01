@@ -49,6 +49,10 @@ def create_web_app(container_thread, inspector_thread, peers_thread, analyser_th
             edges += json['edges']
         return jsonify({'nodes': nodes, 'edges': edges})
 
+    @app.route('/ports')
+    def ports():
+        return jsonify(analyser_thread.ports)
+
     @app.route('/peers')
     def peers():
         return jsonify(peers_thread.peers)

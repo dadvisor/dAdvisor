@@ -11,12 +11,19 @@ class AnalyserThread(Thread):
         self.inspector_thread = inspector_thread
         self.container_thread = container_thread
         self.data = {}  # 2D dict, that can be used as: self.data[src][dst] = data size
+        self.ports = {}  # a dict from port to container_id
 
     def run(self):
         while self.running:
             dataflow = self.inspector_thread.data.get()
+            self.add_port(dataflow.src)
+
+            dataflow.src = self.resolve_address(dataflow.src)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
+
+
+
             if src_id == -1 or dst_id == -1:
                 print('Skipping: {}'.format(dataflow))
                 continue
@@ -28,6 +35,13 @@ class AnalyserThread(Thread):
             else:
                 self.data[src_id][dst_id] = dataflow.size
 
+    def add_port(self, address):
+        if address.is_local():
+            self.ports[address.port] = address.container
+
+    def resolve_address(self, address):
+
+        return address
 
     def address_id(self, address):
         """
