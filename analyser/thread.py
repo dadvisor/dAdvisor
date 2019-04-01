@@ -34,7 +34,6 @@ class AnalyserThread(Thread):
             dst_id = self.address_id(dataflow.dst)
 
             if src_id == -1 or dst_id == -1:
-                print('Skipping: {}'.format(dataflow))
                 continue
             if src_id in self.data:
                 if dst_id in self.data[src_id]:
