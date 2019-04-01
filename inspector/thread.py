@@ -48,7 +48,7 @@ class InspectorThread(Thread):
 
         for src_id in list(self.data.keys()):
             src = self.addresses.get(src_id)
-            if src.port == port:
+            if str(src.port) == str(port):
                 return src
         return []
 
