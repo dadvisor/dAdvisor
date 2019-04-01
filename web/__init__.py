@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 
@@ -9,6 +11,9 @@ def create_web_app(container_thread, peers_thread, analyser_thread):
     app = Flask(__name__)
     app.json_encoder = JSONCustomEncoder
     CORS(app)
+
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
 
     @app.route('/containers')
     def containers():
