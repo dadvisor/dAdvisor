@@ -1,13 +1,13 @@
 class ContainerMapping(object):
-    def __init__(self, host, container_ip, base_image, container_id):
+    def __init__(self, host, container_ip, image, container_id):
         self.host = host
         self.container_ip = container_ip
-        self.base_image = base_image
+        self.image = image
         self.id = container_id
 
     def __dict__(self):
         return {'host': self.host,
-                'image': self.base_image,
+                'image': self.image,
                 'container': self.container_ip,
                 'id': self.id}
 
@@ -21,9 +21,6 @@ class ContainerMapping(object):
 
     def get_dict(self):
         return {'host': self.host,
-                'image': self.base_image,
+                'image': self.image,
                 'container': self.container_ip,
                 'id': self.id}
-
-    def is_local(self):
-        return self.container_ip.startswith('172')
