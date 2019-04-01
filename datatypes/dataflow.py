@@ -9,4 +9,4 @@ class DataFlow(object):
         self.size = size
 
     def __str__(self):
-        return self.src + ' > ' + self.dst + ': ' + str(self.size)
+        return '{} > {}: {}'.format(self.src, self.dst, self.size)
