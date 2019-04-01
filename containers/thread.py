@@ -8,7 +8,6 @@ import requests
 from datatypes.address import IP
 from datatypes.container_info import ContainerInfo
 from datatypes.container_mapping import ContainerMapping
-from datatypes.database import Database
 
 
 class ContainerThread(Thread):
@@ -18,8 +17,8 @@ class ContainerThread(Thread):
         self.peers_thread = peers_thread
         self.running = True
         self.sleep_time = 10
-        self.own_containers = Database()  # database of ContainerInfo objects
-        self.all_containers = Database()  # database of ContainerMapping objects
+        self.own_containers = []  # list of ContainerInfo objects
+        self.all_containers = []  # list of ContainerMapping objects
         self.analyser_thread = None
 
     def run(self):
@@ -40,10 +39,10 @@ class ContainerThread(Thread):
                 info = ContainerInfo(c['Id'], c)
                 for port_map in info.ports:
                     self.analyser_thread.ports[str(port_map['PublicPort'])] = info.ip
-                self.own_containers.add(info)
+                self.own_containers.append(info)
 
     def get_all_containers(self):
-        return self.all_containers.to_list() + \
+        return self.all_containers + \
                [c.to_container_mapping(IP) for c in self.containers_filtered]
 
     def collect_remote_containers(self):
@@ -52,7 +51,7 @@ class ContainerThread(Thread):
             id_set = set([c.id for c in self.all_containers])
             for c in containers:
                 if c['hash'] not in id_set and c['ip']:
-                    self.all_containers.add(ContainerMapping(p.host, c['ip'], c['image'], c['hash']))
+                    self.all_containers.append(ContainerMapping(p.host, c['ip'], c['image'], c['hash']))
 
     def get_nodes(self, hash_length):
         """

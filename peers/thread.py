@@ -5,7 +5,6 @@ from time import sleep
 import requests
 
 from datatypes.address import IP
-from datatypes.database import Database
 from datatypes.peer import Peer
 
 
@@ -17,7 +16,7 @@ class PeersThread(Thread):
         self.sleep_time = 10
         self.my_peer = Peer(IP, port)
         self.my_peer.can_be_removed = False
-        self.peers = Database(self.my_peer)
+        self.peers = [self.my_peer]
 
         self.init_peers()
 
@@ -60,7 +59,7 @@ class PeersThread(Thread):
                 # Add new peers (if they're not in the list)
                 for p2 in peer_list:
                     if p2 not in self.peers:
-                        self.peers.add(p2)
+                        self.peers.append(p2)
             except requests.ConnectionError as e:
                 print('Connection error: {}'.format(e))
                 if p.can_be_removed:
@@ -83,6 +82,6 @@ class PeersThread(Thread):
     def add_peer(self, host, port):
         p = Peer(host, port)
         if p not in self.peers:
-            self.peers.add(p)
+            self.peers.append(p)
             self.request_other_peer(p)
         return p
