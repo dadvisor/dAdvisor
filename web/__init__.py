@@ -19,7 +19,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
 
     @app.route('/containers/all')
     def containers_all():
-        return jsonify([c.get_dict() for c in container_thread.all_containers])
+        return jsonify([c.get_dict() for c in container_thread.get_all_containers()])
 
     @app.route('/inspect')
     def inspect():
