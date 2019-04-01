@@ -6,7 +6,7 @@ import requests
 
 from datatypes.database import Database
 from datatypes.peer import Peer
-from datatypes.address import IP
+from datatypes.address import IP, Address
 
 
 class PeersThread(Thread):
@@ -32,6 +32,9 @@ class PeersThread(Thread):
     @property
     def other_peers(self):
         return [p for p in self.peers if p != self.my_peer]
+
+    def is_other_peer(self, host):
+        return [p for p in self.other_peers if p.host == host]
 
     def init_peers(self):
         """ Read peers from the environment variable and add them to the list.
@@ -70,6 +73,20 @@ class PeersThread(Thread):
                                                       self.my_peer.host, self.my_peer.port)).json()
         except Exception:
             print('Cannot send an address to {}'.format(p))
+
+    def resolve_address(self, address):
+        p = self.get_peer_from_host(address.host)
+        try:
+            data = requests.get('http://{}:{}/container/{}'.format(p.host, p.port, address.port)).json()
+            return Address(data['host'], data['container'], data['port'])
+        except Exception:
+            print('Cannot validate data from {}'.format(p))
+
+    def get_peer_from_host(self, host):
+        for peer in self.other_peers:
+            if peer.host == host:
+                return peer
+        return None
 
     def add_peer(self, host, port):
         p = Peer(host, port)

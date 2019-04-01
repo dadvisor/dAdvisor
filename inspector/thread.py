@@ -10,7 +10,7 @@ MAX_WIDTH = 10.0
 
 class InspectorThread(Thread):
 
-    def __init__(self):
+    def __init__(self, peers_thread):
         Thread.__init__(self)
         """
         A 2D dictionary, which is structured the following:
@@ -19,6 +19,7 @@ class InspectorThread(Thread):
         """
         self.data = {}
         self.addresses = Database()
+        self.peers_thread = peers_thread
 
     def run(self):
         self.check_installation()
@@ -28,7 +29,7 @@ class InspectorThread(Thread):
             try:
                 src, dst, size = parse_row(row.decode('utf-8'))
                 if src.is_local() or dst.is_local():
-                    src_id = self.addresses.get_id(src)
+                    src_id = self.resolve_address(src)
                     dst_id = self.addresses.get_id(dst)
                     if src_id in self.data:
                         src_dict = self.data[src_id]
@@ -51,6 +52,16 @@ class InspectorThread(Thread):
             if str(src.port) == str(port):
                 return src
         return []
+
+    def resolve_address(self, address):
+        """
+        Get the local address from a given host (assuming that this host is a peer)
+        :param address:
+        :return:
+        """
+        if not address.is_local() and self.peers_thread.is_other_peer(address):
+            address = self.peers_thread.resolve_address(address)
+        return self.addresses.get_id(address)
 
     def get_data_for_host(self, host):
         addresses = Database()
