@@ -44,7 +44,7 @@ class InspectorThread(Thread):
                 print('Cannot parse row: %s' % row.decode('utf-8'))
 
     def get_container(self, port):
-        for src_id in list(self.data.items()):
+        for src_id in list(self.data.keys()):
             src = self.addresses.get(src_id)
             if src.port == port:
                 return src
