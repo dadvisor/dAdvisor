@@ -4,8 +4,8 @@ from time import sleep
 
 import requests
 
-from peers.database import Database
-from peers.peer import Peer
+from datatypes.database import Database
+from datatypes.peer import Peer
 from web.const import IP
 
 

@@ -1,8 +1,8 @@
 from flask.json import JSONEncoder
 
-from peers.address import Address
-from peers.database import Database
-from peers.peer import Peer
+from datatypes.address import Address
+from datatypes.database import Database
+from datatypes.peer import Peer
 
 
 class JSONCustomEncoder(JSONEncoder):

@@ -3,7 +3,7 @@ import subprocess
 from threading import Thread
 from time import sleep
 
-from containers.container_info import ContainerInfo
+from datatypes.container_info import ContainerInfo
 
 
 class ContainerThread(Thread):

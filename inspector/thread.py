@@ -3,7 +3,7 @@ import sys
 from threading import Thread
 
 from inspector.parser import parse_row
-from peers.database import Database
+from datatypes.database import Database
 
 MAX_WIDTH = 10.0
 
