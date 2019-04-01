@@ -3,6 +3,7 @@ import subprocess
 from threading import Thread
 from time import sleep
 
+from datatypes.address import IP
 from datatypes.container_info import ContainerInfo
 
 
@@ -34,7 +35,6 @@ class ContainerThread(Thread):
         """
         :return: A list of dicts with the containers
         """
-        from web.const import IP
         nodes = self.containers_filtered
         images = set(v.image for v in nodes.values())
         return [{'data': {'id': IP,

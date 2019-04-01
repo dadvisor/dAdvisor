@@ -6,7 +6,7 @@ import requests
 
 from datatypes.database import Database
 from datatypes.peer import Peer
-from web.const import IP
+from datatypes.address import IP
 
 
 class PeersThread(Thread):

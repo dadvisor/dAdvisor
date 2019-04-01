@@ -4,7 +4,7 @@ import requests
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
-
+from datatypes.address import IP
 from datatypes.encoder import JSONCustomEncoder
 
 
@@ -27,7 +27,6 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
 
     @app.route('/ip')
     def ip():
-        from web.const import IP
         return IP
 
     @app.route('/api/<path:command>')

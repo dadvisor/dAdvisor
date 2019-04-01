@@ -1,4 +1,6 @@
-from web.const import IP
+import socket
+
+IP = socket.gethostbyname(socket.gethostname())
 
 
 class Address(object):
