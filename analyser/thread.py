@@ -19,7 +19,7 @@ class AnalyserThread(Thread):
     def update_ports(self):
         for info in self.container_thread.containers_filtered:
             for port_map in info.ports:
-                self.ports[port_map['PublicPort']] = info.ip
+                self.ports[str(port_map['PublicPort'])] = info.ip
 
     def run(self):
         self.update_ports()
