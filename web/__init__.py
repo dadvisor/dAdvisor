@@ -7,7 +7,7 @@ from datatypes.address import IP
 from datatypes.encoder import JSONCustomEncoder
 
 
-def create_web_app(container_thread, peers_thread, analyser_thread):
+def create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread):
     app = Flask(__name__)
     app.json_encoder = JSONCustomEncoder
     CORS(app)
@@ -31,6 +31,10 @@ def create_web_app(container_thread, peers_thread, analyser_thread):
     def ip():
         return IP
 
+    @app.route('/size')
+    def size():
+        return jsonify(inspector_thread.data.qsize())
+
     @app.route('/graph')
     def graph():
         return render_template('index.html')
@@ -42,6 +46,10 @@ def create_web_app(container_thread, peers_thread, analyser_thread):
             'nodes': container_thread.get_nodes(hash_length),
             'edges': analyser_thread.get_edges()
         })
+
+    @app.route('/edges')
+    def edges():
+        return jsonify(analyser_thread.get_edges())
 
     @app.route('/ports')
     def ports():

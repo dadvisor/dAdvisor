@@ -16,20 +16,11 @@ class AnalyserThread(Thread):
         self.data = {}  # 2D dict, that can be used as: self.data[src][dst] = data size
         self.ports = {}  # a dict from port to container_id
 
-    def update_ports(self):
-        for info in self.container_thread.containers_filtered:
-            for port_map in info.ports:
-                self.ports[str(port_map['PublicPort'])] = info.ip
-
     def run(self):
-        self.update_ports()
         while self.running:
             dataflow = self.inspector_thread.data.get()
             self.add_port(dataflow.src)
-            self.add_port(dataflow.dst)
-
             dataflow.src = self.resolve_address(dataflow.src)
-            dataflow.dst = self.resolve_address(dataflow.dst)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
 
@@ -43,7 +34,6 @@ class AnalyserThread(Thread):
             else:
                 self.data[src_id] = {}
                 self.data[src_id][dst_id] = dataflow.size
-            self.update_ports()
 
     def add_port(self, address):
         if address.is_local():

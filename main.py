@@ -13,8 +13,9 @@ if __name__ == '__main__':
     container_thread = start_container_thread(peers_thread)
     inspector_thread = start_inspector_thread(peers_thread)
     analyser_thread = start_analyser_thread(inspector_thread, container_thread, peers_thread)
+    container_thread.analyser_thread = analyser_thread
 
-    app = create_web_app(container_thread, peers_thread, analyser_thread)
+    app = create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread)
     app.run(debug=True, host='0.0.0.0', port=int(PORT))
 
     print('Stopping program')

@@ -20,6 +20,7 @@ class ContainerThread(Thread):
         self.sleep_time = 10
         self.own_containers = Database()  # database of ContainerInfo objects
         self.all_containers = Database()  # database of ContainerMapping objects
+        self.analyser_thread = None
 
     def run(self):
         while self.running:
@@ -36,7 +37,10 @@ class ContainerThread(Thread):
         data = json.loads(p.communicate()[0].decode('utf-8'))
         for c in data:
             if c['Id'] not in [c.hash for c in self.own_containers]:
-                self.own_containers.add(ContainerInfo(c['Id'], c))
+                info = ContainerInfo(c['Id'], c)
+                for port_map in info.ports:
+                    self.analyser_thread.ports[str(port_map['PublicPort'])] = info.ip
+                self.own_containers.add(info)
 
     def get_all_containers(self):
         return self.all_containers.to_list() + \
