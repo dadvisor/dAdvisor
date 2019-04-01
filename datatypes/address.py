@@ -1,4 +1,4 @@
-from web import IP
+from web.const import IP
 
 
 class Address(object):
