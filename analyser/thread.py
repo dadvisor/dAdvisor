@@ -48,9 +48,11 @@ class AnalyserThread(Thread):
             if p:
                 try:
                     ports = requests.get('http://{}:{}/ports'.format(p.host, p.port)).json()
-                    address.container = ports[address.port]
+                    if address.port in ports:
+                        address.container = ports[address.port]
                 except Exception:
                     print('Cannot retrieve ports from peer')
+                    raise
         return address
 
     def address_id(self, address):
