@@ -46,6 +46,18 @@ class ContainerThread(Thread):
                           'parent': IP + v.image,
                           'name': k[:hash_length]}} for k, v in nodes.items()]
 
+    def to_internal_port(self, port):
+        """
+        Converts a public port to a private port. Returns the given port if no mapping is found
+        :param port: the port to map
+        :return:
+        """
+        for container in list(self.containers_filtered.values()):
+            for port_mapping in container.ports:
+                if port_mapping['PublicPort'] == int(port):
+                    return int(port_mapping['PrivatePort'])
+        return port
+
     @property
     def containers_filtered(self):
         """

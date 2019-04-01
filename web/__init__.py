@@ -54,7 +54,7 @@ def create_web_app(container_thread, inspector_thread, peers_thread):
         :param port:
         :return:
         """
-        return jsonify(inspector_thread.get_container(port))
+        return jsonify(inspector_thread.get_container(container_thread, port))
 
     @app.route('/full_graph')
     def full_graph():
