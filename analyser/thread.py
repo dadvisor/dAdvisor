@@ -44,6 +44,7 @@ class AnalyserThread(Thread):
             else:
                 self.data[src_id] = {}
                 self.data[src_id][dst_id] = dataflow.size
+            self.update_ports()
 
     def add_port(self, address):
         if address.is_local():
