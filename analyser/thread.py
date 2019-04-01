@@ -43,8 +43,12 @@ class AnalyserThread(Thread):
     def resolve_address(self, address):
         if not address.is_local():
             p = self.peers_thread.get_peer_from_host(address.host)
-            ports = requests.get('http://{}:{}/ports'.format(p.host, p.port)).json()
-            address.container = ports[address.port]
+            if p:
+                try:
+                    ports = requests.get('http://{}:{}/ports'.format(p.host, p.port)).json()
+                    address.container = ports[address.port]
+                except Exception:
+                    print('Cannot retrieve ports from peer')
         return address
 
     def address_id(self, address):
