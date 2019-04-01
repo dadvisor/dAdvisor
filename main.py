@@ -8,8 +8,8 @@ from web import create_web_app
 PORT = os.environ.get('PORT', '8800')
 
 if __name__ == '__main__':
-    container_thread = start_container_thread()
     peers_thread = start_peers_thread(PORT)
+    container_thread = start_container_thread(peers_thread)
     inspector_thread = start_inspector_thread(peers_thread)
 
     app = create_web_app(container_thread, inspector_thread, peers_thread)
