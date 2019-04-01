@@ -36,9 +36,11 @@ class ContainerThread(Thread):
         data = json.loads(p.communicate()[0].decode('utf-8'))
         for c in data:
             if c['Id'] not in [c.hash for c in self.own_containers]:
-                container_info = ContainerInfo(c['Id'], c)
-                self.own_containers.add(container_info)
-                self.all_containers.add(ContainerMapping.decode(c, IP, container_info))
+                self.own_containers.add(ContainerInfo(c['Id'], c))
+
+    def get_all_containers(self):
+        return self.all_containers.to_list() + \
+               [c.to_container_mapping(IP) for c in self.containers_filtered]
 
     def collect_remote_containers(self):
         for p in self.peers_thread.other_peers:

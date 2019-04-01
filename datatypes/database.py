@@ -26,6 +26,9 @@ class Database(object):
     def __len__(self):
         return self.length
 
+    def to_list(self):
+        return self.data
+
     def __iter__(self):
         return iter(self.data)
 

@@ -4,10 +4,12 @@ class ContainerMapping(object):
         self.container_ip = container_ip
         self.base_image = base_image
         self.id = container_id
-        self.container_info = None
 
     def __dict__(self):
-        return {'host': self.host, 'image': self.base_image, 'container': self.get_ip(), 'id': self.id}
+        return {'host': self.host,
+                'image': self.base_image,
+                'container': self.container_ip,
+                'id': self.id}
 
     def __eq__(self, other):
         return self.host == other.host and \
@@ -20,18 +22,8 @@ class ContainerMapping(object):
     def get_dict(self):
         return {'host': self.host,
                 'image': self.base_image,
-                'container': self.get_ip(),
+                'container': self.container_ip,
                 'id': self.id}
 
     def is_local(self):
         return self.container_ip.startswith('172')
-
-    def get_ip(self):
-        if not self.container_ip and self.container_info:
-            return self.container_info.ip
-
-    @staticmethod
-    def decode(data, host, container_info):
-        mapping = ContainerMapping(host, '', str(data['Image']), data['Id'])
-        mapping.container_info = container_info
-        return mapping

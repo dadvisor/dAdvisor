@@ -40,3 +40,7 @@ class ContainerInfo(object):
             'image': self.image,
             'ip': self.ip
         }
+
+    def to_container_mapping(self, host):
+        from datatypes.container_mapping import ContainerMapping
+        return ContainerMapping(host, self.ip, self.image, self.hash)
