@@ -1,5 +1,6 @@
 import logging
 
+import requests
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 
@@ -42,13 +43,16 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
     @app.route('/data')
     def data():
         hash_length = 12
+        edges = analyser_thread.get_edges()
+        for p in peers_thread.other_peers:
+            edges += requests.get('http://{}:{}/edges'.format(p.host, p.port)).json()
         return jsonify({
             'nodes': container_thread.get_nodes(hash_length),
-            'edges': analyser_thread.get_edges()
+            'edges': edges
         })
 
     @app.route('/edges')
-    def edges():
+    def get_edges():
         return jsonify(analyser_thread.get_edges())
 
     @app.route('/ports')
