@@ -26,13 +26,14 @@ class AnalyserThread(Thread):
             self.resolve_local_address(dataflow.src)
             self.resolve_local_address(dataflow.dst)
 
-            dataflow.src = self.resolve_remote_address(dataflow.src)
+            self.resolve_remote_address(dataflow.src)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
 
             if src_id == -1 or dst_id == -1:
-                print('src_id: {}, dst_id: {} - {}'.format(src_id, dst_id, dataflow))
                 continue
+
+            print(dataflow)
             if src_id in self.data:
                 if dst_id in self.data[src_id]:
                     self.data[src_id][dst_id] += dataflow.size
@@ -59,7 +60,6 @@ class AnalyserThread(Thread):
                 if str(port_map['PublicPort']) == str(address.port):
                     address.container = info.ip
                     address.port = str(port_map['PrivatePort'])
-                    print(address)
                     return
 
     def resolve_remote_address(self, address):
@@ -73,10 +73,6 @@ class AnalyserThread(Thread):
                 except Exception:
                     print('Cannot retrieve ports from peer')
                     raise
-        else:
-            if address.container == '172.17.0.1':
-                print(address)
-        return address
 
     def get_edges(self):
         """
