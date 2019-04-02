@@ -30,6 +30,7 @@ class ContainerThread(Thread):
                 self.validate_own_containers()
             except Exception as e:
                 log.error(e)
+                raise
             sleep(self.sleep_time)
 
     def collect_own_containers(self):
