@@ -3,6 +3,7 @@ from threading import Thread
 import requests
 
 from datatypes.address import IP, Address
+from log import log
 
 MAX_WIDTH = 10.0
 
@@ -33,7 +34,7 @@ class AnalyserThread(Thread):
             if src_id == -1 or dst_id == -1:
                 continue
 
-            print(dataflow)
+            log.info(dataflow)
             if src_id in self.data:
                 if dst_id in self.data[src_id]:
                     self.data[src_id][dst_id] += dataflow.size
@@ -71,7 +72,7 @@ class AnalyserThread(Thread):
                     if address.port in ports:
                         address.container = ports[address.port]
                 except Exception:
-                    print('Cannot retrieve ports from peer')
+                    log.warn('Cannot retrieve ports from peer')
                     raise
 
     def get_edges(self):

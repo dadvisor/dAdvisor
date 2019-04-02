@@ -6,6 +6,7 @@ import requests
 
 from datatypes.address import IP
 from datatypes.peer import Peer
+from log import log
 
 
 class PeersThread(Thread):
@@ -25,7 +26,7 @@ class PeersThread(Thread):
             try:
                 self.validate_peers()
             except Exception as e:
-                print(e)
+                log.error(e)
             sleep(self.sleep_time)
 
     @property
@@ -47,7 +48,7 @@ class PeersThread(Thread):
                 p.can_be_removed = False
 
     def validate_peers(self):
-        print('Validating peers: {}'.format(len(self.peers)))
+        log.info('Validating peers: {}'.format(len(self.peers)))
         for p in self.other_peers:
             try:
                 peer_list = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
@@ -61,7 +62,7 @@ class PeersThread(Thread):
                     if p2 not in self.peers:
                         self.peers.append(p2)
             except requests.ConnectionError as e:
-                print('Connection error: {}'.format(e))
+                log.error(e)
                 if p.can_be_removed:
                     self.peers.remove(p)
 
@@ -70,8 +71,9 @@ class PeersThread(Thread):
             requests.get(
                 'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port,
                                                       self.my_peer.host, self.my_peer.port)).json()
-        except Exception:
-            print('Cannot send an address to {}'.format(p))
+        except Exception as e:
+            log.warn('Cannot send an address to {}'.format(p))
+            log.error(e)
 
     def get_peer_from_host(self, host):
         for peer in self.other_peers:

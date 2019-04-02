@@ -4,6 +4,7 @@ from queue import Queue
 from threading import Thread
 
 from inspector.parser import parse_row
+from log import log
 
 
 class InspectorThread(Thread):
@@ -29,8 +30,9 @@ class InspectorThread(Thread):
                         int(data_flow.src.port) != 8800 and \
                         int(data_flow.dst.port) != 8800:
                     self.data.put(data_flow)
-            except Exception:
-                print('Cannot parse row: %s' % row.decode('utf-8'))
+            except Exception as e:
+                log.warn('Cannot parse row: %s' % row.decode('utf-8'))
+                log.error(e)
 
     @staticmethod
     def check_installation():

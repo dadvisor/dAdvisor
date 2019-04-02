@@ -3,6 +3,7 @@ import os
 from analyser import start_analyser_thread
 from containers import start_container_thread
 from inspector import start_inspector_thread
+from log import log
 from peers import start_peers_thread
 from web import create_web_app
 
@@ -18,4 +19,4 @@ if __name__ == '__main__':
     app = create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread)
     app.run(debug=True, host='0.0.0.0', port=int(PORT))
 
-    print('Stopping program')
+    log.info('Stopping program')

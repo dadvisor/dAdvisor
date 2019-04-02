@@ -1,13 +1,14 @@
 import json
 import subprocess
 from threading import Thread
-from time import sleep, time
+from time import sleep
 
 import requests
 
 from datatypes.address import IP
 from datatypes.container_info import ContainerInfo
 from datatypes.container_mapping import ContainerMapping
+from log import log
 
 
 class ContainerThread(Thread):
@@ -28,7 +29,7 @@ class ContainerThread(Thread):
                 self.collect_remote_containers()
                 self.validate_own_containers()
             except Exception as e:
-                print(e)
+                log.error(e)
             sleep(self.sleep_time)
 
     def collect_own_containers(self):
