@@ -22,12 +22,10 @@ class InspectorThread(Thread):
         p = subprocess.Popen(('tcpdump', '-i', 'any', '-n', '-l'), stdout=subprocess.PIPE)
 
         for row in iter(p.stdout.readline, b''):
-            log.info(row.decode('utf-8').rstrip())
+            log.warn(row.decode('utf-8').rstrip())
             try:
                 data_flow = parse_row(row.decode('utf-8'))
-                if data_flow.size > 0 and \
-                        int(data_flow.src.port) != 8800 and \
-                        int(data_flow.dst.port) != 8800:  # TODO update if condition
+                if data_flow.size > 0 and not self.is_p2p_communication(data_flow):
                     self.data.put(data_flow)
             except ValueError:
                 log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
@@ -40,3 +38,13 @@ class InspectorThread(Thread):
             sys.stderr.write('tcpdump is not installed. Please install it before running this code.\n')
             sys.stderr.flush()
             exit(-1)
+
+    def is_p2p_communication(self, data_flow):
+        """
+        Skip communication between peers
+        :return:
+        """
+        for p in self.peers_thread.peers:
+            if data_flow.src == p.address or data_flow.dst == p.address:
+                return True
+        return False
