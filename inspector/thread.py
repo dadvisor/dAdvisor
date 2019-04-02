@@ -44,6 +44,7 @@ class InspectorThread(Thread):
         :return:
         """
         for p in self.peers_thread.peers:
-            if data_flow.src == p.address or data_flow.dst == p.address:
+            if (data_flow.src.host == p.address.host and str(data_flow.src.port) == str(p.address.port)) or \
+                    (data_flow.dst.host == p.address.host and str(data_flow.dst.port) == str(p.address.port)):
                 return True
         return False
