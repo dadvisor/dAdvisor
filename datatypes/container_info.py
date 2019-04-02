@@ -18,7 +18,7 @@ class ContainerInfo(object):
         if self.stopped:
             return
         for name in self.names:
-            cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers{}/json'.format(name)
+            cmd = 'curl -s --unix-socket /var/run/docker.sock http://localhost/containers{}/json'.format(name)
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
             data = json.loads(p.communicate()[0].decode('utf-8'))
             if 'message' in data:

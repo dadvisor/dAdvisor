@@ -33,7 +33,7 @@ class ContainerThread(Thread):
             sleep(self.sleep_time)
 
     def collect_own_containers(self):
-        cmd = 'curl --unix-socket /var/run/docker.sock http://localhost/containers/json'
+        cmd = 'curl -s --unix-socket /var/run/docker.sock http://localhost/containers/json'
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         data = json.loads(p.communicate()[0].decode('utf-8'))
         for c in data:
