@@ -1,3 +1,4 @@
+import re
 import socket
 
 IP = socket.gethostbyname(socket.gethostname())
@@ -22,7 +23,11 @@ class Address(object):
         return '{}:{}:{}'.format(self.host, self.container, self.port)
 
     def is_local(self):
-        return self.host == IP and self.container.startswith('172')
+        return self.host == IP and re.match(r'172.\d+.0.\d+', self.container)
+
+    @staticmethod
+    def is_host(host, container):
+        return host == IP and re.match(r'172.\d+.0.1', container)
 
     @staticmethod
     def decode(host_container, port):
@@ -31,6 +36,6 @@ class Address(object):
         :param port:
         :return:
         """
-        if host_container.startswith('172'):
+        if re.match(r'172.\d+.0.\d+', host_container):
             return Address(IP, host_container, port)
         return Address(host_container, '', port)

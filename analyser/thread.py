@@ -23,12 +23,15 @@ class AnalyserThread(Thread):
             dataflow = self.inspector_thread.data.get()
             self.add_port(dataflow.src)
             self.add_port(dataflow.dst)
-            dataflow.src = self.resolve_address(dataflow.src)
+            self.resolve_local_address(dataflow.src)
+            self.resolve_local_address(dataflow.dst)
+
+            dataflow.src = self.resolve_remote_address(dataflow.src)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
 
             if src_id == -1 or dst_id == -1:
-                print(dataflow)
+                print('src_id: {}, dst_id: {} - {}'.format(src_id, dst_id, dataflow))
                 continue
             if src_id in self.data:
                 if dst_id in self.data[src_id]:
@@ -48,7 +51,18 @@ class AnalyserThread(Thread):
             return Address(IP, self.ports[port], port)
         return None
 
-    def resolve_address(self, address):
+    def resolve_local_address(self, address):
+        if address.host != IP:
+            return
+        for info in self.container_thread.own_containers:
+            for port_map in info.ports:
+                if str(port_map['PublicPort']) == str(address.port):
+                    address.container = info.ip
+                    address.port = str(port_map['PrivatePort'])
+                    print(address)
+                    return
+
+    def resolve_remote_address(self, address):
         if not address.is_local():
             p = self.peers_thread.get_peer_from_host(address.host)
             if p:
