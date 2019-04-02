@@ -22,6 +22,7 @@ class InspectorThread(Thread):
         p = subprocess.Popen(('tcpdump', '-n', '-l'), stdout=subprocess.PIPE)
 
         for row in iter(p.stdout.readline, b''):
+            log.info(row.decode('utf-8').rstrip())
             try:
                 data_flow = parse_row(row.decode('utf-8'))
                 if data_flow.size > 0 and \
@@ -29,7 +30,7 @@ class InspectorThread(Thread):
                         int(data_flow.dst.port) != 8800:  # TODO update if condition
                     self.data.put(data_flow)
             except ValueError:
-                log.warn('Cannot parse row: %s' % row.decode('utf-8').replace('\n', ''))
+                log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
     @staticmethod
     def check_installation():
