@@ -22,11 +22,11 @@ class InspectorThread(Thread):
         p = subprocess.Popen(('tcpdump', '-i', 'any', '-n', '-l'), stdout=subprocess.PIPE)
 
         for row in iter(p.stdout.readline, b''):
-            log.warn(row.decode('utf-8').rstrip())
             try:
                 data_flow = parse_row(row.decode('utf-8'))
                 if data_flow.size > 0 and not self.is_p2p_communication(data_flow):
                     self.data.put(data_flow)
+                    log.warn(data_flow)
             except ValueError:
                 log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
