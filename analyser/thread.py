@@ -64,7 +64,7 @@ class AnalyserThread(Thread):
                     return
 
     def resolve_remote_address(self, address):
-        if not address.is_local():
+        if address.host != IP:
             p = self.peers_thread.get_peer_from_host(address.host)
             if p:
                 try:
