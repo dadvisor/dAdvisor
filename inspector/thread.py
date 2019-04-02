@@ -19,7 +19,7 @@ class InspectorThread(Thread):
 
     def run(self):
         self.check_installation()
-        p = subprocess.Popen(('tcpdump', '-n', '-l'), stdout=subprocess.PIPE)
+        p = subprocess.Popen(('tcpdump', '-i', 'any', '-n', '-l'), stdout=subprocess.PIPE)
 
         for row in iter(p.stdout.readline, b''):
             log.info(row.decode('utf-8').rstrip())
