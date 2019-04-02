@@ -29,7 +29,7 @@ class ContainerInfo(object):
                     self.ip = data['NetworkSettings']['IPAddress']
                 else:
                     networks = data['NetworkSettings']['Networks']
-                    self.ip = networks.values()[0]['IPAddress']
+                    self.ip = next(iter(networks.values()))['IPAddress']
 
     def __dict__(self):
         return {
