@@ -8,14 +8,12 @@ from log import log
 
 
 class InspectorThread(Thread):
+    """
+    Reads data from the tcpdump program and store it in a queue, so that it can be processed further
+    """
 
     def __init__(self, peers_thread):
         Thread.__init__(self)
-        """
-        A 2D dictionary, which is structured the following:
-            self.data[src][dst] = size
-            src and dst are an index in the addresses Database
-        """
         self.data = Queue()
         self.peers_thread = peers_thread
 
@@ -28,11 +26,10 @@ class InspectorThread(Thread):
                 data_flow = parse_row(row.decode('utf-8'))
                 if data_flow.size > 0 and \
                         int(data_flow.src.port) != 8800 and \
-                        int(data_flow.dst.port) != 8800:
+                        int(data_flow.dst.port) != 8800:  # TODO update if condition
                     self.data.put(data_flow)
-            except Exception as e:
+            except ValueError:
                 log.warn('Cannot parse row: %s' % row.decode('utf-8'))
-                log.error(e)
 
     @staticmethod
     def check_installation():
