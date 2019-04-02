@@ -4,6 +4,11 @@ import time
 
 
 class ContainerInfo(object):
+    """
+    Creates a ContainerInfo object with several properties.
+    Note that the ip property is added later (in :func: validate), as Docker
+    doesn't directly add an IP to the container.
+    """
 
     def __init__(self, hash, load):
         self.hash = hash

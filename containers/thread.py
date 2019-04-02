@@ -39,14 +39,15 @@ class ContainerThread(Thread):
         data = json.loads(p.communicate()[0].decode('utf-8'))
         for c in data:
             if c['Id'] not in [c.hash for c in self.own_containers]:
-                info = ContainerInfo(c['Id'], c)
-                for port_map in info.ports:
-                    self.analyser_thread.ports[str(port_map['PublicPort'])] = info.ip
-                self.own_containers.append(info)
+                self.own_containers.append(ContainerInfo(c['Id'], c))
 
     def validate_own_containers(self):
         for info in self.own_containers:
             info.validate()
+            for port_map in info.ports:
+                key = str(port_map['PublicPort'])
+                if key not in self.analyser_thread.ports and info.ip:
+                    self.analyser_thread.ports[key] = info.ip
 
     def get_all_containers(self):
         return self.other_containers + \
