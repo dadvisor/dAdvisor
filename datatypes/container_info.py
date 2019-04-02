@@ -24,8 +24,12 @@ class ContainerInfo(object):
             if 'message' in data:
                 self.stopped = int(time.time())
                 return
-            elif not self.ip:
-                self.ip = str(data['NetworkSettings']['IPAddress'])
+            elif 'NetworkSettings' in data:
+                if data['NetworkSettings']['IPAddress']:
+                    self.ip = data['NetworkSettings']['IPAddress']
+                else:
+                    networks = data['NetworkSettings']['Networks']
+                    self.ip = [v['IPAddress'] for v in networks.values()]
 
     def __dict__(self):
         return {
