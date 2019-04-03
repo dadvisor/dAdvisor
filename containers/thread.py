@@ -1,6 +1,6 @@
 import json
 import subprocess
-from threading import Thread
+from threading import Thread, active_count
 from time import sleep
 
 import requests
@@ -26,12 +26,12 @@ class ContainerThread(Thread):
     def run(self):
         while self.running:
             try:
+                log.info('Running threads: {}'.format(active_count()))
                 self.collect_own_containers()
                 self.collect_remote_containers()
                 self.validate_own_containers()
             except Exception as e:
                 log.error(e)
-                raise
             sleep(self.sleep_time)
 
     def collect_own_containers(self):
