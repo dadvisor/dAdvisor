@@ -13,7 +13,7 @@ class InspectorThread(Thread):
     """
 
     def __init__(self, peers_thread):
-        Thread.__init__(self)
+        Thread.__init__(self, name='InspectorThread')
         self.data = Queue()
         self.peers_thread = peers_thread
 

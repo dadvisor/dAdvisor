@@ -12,7 +12,7 @@ from log import log
 class PeersThread(Thread):
 
     def __init__(self, port):
-        Thread.__init__(self)
+        Thread.__init__(self, name='PeersThread')
         self.running = True
         self.sleep_time = 10
         self.my_peer = Peer(IP, port)

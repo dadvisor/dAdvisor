@@ -14,7 +14,7 @@ from log import log
 class ContainerThread(Thread):
 
     def __init__(self, peers_thread):
-        Thread.__init__(self)
+        Thread.__init__(self, name='ContainerThread')
         self.peers_thread = peers_thread
         self.running = True
         self.sleep_time = 10

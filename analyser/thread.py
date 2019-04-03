@@ -11,7 +11,7 @@ MAX_WIDTH = 10.0
 class AnalyserThread(Thread):
 
     def __init__(self, inspector_thread, container_thread, peers_thread):
-        Thread.__init__(self)
+        Thread.__init__(self, name='AnalyserThread')
         self.running = True
         self.inspector_thread = inspector_thread
         self.container_thread = container_thread
@@ -58,9 +58,10 @@ class AnalyserThread(Thread):
             return
         for info in self.container_thread.own_containers:
             for port_map in info.ports:
-                if str(port_map['PublicPort']) == str(address.port):
+                if 'PublicPort' in port_map and str(port_map['PublicPort']) == str(address.port):
                     address.container = info.ip
-                    address.port = str(port_map['PrivatePort'])
+                    if 'PrivatePort' in port_map:
+                        address.port = str(port_map['PrivatePort'])
                     return
 
     def resolve_remote_address(self, address):
