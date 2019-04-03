@@ -111,3 +111,19 @@ class ContainerThread(Thread):
         """
         skip = '/dadvisor'
         return [info for info in self.own_containers if skip not in info.names]
+
+    @staticmethod
+    def validate_edges(edges, nodes):
+        """
+        Remove the edges for which the endpoints (nodes) don't exist in the given node-list
+        """
+        for edge in edges:
+            src_exists = False
+            dst_exists = False
+            for node in nodes:
+                if node['data']['id'] == edge['data']['source']:
+                    src_exists = True
+                if node['data']['id'] == edge['data']['target']:
+                    dst_exists = True
+            if not src_exists or not dst_exists:
+                edges.remove(edge)

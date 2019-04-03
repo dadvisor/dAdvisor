@@ -39,11 +39,14 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
     @app.route('/data')
     def data():
         hash_length = 12
+        nodes = container_thread.get_nodes(hash_length)
         edges = analyser_thread.get_edges()
         for p in peers_thread.other_peers:
             edges += requests.get('http://{}:{}/edges'.format(p.host, p.port)).json()
+        container_thread.validate_edges(edges, nodes)
+
         return jsonify({
-            'nodes': container_thread.get_nodes(hash_length),
+            'nodes': nodes,
             'edges': edges
         })
 
