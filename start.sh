@@ -1,4 +1,4 @@
 #!/bin/sh
 
-#./prometheus-*/prometheus &
+./prometheus-*/prometheus &
 python main.py
