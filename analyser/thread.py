@@ -27,7 +27,7 @@ class AnalyserThread(Thread):
             self.resolve_local_address(dataflow.src)
             self.resolve_local_address(dataflow.dst)
 
-            self.resolve_remote_address(dataflow.src)
+            self.resolve_remote_address(dataflow.dst)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
 
