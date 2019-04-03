@@ -31,7 +31,7 @@ class AnalyserThread(Thread):
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
 
-            if src_id == -1 or dst_id == -1:
+            if not src_id or not dst_id:
                 continue
             log.info(dataflow)
 
@@ -81,13 +81,12 @@ class AnalyserThread(Thread):
         :return: A list with a dict per data-flow of the containers
         """
         edges = []
-        containers = self.container_thread.get_all_containers()
         for src_id in self.data:
-            for dst_id in self.data[src_id]:
+            for dst_id, size in list(self.data[src_id].items()):
                 edges.append({'data': {
-                    'source': containers[src_id].id,
-                    'target': containers[dst_id].id,
-                    'bytes': self.data[src_id][dst_id]
+                    'source': src_id,
+                    'target': dst_id,
+                    'bytes': size
                 }})
         return self.adjust_width(edges)
 
@@ -97,10 +96,10 @@ class AnalyserThread(Thread):
         :param address:
         :return:
         """
-        for index, item in enumerate(self.container_thread.get_all_containers()):
+        for item in list(self.container_thread.get_all_containers()):
             if address.host == item.host and address.container == item.container_ip:
-                return index
-        return -1
+                return item.id
+        return ''
 
     @staticmethod
     def adjust_width(edges):

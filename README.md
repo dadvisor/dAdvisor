@@ -1,11 +1,12 @@
 # dAdvisor
 A Docker container to inspect inter-container traffic.
 
-Suppose you have a large project with many Docker containers, and you don't know which container interacts with each other.This repository helps you to inspect the traffic between those.
+Suppose you have a large project with many Docker containers, and you don't know which containers interact with each other. Then, this repository helps you to inspect the traffic between those.
+It even works across multiple virtual machines, but then you need to deploy this container on every host.
 
 ## A small demo
 An example docker-compose can be found in the root folder of this project.
-It'll boot up a web-service (*web*) and a request-maker (*req*). Use the following command for starting those containers:
+It will boot up a web-service (*web*) and a request-maker (*req*). Use the following command for starting those containers:
 
 	docker run --name web -d dadvisor/web:latest
 	docker run --name req -d -e HOST=web:5000 --link web dadvisor/req:latest

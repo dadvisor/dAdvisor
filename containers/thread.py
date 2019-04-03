@@ -17,7 +17,7 @@ class ContainerThread(Thread):
         Thread.__init__(self, name='ContainerThread')
         self.peers_thread = peers_thread
         self.running = True
-        self.sleep_time = 10
+        self.sleep_time = 5
         self.own_containers = []  # list of ContainerInfo objects
         self.old_containers = []  # list of ContainerInfo objects
         self.other_containers = []  # list of ContainerMapping objects
