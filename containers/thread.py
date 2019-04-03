@@ -51,9 +51,10 @@ class ContainerThread(Thread):
                 continue
 
             for port_map in info.ports:
-                key = str(port_map['PublicPort'])
-                if key not in self.analyser_thread.ports and info.ip:
-                    self.analyser_thread.ports[key] = info.ip
+                if 'PublicPort' in port_map:
+                    key = str(port_map['PublicPort'])
+                    if key not in self.analyser_thread.ports and info.ip:
+                        self.analyser_thread.ports[key] = info.ip
 
     def get_all_containers(self):
         return self.other_containers + \
