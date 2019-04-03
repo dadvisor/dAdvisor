@@ -63,9 +63,12 @@ class ContainerThread(Thread):
     def collect_remote_containers(self):
         for p in self.peers_thread.other_peers:
             containers = requests.get('http://{}:{}/containers'.format(p.host, p.port)).json()
-            id_set = set([c.id for c in self.other_containers])
+            # remove previous containers
+            for c in self.other_containers:
+                if c.host == p.host:
+                    self.other_containers.remove(c)
             for c in containers:
-                if c['hash'] not in id_set and c['ip']:  # only add containers that have an ip
+                if c['ip']:  # only add containers that have an ip
                     self.other_containers.append(ContainerMapping(p.host, c['ip'], c['image'], c['hash']))
 
     def get_nodes(self, hash_length):
