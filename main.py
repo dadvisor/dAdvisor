@@ -18,6 +18,6 @@ if __name__ == '__main__':
     container_thread.start()
 
     app = create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread)
-    app.run(debug=True, host='0.0.0.0', port=int(PORT))
+    app.run(debug=False, host='0.0.0.0', port=int(PORT))
 
     log.info('Stopping program')
