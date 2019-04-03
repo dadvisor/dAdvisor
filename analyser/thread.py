@@ -33,6 +33,7 @@ class AnalyserThread(Thread):
 
             if src_id == -1 or dst_id == -1:
                 continue
+            log.info(dataflow)
 
             if src_id in self.data:
                 if dst_id in self.data[src_id]:
