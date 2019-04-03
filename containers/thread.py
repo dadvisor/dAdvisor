@@ -19,6 +19,7 @@ class ContainerThread(Thread):
         self.running = True
         self.sleep_time = 10
         self.own_containers = []  # list of ContainerInfo objects
+        self.old_containers = []  # list of ContainerInfo objects
         self.other_containers = []  # list of ContainerMapping objects
         self.analyser_thread = None
 
@@ -44,6 +45,11 @@ class ContainerThread(Thread):
     def validate_own_containers(self):
         for info in self.own_containers:
             info.validate()
+            if info.stopped:
+                self.own_containers.remove(info)
+                self.old_containers.append(info)
+                continue
+
             for port_map in info.ports:
                 key = str(port_map['PublicPort'])
                 if key not in self.analyser_thread.ports and info.ip:
@@ -67,7 +73,7 @@ class ContainerThread(Thread):
         """
         all_containers = self.get_all_containers()
         hosts = set([c.host for c in all_containers])
-        images = {}
+        images = {}  # a dict of sets
         for container in all_containers:
             if container.host not in images:
                 images[container.host] = {container.image}
@@ -103,4 +109,4 @@ class ContainerThread(Thread):
         :return: A dict without the key for its own container
         """
         skip = '/dadvisor'
-        return [info for info in self.own_containers if skip not in info.names and not info.stopped]
+        return [info for info in self.own_containers if skip not in info.names]
