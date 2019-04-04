@@ -20,7 +20,7 @@ class PeersThread(Thread):
         self.init_peers()
 
     def set_my_peer(self, address, port=80):
-        self.my_peer = Peer(address, port)
+        self.my_peer = Peer(address, str(port))
         self.my_peer.can_be_removed = False
         self.peers.append(self.my_peer)
 
