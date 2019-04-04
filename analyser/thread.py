@@ -89,7 +89,7 @@ class AnalyserThread(Thread):
                 edges.append({'data': {
                     'source': src_id,
                     'target': dst_id,
-                    'bytes': size._value
+                    'bytes': size._value._value
                 }})
         return self.adjust_width(edges)
 
