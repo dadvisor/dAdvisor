@@ -78,7 +78,7 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
         p = peers_thread.add_peer(host, port)
         return jsonify(p)
 
-    app = DispatcherMiddleware(app, {
+    app_dispatch = DispatcherMiddleware(app, {
         '/metrics': make_wsgi_app()
     })
 
