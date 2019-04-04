@@ -1,5 +1,7 @@
 import os
 
+from werkzeug.serving import run_simple
+
 from analyser import start_analyser_thread
 from containers import create_container_thread
 from inspector import start_inspector_thread
@@ -18,6 +20,7 @@ if __name__ == '__main__':
     container_thread.start()
 
     app = create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread)
-    app.run(debug=False, host='0.0.0.0', port=int(PORT))
+
+    run_simple('0.0.0.0', int(PORT), app, use_reloader=False)
 
     log.info('Stopping program')

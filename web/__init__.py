@@ -82,4 +82,4 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
         '/metrics': make_wsgi_app()
     })
 
-    return app
+    return app_dispatch
