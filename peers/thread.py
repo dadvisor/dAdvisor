@@ -47,6 +47,7 @@ class PeersThread(Thread):
         if peers != '':
             for peer in peers.split(','):
                 host, port = peer.split(':')
+                log.info('Adding peer: {}, {}'.format(host, port))
                 p = self.add_peer(host, port)
                 p.can_be_removed = False
 

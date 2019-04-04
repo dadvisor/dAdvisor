@@ -1,7 +1,7 @@
 werkzeug
 prometheus_client
-requests
 requests[socks]
+requests
 flask
 flask_cors
 stem
