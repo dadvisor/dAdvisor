@@ -4,22 +4,24 @@ from time import sleep
 
 import requests
 
-from datatypes.address import IP
 from datatypes.peer import Peer
 from log import log
 
 
 class PeersThread(Thread):
 
-    def __init__(self, port):
+    def __init__(self):
         Thread.__init__(self, name='PeersThread')
         self.running = True
         self.sleep_time = 10
-        self.my_peer = Peer(IP, port)
-        self.my_peer.can_be_removed = False
-        self.peers = [self.my_peer]
-
+        self.my_peer = None
+        self.peers = []
         self.init_peers()
+
+    def set_my_peer(self, address, port=80):
+        self.my_peer = Peer(address, port)
+        self.my_peer.can_be_removed = False
+        self.peers.append(self.my_peer)
 
     def run(self):
         while self.running:

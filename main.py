@@ -13,7 +13,7 @@ from web import create_web_app
 PORT = os.environ.get('PORT', '8800')
 
 if __name__ == '__main__':
-    peers_thread = start_peers_thread(PORT)
+    peers_thread = start_peers_thread()
     container_thread = create_container_thread(peers_thread)
     inspector_thread = start_inspector_thread(peers_thread)
     analyser_thread = start_analyser_thread(inspector_thread, container_thread, peers_thread)
@@ -30,7 +30,7 @@ if __name__ == '__main__':
             ("HiddenServicePort", "80 %s:%s" % (host, str(PORT)))
         ])
         svc_name = open("etc/tor/temp/hostname", "r").read().strip()
-        log.info("Created host: %s" % svc_name)
+        peers_thread.set_my_peer(svc_name)
     except Exception as e:
         print(e)
 
