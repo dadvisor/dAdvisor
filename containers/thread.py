@@ -3,12 +3,11 @@ import subprocess
 from threading import Thread, active_count
 from time import sleep
 
-import requests
-
 from datatypes.address import IP
 from datatypes.container_info import ContainerInfo
 from datatypes.container_mapping import ContainerMapping
 from log import log
+from peers.peer_actions import get_containers
 
 
 class ContainerThread(Thread):
@@ -62,7 +61,7 @@ class ContainerThread(Thread):
 
     def collect_remote_containers(self):
         for p in self.peers_thread.other_peers:
-            containers = requests.get('http://{}:{}/containers'.format(p.host, p.port)).json()
+            containers = get_containers(p)
             # remove previous containers
             for c in self.other_containers:
                 if c.host == p.host:

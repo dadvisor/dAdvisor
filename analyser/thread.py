@@ -1,10 +1,10 @@
 from threading import Thread
 
-import requests
 from prometheus_client import Counter
 
 from datatypes.address import IP, Address
 from log import log
+from peers.peer_actions import get_ports
 
 MAX_WIDTH = 10.0
 
@@ -72,7 +72,7 @@ class AnalyserThread(Thread):
             p = self.peers_thread.get_peer_from_host(address.host)
             if p:
                 try:
-                    ports = requests.get('http://{}:{}/ports'.format(p.host, p.port)).json()
+                    ports = get_ports(p)
                     if address.port in ports:
                         address.container = ports[address.port]
                 except Exception:

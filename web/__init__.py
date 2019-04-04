@@ -1,14 +1,14 @@
 import logging
 
-import requests
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
+from prometheus_client import make_wsgi_app
 from werkzeug.serving import run_simple
+from werkzeug.wsgi import DispatcherMiddleware
 
 from datatypes.address import IP
 from datatypes.encoder import JSONCustomEncoder
-from werkzeug.wsgi import DispatcherMiddleware
-from prometheus_client import make_wsgi_app
+from peers.peer_actions import get_edges_from_peer
 
 
 def create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread):
@@ -45,7 +45,7 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
         nodes = container_thread.get_nodes(hash_length)
         edges = analyser_thread.get_edges()
         for p in peers_thread.other_peers:
-            edges += requests.get('http://{}:{}/edges'.format(p.host, p.port)).json()
+            edges += get_edges_from_peer(p)
         container_thread.validate_edges(edges, nodes)
 
         return jsonify({

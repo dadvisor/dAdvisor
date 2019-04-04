@@ -6,6 +6,7 @@ import requests
 
 from datatypes.peer import Peer
 from log import log
+from peers.peer_actions import fetch_peers, expose_peer
 
 
 class PeersThread(Thread):
@@ -53,11 +54,10 @@ class PeersThread(Thread):
         log.info('Validating peers: {}'.format(len(self.peers)))
         for p in self.other_peers:
             try:
-                peer_list = requests.get('http://{}:{}/peers'.format(p.host, p.port)).json()
-                peer_list = [Peer(p2['host'], p2['port']) for p2 in peer_list]
+                peer_list = fetch_peers(p)
                 # Expose own node if it is not in the other_peers-list
                 if self.my_peer not in peer_list:
-                    self.request_other_peer(p)
+                    expose_peer(self.my_peer, p)
 
                 # Add new peers (if they're not in the list)
                 for p2 in peer_list:
@@ -67,15 +67,6 @@ class PeersThread(Thread):
                 log.error(e)
                 if p.can_be_removed:
                     self.peers.remove(p)
-
-    def request_other_peer(self, p):
-        try:
-            requests.get(
-                'http://{}:{}/peers/add/{}:{}'.format(p.host, p.port,
-                                                      self.my_peer.host, self.my_peer.port)).json()
-        except Exception as e:
-            log.warn('Cannot send an address to {}'.format(p))
-            log.error(e)
 
     def get_peer_from_host(self, host):
         for peer in self.other_peers:
@@ -87,5 +78,5 @@ class PeersThread(Thread):
         p = Peer(host, port)
         if p not in self.peers:
             self.peers.append(p)
-            self.request_other_peer(p)
+            expose_peer(self.my_peer, p)
         return p
