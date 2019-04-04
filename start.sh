@@ -1,5 +1,5 @@
 #!/bin/sh
 
-tor
+tor &
 ./prometheus-*/prometheus &
 python main.py
