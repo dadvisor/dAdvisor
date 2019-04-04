@@ -1,5 +1,6 @@
 import os
 
+from stem.control import Controller
 from werkzeug.serving import run_simple
 
 from analyser import start_analyser_thread
@@ -20,6 +21,18 @@ if __name__ == '__main__':
     container_thread.start()
 
     app = create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread)
-    run_simple('0.0.0.0', int(PORT), app, use_reloader=False)
+    host = "127.0.0.1"
+    controller = Controller.from_port(port=9051)
+    try:
+        controller.authenticate()
+        controller.set_options([
+            ("HiddenServiceDir", "temp"),
+            ("HiddenServicePort", "80 %s:%s" % (host, str(PORT)))
+        ])
+        svc_name = open("etc/tor/temp/hostname", "r").read().strip()
+        log.info("Created host: %s" % svc_name)
+    except Exception as e:
+        print(e)
 
+    run_simple('0.0.0.0', int(PORT), app, use_reloader=False)
     log.info('Stopping program')

@@ -40,11 +40,11 @@ class AnalyserThread(Thread):
                 if dst_id in self.data[src_id]:
                     self.data[src_id][dst_id].inc(dataflow.size)
                 else:
-                    self.data[src_id][dst_id] = Counter('_{}_{}'.format(src_id, dst_id), 'Description')
+                    self.data[src_id][dst_id] = Counter('_{}_{}'.format(src_id, dst_id), 'edge')
                     self.data[src_id][dst_id].inc(dataflow.size)
             else:
                 self.data[src_id] = {}
-                self.data[src_id][dst_id] = Counter('_{}_{}'.format(src_id, dst_id), 'Description')
+                self.data[src_id][dst_id] = Counter('_{}_{}'.format(src_id, dst_id), 'edge')
                 self.data[src_id][dst_id].inc(dataflow.size)
 
     def add_port(self, address):

@@ -3,6 +3,7 @@ import logging
 import requests
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
+from werkzeug.serving import run_simple
 
 from datatypes.address import IP
 from datatypes.encoder import JSONCustomEncoder
@@ -34,9 +35,9 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
     def size():
         return jsonify(inspector_thread.data.qsize())
 
-    @app.route('/graph')
-    def graph():
-        return render_template('index.html')
+    @app.route('/index')
+    def index():
+        return render_template('index2.html')
 
     @app.route('/data')
     def data():
@@ -83,3 +84,8 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
     })
 
     return app_dispatch
+
+
+if __name__ == '__main__':
+    app = create_web_app(None, None, None, None)
+    run_simple('0.0.0.0', 5000, app, use_reloader=False)
