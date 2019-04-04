@@ -21,12 +21,12 @@ if __name__ == '__main__':
     container_thread.start()
 
     app = create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread)
-    host = "127.0.0.1"
+    host = "0.0.0.0"
     controller = Controller.from_port(port=9051)
     try:
         controller.authenticate()
         controller.set_options([
-            ("HiddenServiceDir", "temp"),
+            ("HiddenServiceDir", "/etc/tor/temp"),
             ("HiddenServicePort", "80 %s:%s" % (host, str(PORT)))
         ])
         svc_name = open("etc/tor/temp/hostname", "r").read().strip()
@@ -34,5 +34,5 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
 
-    run_simple('0.0.0.0', int(PORT), app, use_reloader=False)
+    run_simple(host, int(PORT), app, use_reloader=False)
     log.info('Stopping program')
