@@ -1,6 +1,7 @@
 from threading import Thread
 
 import requests
+from prometheus_client import Counter
 
 from datatypes.address import IP, Address
 from log import log
@@ -37,12 +38,14 @@ class AnalyserThread(Thread):
 
             if src_id in self.data:
                 if dst_id in self.data[src_id]:
-                    self.data[src_id][dst_id] += dataflow.size
+                    self.data[src_id][dst_id].inc(dataflow.size)
                 else:
-                    self.data[src_id][dst_id] = dataflow.size
+                    self.data[src_id][dst_id] = Counter('{}-{}'.format(src_id, dst_id), 'Description')
+                    self.data[src_id][dst_id].inc(dataflow.size)
             else:
                 self.data[src_id] = {}
-                self.data[src_id][dst_id] = dataflow.size
+                self.data[src_id][dst_id] = Counter('{}-{}'.format(src_id, dst_id), 'Description')
+                self.data[src_id][dst_id].inc(dataflow.size)
 
     def add_port(self, address):
         if address.is_local():

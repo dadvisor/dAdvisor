@@ -1,3 +1,4 @@
+werkzeug
 prometheus_client
 requests
 flask

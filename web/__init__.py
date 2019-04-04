@@ -6,6 +6,8 @@ from flask_cors import CORS
 
 from datatypes.address import IP
 from datatypes.encoder import JSONCustomEncoder
+from werkzeug.wsgi import DispatcherMiddleware
+from prometheus_client import make_wsgi_app
 
 
 def create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread):
@@ -75,5 +77,9 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
         host, port = host_port.split(':')
         p = peers_thread.add_peer(host, port)
         return jsonify(p)
+
+    app = DispatcherMiddleware(app, {
+        '/metrics': make_wsgi_app()
+    })
 
     return app
