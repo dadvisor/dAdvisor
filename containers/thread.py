@@ -3,7 +3,7 @@ import subprocess
 from threading import Thread, active_count
 from time import sleep
 
-from datatypes.address import IP
+from datatypes.address import Address
 from datatypes.container_info import ContainerInfo
 from datatypes.container_mapping import ContainerMapping
 from log import log
@@ -57,7 +57,7 @@ class ContainerThread(Thread):
 
     def get_all_containers(self):
         return self.other_containers + \
-               [c.to_container_mapping(IP) for c in self.containers_filtered]
+               [c.to_container_mapping(Address.IP) for c in self.containers_filtered]
 
     def collect_remote_containers(self):
         for p in self.peers_thread.other_peers:

@@ -6,7 +6,7 @@ from prometheus_client import make_wsgi_app
 from werkzeug.serving import run_simple
 from werkzeug.wsgi import DispatcherMiddleware
 
-from datatypes.address import IP
+from datatypes.address import Address
 from datatypes.encoder import JSONCustomEncoder
 from peers.peer_actions import get_edges_from_peer
 
@@ -29,7 +29,7 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
 
     @app.route('/ip')
     def ip():
-        return IP
+        return Address.IP
 
     @app.route('/size')
     def size():

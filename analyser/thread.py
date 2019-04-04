@@ -2,7 +2,7 @@ from threading import Thread
 
 from prometheus_client import Counter
 
-from datatypes.address import IP, Address
+from datatypes.address import Address
 from log import log
 from peers.peer_actions import get_ports
 
@@ -53,11 +53,11 @@ class AnalyserThread(Thread):
 
     def resolve_port(self, port):
         if port in self.ports:
-            return Address(IP, self.ports[port], port)
+            return Address(Address.IP, self.ports[port], port)
         return None
 
     def resolve_local_address(self, address):
-        if address.host != IP:
+        if address.host != Address.IP:
             return
         for info in self.container_thread.own_containers:
             for port_map in info.ports:
@@ -68,7 +68,7 @@ class AnalyserThread(Thread):
                     return
 
     def resolve_remote_address(self, address):
-        if address.host != IP:
+        if address.host != Address.IP:
             p = self.peers_thread.get_peer_from_host(address.host)
             if p:
                 try:
