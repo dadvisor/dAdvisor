@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-tor &
 ./prometheus-*/prometheus &
+tor &
 
 if [[ "$(stat -c "%U:%G" /grafana/data)" != grafana:grafana ]]; then
 	chown grafana:grafana /grafana/data

@@ -26,7 +26,7 @@ VOLUME /grafana/data
 
 COPY grafana/dashboard.json / grafana/dashboards/
 COPY grafana/defaults.ini /grafana/conf/
-COPY ./grafana/prometheus.yaml /grafana/datasources/
+COPY ./grafana/datasource.yaml /grafana/datasources/
 
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 COPY . .
