@@ -24,12 +24,12 @@ RUN set -ex \
 
 VOLUME /grafana/data
 
-#COPY ./config.docker/defaults.ini /grafana/conf/
+COPY ./defaults.ini /grafana/conf/
 
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 COPY . .
 RUN pip install -r requirements.txt
 
-EXPOSE 8800
+EXPOSE 8800, 3000
 
 CMD ["./start.sh"]
