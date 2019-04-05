@@ -1,4 +1,12 @@
+import os
 import re
+
+import requests
+
+if os.environ.get('USE_TOR', default=False):
+    IP = open("etc/tor/temp/hostname", "r").read().strip()
+else:
+    IP = requests.get('https://api.ipify.org?format=json').json()['ip']
 
 
 class Address(object):
@@ -20,11 +28,11 @@ class Address(object):
         return '{}:{}:{}'.format(self.host, self.container, self.port)
 
     def is_local(self):
-        return self.host == Address.IP and re.match(r'172.\d+.0.\d+', self.container)
+        return self.host == IP and re.match(r'172.\d+.0.\d+', self.container)
 
     @staticmethod
     def is_host(host, container):
-        return host == Address.IP and re.match(r'172.\d+.0.1', container)
+        return host == IP and re.match(r'172.\d+.0.1', container)
 
     @staticmethod
     def decode(host_container, port):
@@ -34,10 +42,5 @@ class Address(object):
         :return:
         """
         if re.match(r'172.\d+.0.\d+', host_container):
-            return Address(Address.IP, host_container, port)
+            return Address(IP, host_container, port)
         return Address(host_container, '', port)
-
-    @staticmethod
-    @property
-    def IP():
-        return open("etc/tor/temp/hostname", "r").read().strip()
