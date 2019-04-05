@@ -24,7 +24,7 @@ RUN set -ex \
 
 VOLUME /grafana/data
 
-COPY ./config.docker/defaults.ini /grafana/conf/
+#COPY ./config.docker/defaults.ini /grafana/conf/
 
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 COPY . .
