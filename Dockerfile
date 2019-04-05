@@ -24,7 +24,7 @@ RUN set -ex \
 
 VOLUME /grafana/data
 
-COPY ./grafana/defaults.ini /grafana/conf/
+COPY ./grafana/config.ini /grafana/conf/
 COPY ./grafana/prometheus.yaml /grafana/datasources/
 
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
