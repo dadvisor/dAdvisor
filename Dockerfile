@@ -24,8 +24,8 @@ RUN set -ex \
 
 VOLUME /grafana/data
 
-COPY grafana/dashboard.json / grafana/dashboards/
-COPY grafana/defaults.ini /grafana/conf/
+COPY ./grafana/dashboard.json /grafana/dashboards/
+COPY ./grafana/defaults.ini /grafana/conf/
 COPY ./grafana/datasource.yaml /grafana/datasources/
 
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
