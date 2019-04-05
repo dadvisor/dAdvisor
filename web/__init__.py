@@ -84,8 +84,3 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
     })
 
     return app_dispatch
-
-
-if __name__ == '__main__':
-    app = create_web_app(None, None, None, None)
-    run_simple('0.0.0.0', 5000, app, use_reloader=False)
