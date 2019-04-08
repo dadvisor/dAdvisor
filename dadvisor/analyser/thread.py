@@ -21,6 +21,8 @@ class AnalyserThread(Thread):
         self.ports = {}  # a dict from port to container_id
 
     def run(self):
+        counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
+
         while self.running:
             dataflow = self.inspector_thread.data.get()
             self.add_port(dataflow.src)
@@ -36,18 +38,7 @@ class AnalyserThread(Thread):
                 continue
             log.info(dataflow)
 
-            if src_id in self.data:
-                if dst_id in self.data[src_id]:
-                    self.data[src_id][dst_id].inc(dataflow.size)
-                else:
-                    self.data[src_id][dst_id] = Counter('edge', 'edge')
-                    self.data[src_id][dst_id].info(src=src_id, dst=dst_id)
-                    self.data[src_id][dst_id].inc(dataflow.size)
-            else:
-                self.data[src_id] = {}
-                self.data[src_id][dst_id] = Counter('edge', 'edge')
-                self.data[src_id][dst_id].info(src=src_id, dst=dst_id)
-                self.data[src_id][dst_id].inc(dataflow.size)
+            counter.labels(src_id, dst_id).inc(dataflow.size)
 
     def add_port(self, address):
         if address.is_local():
