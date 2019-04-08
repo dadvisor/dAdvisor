@@ -5,4 +5,3 @@ requests
 flask
 flask_cors
 stem
-pandas
