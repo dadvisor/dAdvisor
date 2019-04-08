@@ -1,7 +1,11 @@
 import json
 import subprocess
 import time
+
 from prometheus_client import Info
+
+container_info = Info('containers', 'Container info', 'hash')
+
 
 class ContainerInfo(object):
     """
@@ -18,8 +22,7 @@ class ContainerInfo(object):
         self.image = str(load['Image'])
         self.ports = load['Ports']
         self.ip = ''
-        self.info = Info('node_{}'.format(self.hash), 'Container node')
-        self.info.info({
+        container_info.labels(self.hash).info({
             'created': self.created,
             'names': ','.join(self.names),
             'image': self.image
@@ -34,6 +37,13 @@ class ContainerInfo(object):
             data = json.loads(p.communicate()[0].decode('utf-8'))
             if 'message' in data:
                 self.stopped = int(time.time())
+                container_info.labels(self.hash).info({
+                    'created': self.created,
+                    'names': ','.join(self.names),
+                    'image': self.image,
+                    'stopped': str(self.stopped),
+                    'ip': self.ip
+                })
                 return
             elif 'NetworkSettings' in data:
                 if data['NetworkSettings']['IPAddress']:
@@ -41,7 +51,7 @@ class ContainerInfo(object):
                 else:
                     networks = data['NetworkSettings']['Networks']
                     self.ip = next(iter(networks.values()))['IPAddress']
-                self.info.info({
+                container_info.labels(self.hash).info({
                     'created': self.created,
                     'names': ','.join(self.names),
                     'image': self.image,
