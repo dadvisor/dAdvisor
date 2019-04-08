@@ -38,7 +38,7 @@ class AnalyserThread(Thread):
                 continue
             log.info(dataflow)
 
-            counter.labels(src_id, dst_id).inc(dataflow.size)
+            counter.labels(srd=src_id, dst=dst_id).inc(dataflow.size)
 
     def add_port(self, address):
         if address.is_local():

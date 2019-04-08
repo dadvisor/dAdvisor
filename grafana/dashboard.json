@@ -162,8 +162,10 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "count(containers) -1",
+          "expr": "count({__name__=~\"container_.*\"}) -1",
           "format": "time_series",
+          "instant": false,
+          "interval": "",
           "intervalFactor": 1,
           "refId": "A"
         }
