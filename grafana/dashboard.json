@@ -15,6 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -78,9 +79,10 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "count(bytes_send_total)",
+          "expr": "count({__name__=\"bytes_send_total\"})",
           "format": "time_series",
-          "instant": false,
+          "hide": false,
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
@@ -163,7 +165,7 @@
         {
           "expr": "count({__name__=~\"container_.*\"}) -1",
           "format": "time_series",
-          "instant": false,
+          "instant": true,
           "interval": "",
           "intervalFactor": 1,
           "refId": "A"
