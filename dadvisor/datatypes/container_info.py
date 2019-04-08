@@ -41,6 +41,12 @@ class ContainerInfo(object):
                 else:
                     networks = data['NetworkSettings']['Networks']
                     self.ip = next(iter(networks.values()))['IPAddress']
+                self.info.info({
+                    'created': self.created,
+                    'names': ','.join(self.names),
+                    'image': self.image,
+                    'ip': self.ip
+                })
 
     def __dict__(self):
         return {
