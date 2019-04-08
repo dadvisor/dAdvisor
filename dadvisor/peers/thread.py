@@ -90,10 +90,10 @@ class PeersThread(Thread):
                     raise
 
         with open(filename, 'w') as f:
-            f.write('scrape_configs:')
-            f.write('  - job_name: \'prometheus{}\''.format(host))
-            f.write('    static_configs:')
-            f.write('      - targets: [\'{}:{}\']'.format(host, port))
+            f.write('scrape_configs:\n')
+            f.write('  - job_name: \'prometheus{}\'\n'.format(host))
+            f.write('    static_configs:\n')
+            f.write('      - targets: [\'{}:{}\']\n'.format(host, port))
 
         p = Peer(host, port)
         if p not in self.peers:
