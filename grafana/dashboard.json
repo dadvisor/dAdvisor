@@ -7,7 +7,21 @@
   "graphTooltip": 0,
   "id": 2,
   "links": [],
-  "panels": [],
+  "panels": [
+    {
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Panel Title",
+      "type": "grafana-contianer-panel"
+    }
+  ],
   "schemaVersion": 18,
   "style": "light",
   "tags": [],
