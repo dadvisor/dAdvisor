@@ -19,7 +19,11 @@ class ContainerInfo(object):
         self.ports = load['Ports']
         self.ip = ''
         self.info = Info('node_{}'.format(self.hash), 'Container node')
-        self.info.info(self.__dict__())
+        self.info.info({
+            'created': self.created,
+            'names': ','.join(self.names),
+            'image': self.image
+        })
 
     def validate(self):
         if self.stopped:
