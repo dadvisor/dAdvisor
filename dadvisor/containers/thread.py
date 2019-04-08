@@ -119,7 +119,7 @@ class ContainerThread(Thread):
         """
         Remove the edges for which the endpoints (nodes) don't exist in the given node-list
         """
-        from analyser.thread import id_map
+        from ..analyser.thread import id_map
         for edge in edges:
             src_exists = False
             dst_exists = False
