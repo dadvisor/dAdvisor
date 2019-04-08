@@ -24,8 +24,8 @@ RUN set -ex \
 
 VOLUME /grafana/data
 
-COPY ./grafana/dashboard.json /var/lib/grafana/dashboards
-COPY ./grafana/dashboard.yaml /var/lib/grafana/dashboards
+COPY ./grafana/dashboard.json /grafana/dashboards
+COPY ./grafana/dashboard.yaml /grafana/dashboards
 COPY ./grafana/defaults.ini /grafana/conf/
 COPY ./grafana/datasource.yaml /grafana/datasources/
 
