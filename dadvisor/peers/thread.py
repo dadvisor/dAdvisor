@@ -1,11 +1,12 @@
+import errno
 import os
 from threading import Thread
 from time import sleep
 
 import requests
 
-from ..datatypes.peer import Peer
 from ..datatypes.address import IP
+from ..datatypes.peer import Peer
 from ..log import log
 from ..peers.peer_actions import fetch_peers, expose_peer
 
@@ -80,8 +81,15 @@ class PeersThread(Thread):
         return None
 
     def add_peer(self, host, port):
+        filename = '/prometheus/{}.yaml'.format(host)
+        if not os.path.exists(os.path.dirname(filename)):
+            try:
+                os.makedirs(os.path.dirname(filename))
+            except OSError as exc:
+                if exc.errno != errno.EEXIST:
+                    raise
 
-        with open('/prometheus/{}.yaml'.format(host), 'w') as f:
+        with open(filename, 'w') as f:
             f.write('scrape_configs:')
             f.write('  - job_name: \'prometheus{}\''.format(host))
             f.write('    static_configs:')
