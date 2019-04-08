@@ -90,7 +90,7 @@ class PeersThread(Thread):
                     raise
 
         with open(filename, 'w') as f:
-            f.write("[{\"labels\": {\"job\": \"prometheus\"}},\"targets\": [\"")
+            f.write("[{\"labels\": {\"job\": \"prometheus\"},\"targets\": [\"")
             f.write("{}:{}".format(host, port))
             f.write("\"]}]\n")
 
