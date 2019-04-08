@@ -1,7 +1,7 @@
 import requests
 
-from dadvisor.datatypes.peer import Peer
-from dadvisor.log import log
+from ..datatypes.peer import Peer
+from ..log import log
 
 proxies = {'http': 'socks5h://localhost:9050',
            'https': 'socks5h://localhost:9050'}

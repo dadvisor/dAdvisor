@@ -1,4 +1,4 @@
-from dadvisor.datatypes.address import Address
+from ..datatypes.address import Address
 
 
 class Peer(object):

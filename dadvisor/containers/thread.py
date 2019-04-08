@@ -3,11 +3,11 @@ import subprocess
 from threading import Thread, active_count
 from time import sleep
 
-from dadvisor.datatypes.address import IP
-from dadvisor.datatypes.container_info import ContainerInfo
-from dadvisor.datatypes.container_mapping import ContainerMapping
-from dadvisor.log import log
-from dadvisor.peers import get_containers
+from ..datatypes.address import IP
+from ..datatypes.container_info import ContainerInfo
+from ..datatypes.container_mapping import ContainerMapping
+from ..log import log
+from ..peers.peer_actions import get_containers
 
 
 class ContainerThread(Thread):

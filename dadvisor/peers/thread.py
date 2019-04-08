@@ -4,9 +4,9 @@ from time import sleep
 
 import requests
 
-from dadvisor.datatypes.peer import Peer
-from dadvisor.log import log
-from dadvisor.peers import fetch_peers, expose_peer
+from ..datatypes.peer import Peer
+from ..log import log
+from ..peers.peer_actions import fetch_peers, expose_peer
 
 
 class PeersThread(Thread):

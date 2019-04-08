@@ -1,1 +1,1 @@
-from dadvisor.peers.thread import PeersThread
+from .thread import PeersThread

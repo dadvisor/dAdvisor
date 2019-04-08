@@ -1,1 +1,1 @@
-
+from .thread import InspectorThread

@@ -1,11 +1,11 @@
-from dadvisor.datatypes.dataflow import DataFlow
+from ..datatypes.dataflow import DataFlow
 
 
 def to_address(address):
     """
     Returns an Address-obj containing the host, port, and possibly container
     """
-    from dadvisor.datatypes.address import Address
+    from ..datatypes.address import Address
 
     address = address.rstrip('.:')  # remove last . and :
     array = address.split('.')

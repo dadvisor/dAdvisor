@@ -3,12 +3,12 @@ import os
 from stem.control import Controller
 from werkzeug.serving import run_simple
 
-from dadvisor.analyser import AnalyserThread
-from dadvisor.containers import ContainerThread
-from dadvisor.inspector import InspectorThread
-from dadvisor.log import log
-from dadvisor.peers import PeersThread
-from dadvisor.web import create_web_app
+from .analyser import AnalyserThread
+from .containers import ContainerThread
+from .inspector import InspectorThread
+from .log import log
+from .peers import PeersThread
+from .web import create_web_app
 
 PORT = os.environ.get('PORT', '8800')
 HOST = '0.0.0.0'
