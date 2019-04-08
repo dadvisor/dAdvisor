@@ -17,11 +17,11 @@ class AnalyserThread(Thread):
         self.inspector_thread = inspector_thread
         self.container_thread = container_thread
         self.peers_thread = peers_thread
-        self.data = {}  # 2D dict, that can be used as: self.data[src][dst] = data size
         self.ports = {}  # a dict from port to container_id
+        self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
 
     def run(self):
-        counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
+
 
         while self.running:
             dataflow = self.inspector_thread.data.get()
@@ -38,7 +38,7 @@ class AnalyserThread(Thread):
                 continue
             log.info(dataflow)
 
-            counter.labels(src='id_{}'.format(src_id), dst='id_{}'.format(dst_id)).inc(dataflow.size)
+            self.counter.labels(src='id_{}'.format(src_id), dst='id_{}'.format(dst_id)).inc(dataflow.size)
 
     def add_port(self, address):
         if address.is_local():
@@ -77,12 +77,14 @@ class AnalyserThread(Thread):
         :return: A list with a dict per data-flow of the containers
         """
         edges = []
-        for src_id in self.data:
-            for dst_id, size in list(self.data[src_id].items()):
+        for src_id in self.ports:
+            for dst_id in [port for port in self.ports if
+                           port != src_id and
+                           self.counter.labels(src_id, port)._value.get() > 0]:
                 edges.append({'data': {
                     'source': src_id,
                     'target': dst_id,
-                    'bytes': size._value._value
+                    'bytes': self.counter.labels(src_id, dst_id)._value.get()
                 }})
         return self.adjust_width(edges)
 

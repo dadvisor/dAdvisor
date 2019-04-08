@@ -28,12 +28,7 @@ if __name__ == '__main__':
             ("HiddenServiceDir", "/etc/tor/temp"),
             ("HiddenServicePort", "80 %s:%s" % (HOST, str(PORT)))
         ])
-        svc_name = open("etc/tor/temp/hostname", "r").read().strip()
-        peers_thread.set_my_peer(svc_name)
-        log.info('-' * 50)
-        log.info(svc_name)
-        log.info('-' * 50)
-
+        peers_thread.set_my_peer(PORT)
         peers_thread.start()
         container_thread.start()
         inspector_thread.start()

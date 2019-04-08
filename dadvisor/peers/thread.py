@@ -5,6 +5,7 @@ from time import sleep
 import requests
 
 from ..datatypes.peer import Peer
+from ..datatypes.address import IP
 from ..log import log
 from ..peers.peer_actions import fetch_peers, expose_peer
 
@@ -19,8 +20,11 @@ class PeersThread(Thread):
         self.peers = []
         self.init_peers()
 
-    def set_my_peer(self, address, port=80):
-        self.my_peer = Peer(address, str(port))
+    def set_my_peer(self, port):
+        if os.environ.get('USE_TOR', default=False):
+            self.my_peer = Peer(IP, str(80))
+        else:
+            self.my_peer = Peer(IP, port)
         self.my_peer.can_be_removed = False
         self.peers.append(self.my_peer)
 
