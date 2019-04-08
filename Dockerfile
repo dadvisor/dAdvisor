@@ -26,6 +26,7 @@ RUN set -ex \
 VOLUME /grafana/data
 
 RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins/containers-panel
+# debug option
 RUN cd /grafana/plugins/containers-panel && git pull && cd /
 
 COPY ./grafana/dashboard.json /grafana/dashboards
@@ -35,7 +36,7 @@ COPY ./grafana/datasource.yaml /grafana/datasources/
 
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 COPY . .
-RUN pip install -r requirements.txt
+RUN pip install -r dadvisor/requirements.txt
 
 EXPOSE 8800
 EXPOSE 3000
