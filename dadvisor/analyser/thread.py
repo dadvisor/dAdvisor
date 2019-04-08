@@ -22,7 +22,6 @@ class AnalyserThread(Thread):
 
     def run(self):
 
-
         while self.running:
             dataflow = self.inspector_thread.data.get()
             self.add_port(dataflow.src)
@@ -38,7 +37,7 @@ class AnalyserThread(Thread):
                 continue
             log.info(dataflow)
 
-            self.counter.labels(src='id_{}'.format(src_id), dst='id_{}'.format(dst_id)).inc(dataflow.size)
+            self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
 
     def add_port(self, address):
         if address.is_local():
@@ -77,16 +76,16 @@ class AnalyserThread(Thread):
         :return: A list with a dict per data-flow of the containers
         """
         edges = []
-        for src_id in self.ports:
-            for dst_id in [port for port in self.ports if
-                           port != src_id and
-                           self.counter.labels(src_id, port)._value.get() > 0]:
+        for src_id in self.container_thread.get_all_containers():
+            for dst_id in [dst_id for dst_id in self.container_thread.get_all_containers() if
+                           dst_id != src_id and
+                           self.counter.labels(id_map(src_id), id_map(dst_id))._value.get() > 0]:
                 edges.append({'data': {
                     'source': src_id,
                     'target': dst_id,
-                    'bytes': self.counter.labels(src_id, dst_id)._value.get()
+                    'bytes': self.counter.labels(id_map(src_id), id_map(dst_id))._value.get()
                 }})
-        return self.adjust_width(edges)
+        return edges
 
     def address_id(self, address):
         """
@@ -99,13 +98,17 @@ class AnalyserThread(Thread):
                 return item.id
         return ''
 
-    @staticmethod
-    def adjust_width(edges):
-        try:
-            max_width = max([edge['data']['bytes'] for edge in edges])
-            scale = MAX_WIDTH / max_width
-        except ValueError:
-            scale = 1
-        for edge in edges:
-            edge['data']['width'] = edge['data']['bytes'] * scale
-        return edges
+    # @staticmethod
+    # def adjust_width(edges):
+    #     try:
+    #         max_width = max([edge['data']['bytes'] for edge in edges])
+    #         scale = MAX_WIDTH / max_width
+    #     except ValueError:
+    #         scale = 1
+    #     for edge in edges:
+    #         edge['data']['width'] = edge['data']['bytes'] * scale
+    #     return edges
+
+
+def id_map(hash):
+    return 'id_{}'.format(hash)
