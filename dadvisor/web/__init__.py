@@ -5,9 +5,9 @@ from flask_cors import CORS
 from prometheus_client import make_wsgi_app
 from werkzeug.wsgi import DispatcherMiddleware
 
-from dadvisor.datatypes.address import IP
-from dadvisor.datatypes.encoder import JSONCustomEncoder
-from dadvisor.peers import get_edges_from_peer
+from ..datatypes.address import IP
+from ..datatypes.encoder import JSONCustomEncoder
+from ..peers.peer_actions import get_edges_from_peer
 
 
 def create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread):

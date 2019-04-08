@@ -10,4 +10,4 @@ fi
 
 su-exec grafana grafana-server --homepath=/grafana &
 
-python dadvisor/main.py
+python -m dadvisor
