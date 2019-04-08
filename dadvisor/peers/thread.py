@@ -80,6 +80,13 @@ class PeersThread(Thread):
         return None
 
     def add_peer(self, host, port):
+
+        with open('/prometheus/{}.yaml'.format(host), 'w') as f:
+            f.write('scrape_configs:')
+            f.write('  - job_name: \'prometheus{}\''.format(host))
+            f.write('    static_configs:')
+            f.write('      - targets: [\'{}:{}\']'.format(host, port))
+
         p = Peer(host, port)
         if p not in self.peers:
             self.peers.append(p)

@@ -25,6 +25,7 @@ RUN set -ex \
 # Grafana configuration
 VOLUME /grafana/data
 
+RUN grafana-cli plugins install simpod-json-datasource
 RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins/containers-panel
 # debug option
 RUN cd /grafana/plugins/containers-panel && git pull && cd /
