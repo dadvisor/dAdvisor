@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 
+mkdir /prometheus
 ./prometheus-*/prometheus &
 tor &
 
