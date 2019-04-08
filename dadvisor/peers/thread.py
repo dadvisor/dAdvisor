@@ -81,7 +81,7 @@ class PeersThread(Thread):
         return None
 
     def add_peer(self, host, port):
-        filename = '/prometheus/{}.yaml'.format(host)
+        filename = '/prometheus/{}.json'.format(host)
         if not os.path.exists(os.path.dirname(filename)):
             try:
                 os.makedirs(os.path.dirname(filename))
@@ -90,10 +90,7 @@ class PeersThread(Thread):
                     raise
 
         with open(filename, 'w') as f:
-            f.write('scrape_configs:\n')
-            f.write('- job_name: \'prometheus{}\'\n'.format(host))
-            f.write('  static_configs:\n')
-            f.write('  - targets: [\'{}:{}\']\n'.format(host, port))
+            f.write('[{"labels": {"job": "prometheus"}},"targets": ["{}:{}"]}]\n'.format(host, port))
 
         p = Peer(host, port)
         if p not in self.peers:

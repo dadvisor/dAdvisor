@@ -10,4 +10,4 @@ scrape_configs:
 
   file_sd_configs:
   - files:
-    - /prometheus/*.yaml
+    - /prometheus/*.json
