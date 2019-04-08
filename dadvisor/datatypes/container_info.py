@@ -1,7 +1,7 @@
 import json
 import subprocess
 import time
-
+from prometheus_client import Info
 
 class ContainerInfo(object):
     """
@@ -18,6 +18,8 @@ class ContainerInfo(object):
         self.image = str(load['Image'])
         self.ports = load['Ports']
         self.ip = ''
+        self.info = Info('node_{}'.format(self.hash), 'Container node')
+        self.info.info(self.__dict__())
 
     def validate(self):
         if self.stopped:
@@ -48,5 +50,5 @@ class ContainerInfo(object):
         }
 
     def to_container_mapping(self, host):
-        from dadvisor.datatypes.container_mapping import ContainerMapping
+        from ..datatypes.container_mapping import ContainerMapping
         return ContainerMapping(host, self.ip, self.image, self.hash)
