@@ -26,7 +26,7 @@ RUN set -ex \
 VOLUME /grafana/data
 
 RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins
-RUN git -C /grafana/plugins pull
+RUN cd /grafana/plugins && git pull && cd ../..
 
 COPY ./grafana/dashboard.json /grafana/dashboards
 COPY ./grafana/dashboard.yaml /grafana/dashboards
