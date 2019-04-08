@@ -25,7 +25,7 @@ RUN set -ex \
 # Grafana configuration
 VOLUME /grafana/data
 
-RUN git clone git@github.com/dAdvisor/containers-panel /grafana/plugins
+RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins
 
 COPY ./grafana/dashboard.json /grafana/dashboards
 COPY ./grafana/dashboard.yaml /grafana/dashboards
