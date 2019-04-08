@@ -95,7 +95,7 @@ class AnalyserThread(Thread):
         """
         for item in list(self.container_thread.get_all_containers()):
             if address.host == item.host and address.container == item.container_ip:
-                return item.id
+                return item
         return ''
 
     # @staticmethod
@@ -110,5 +110,5 @@ class AnalyserThread(Thread):
     #     return edges
 
 
-def id_map(hash):
-    return 'id_{}'.format(hash)
+def id_map(container):
+    return 'id_{}'.format(container.id)
