@@ -111,4 +111,11 @@ class AnalyserThread(Thread):
 
 
 def id_map(container):
-    return 'id_{}'.format(container.id)
+    try:
+        c_id = container.id
+    except AttributeError:
+        try:
+            c_id = container['id']
+        except TypeError:
+            c_id = container
+    return 'id_{}'.format(c_id)
