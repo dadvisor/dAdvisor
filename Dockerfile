@@ -22,7 +22,10 @@ RUN set -ex \
  && grafana-cli plugins update-all \
  && rm -rf /tmp/setup
 
+# Grafana configuration
 VOLUME /grafana/data
+
+RUN git clone git@github.com/dAdvisor/containers-panel /grafana/plugins
 
 COPY ./grafana/dashboard.json /grafana/dashboards
 COPY ./grafana/dashboard.yaml /grafana/dashboards
