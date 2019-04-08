@@ -81,8 +81,8 @@ class AnalyserThread(Thread):
                            dst_id != src_id and
                            self.counter.labels(id_map(src_id), id_map(dst_id))._value.get() > 0]:
                 edges.append({'data': {
-                    'source': src_id,
-                    'target': dst_id,
+                    'source': id_map(src_id),
+                    'target': id_map(dst_id),
                     'bytes': self.counter.labels(id_map(src_id), id_map(dst_id))._value.get()
                 }})
         return edges
