@@ -3,7 +3,6 @@ import subprocess
 from threading import Thread, active_count
 from time import sleep
 
-from analyser.thread import id_map
 from ..datatypes.address import IP
 from ..datatypes.container_info import ContainerInfo
 from ..datatypes.container_mapping import ContainerMapping
@@ -120,6 +119,7 @@ class ContainerThread(Thread):
         """
         Remove the edges for which the endpoints (nodes) don't exist in the given node-list
         """
+        from analyser.thread import id_map
         for edge in edges:
             src_exists = False
             dst_exists = False
