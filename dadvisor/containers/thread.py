@@ -3,6 +3,7 @@ import subprocess
 from threading import Thread, active_count
 from time import sleep
 
+from analyser.thread import id_map
 from ..datatypes.address import IP
 from ..datatypes.container_info import ContainerInfo
 from ..datatypes.container_mapping import ContainerMapping
@@ -123,9 +124,9 @@ class ContainerThread(Thread):
             src_exists = False
             dst_exists = False
             for node in nodes:
-                if node['data']['id'] == edge['data']['source']:
+                if id_map(node['data']) == edge['data']['source']:
                     src_exists = True
-                if node['data']['id'] == edge['data']['target']:
+                if id_map(node['data']) == edge['data']['target']:
                     dst_exists = True
             if not src_exists or not dst_exists:
                 edges.remove(edge)
