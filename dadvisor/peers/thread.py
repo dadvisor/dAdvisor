@@ -1,9 +1,9 @@
-import errno
 import os
 from threading import Thread
 from time import sleep
 
 import requests
+from prometheus_client import Info
 
 from ..datatypes.address import IP
 from ..datatypes.peer import Peer
@@ -81,18 +81,13 @@ class PeersThread(Thread):
         return None
 
     def add_peer(self, host, port):
-        filename = '/prometheus/{}.json'.format(host)
-        if not os.path.exists(os.path.dirname(filename)):
-            try:
-                os.makedirs(os.path.dirname(filename))
-            except OSError as exc:
-                if exc.errno != errno.EEXIST:
-                    raise
-
-        with open(filename, 'w') as f:
+        with open('/prometheus/{}.json'.format(host), 'w') as f:
             f.write("[{\"labels\": {\"job\": \"prometheus\"},\"targets\": [\"")
             f.write("{}:{}".format(host, port))
             f.write("\"]}]\n")
+
+        info = Info('peer_{}'.format(host), 'Container info')
+        info.info({'host': IP, 'port': port})
 
         p = Peer(host, port)
         if p not in self.peers:
