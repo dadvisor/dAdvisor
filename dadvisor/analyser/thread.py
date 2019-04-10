@@ -2,7 +2,7 @@ from threading import Thread
 
 from prometheus_client import Counter
 
-from ..datatypes.address import Address, IP
+from ..datatypes.address import Address, IP, INTERNAL_IP
 from ..log import log
 from ..peers.peer_actions import get_ports
 
@@ -24,13 +24,14 @@ class AnalyserThread(Thread):
 
         while self.running:
             dataflow = self.inspector_thread.data.get()
-            log.info(dataflow)
             self.add_port(dataflow.src)
             self.add_port(dataflow.dst)
             self.resolve_local_address(dataflow.src)
             self.resolve_local_address(dataflow.dst)
 
             self.resolve_remote_address(dataflow.dst)
+            # check if dataflow.src is not empty for host port and container => then primt
+
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
 
@@ -50,6 +51,9 @@ class AnalyserThread(Thread):
         return None
 
     def resolve_local_address(self, address):
+        if address.host == INTERNAL_IP:
+            address.host = IP
+
         if address.host != IP:
             return
         for info in self.container_thread.own_containers:
