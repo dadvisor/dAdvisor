@@ -29,3 +29,8 @@ def get_ports(peer):
 
 def get_containers(peer):
     return requests.get('http://{}:{}/containers'.format(peer.host, peer.port)).json()
+
+
+def get_ip(peer):
+    data = requests.get('http://{}:{}/ip'.format(peer.host, peer.port)).json()
+    return data['internal'], data['external']

@@ -9,7 +9,7 @@ from prometheus_client import Info
 from ..datatypes.address import IP
 from ..datatypes.peer import Peer
 from ..log import log
-from ..peers.peer_actions import fetch_peers, expose_peer
+from ..peers.peer_actions import fetch_peers, expose_peer, get_ip
 
 
 class PeersThread(Thread):
@@ -19,8 +19,9 @@ class PeersThread(Thread):
         self.running = True
         self.sleep_time = 10
         self.my_peer = None
-        self.peers = []
+        self.peers = []  # List of Peer
         self.init_peers()
+        self.host_mapping = {}  # a dict from internal IP to external IP
 
     def set_my_peer(self, port):
         self.my_peer = Peer(IP, port)
@@ -95,4 +96,6 @@ class PeersThread(Thread):
         if p not in self.peers:
             self.peers.append(p)
             expose_peer(self.my_peer, p)
+            internal, external = get_ip(p)
+            self.host_mapping[internal] = external
         return p

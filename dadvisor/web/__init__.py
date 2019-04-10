@@ -5,7 +5,7 @@ from flask_cors import CORS
 from prometheus_client import make_wsgi_app
 from werkzeug.wsgi import DispatcherMiddleware
 
-from ..datatypes.address import IP
+from ..datatypes.address import IP, INTERNAL_IP
 from ..datatypes.encoder import JSONCustomEncoder
 from ..peers.peer_actions import get_edges_from_peer
 
@@ -28,7 +28,7 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
 
     @app.route('/ip')
     def ip():
-        return IP
+        return jsonify({'internal': INTERNAL_IP, 'external': IP})
 
     @app.route('/size')
     def size():

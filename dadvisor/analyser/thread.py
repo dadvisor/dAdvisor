@@ -17,7 +17,7 @@ class AnalyserThread(Thread):
         self.inspector_thread = inspector_thread
         self.container_thread = container_thread
         self.peers_thread = peers_thread
-        self.ports = {}  # a dict from port to container_id
+        self.port_mapping = {}  # a dict from port to container_id
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
 
     def run(self):
@@ -33,35 +33,34 @@ class AnalyserThread(Thread):
 
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
+            log.info('{} - {}: {}'.format(dataflow.src, dataflow.dst, dataflow.size))
 
             if not src_id or not dst_id:
                 continue
-            log.info('{} - {}: {}'.format(dataflow.src, dataflow.dst, dataflow.size))
 
             self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
 
     def add_port(self, address):
         if address.is_local():
-            self.ports[address.port] = address.container
+            self.port_mapping[address.port] = address.container
 
     def resolve_port(self, port):
-        if port in self.ports:
-            return Address(IP, self.ports[port], port)
+        if port in self.port_mapping:
+            return Address(IP, self.port_mapping[port], port)
         return None
 
     def resolve_local_address(self, address):
-        if address.host == INTERNAL_IP:
-            address.host = IP
+        if address.host in self.peers_thread.host_mapping:
+            address.host = self.peers_thread.host_mapping[address.host]
 
-        if address.host != IP:
-            return
-        for info in self.container_thread.own_containers:
-            for port_map in info.ports:
-                if 'PublicPort' in port_map and str(port_map['PublicPort']) == str(address.port):
-                    address.container = info.ip
-                    if 'PrivatePort' in port_map:
-                        address.port = str(port_map['PrivatePort'])
-                    return
+        if address.host == IP:
+            for info in self.container_thread.own_containers:
+                for port_map in info.ports:
+                    if 'PublicPort' in port_map and str(port_map['PublicPort']) == str(address.port):
+                        address.container = info.ip
+                        if 'PrivatePort' in port_map:
+                            address.port = str(port_map['PrivatePort'])
+                        return
 
     def resolve_remote_address(self, address):
         if address.host != IP:
