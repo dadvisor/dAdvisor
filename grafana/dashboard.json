@@ -187,6 +187,7 @@
       "valueName": "avg"
     },
     {
+      "datasource": "Prometheus",
       "gridPos": {
         "h": 15,
         "w": 24,
@@ -194,10 +195,33 @@
         "y": 4
       },
       "id": 2,
+      "interval": null,
+      "legend": {
+        "show": true,
+        "values": true
+      },
+      "links": [],
+      "targets": [
+        {
+          "expr": "{__name__=~\"container_.*\"}",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        },
+        {
+          "expr": "{__name__=\"bytes_send_total\"}",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "B"
+        }
+      ],
       "timeFrom": null,
       "timeShift": null,
       "title": "Container-graph",
-      "type": "grafana-contianer-panel"
+      "type": "grafana-contianer-panel",
+      "valueName": "current"
     }
   ],
   "schemaVersion": 18,

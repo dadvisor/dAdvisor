@@ -4,6 +4,8 @@ import time
 
 from prometheus_client import Info
 
+from .address import IP
+
 
 class ContainerInfo(object):
     """
@@ -22,6 +24,8 @@ class ContainerInfo(object):
         self.ip = ''
         self.info = Info('container_{}'.format(self.hash), 'Container info')
         self.info.info({
+            'hash': self.hash,
+            'host': IP,
             'created': self.created,
             'names': ','.join(self.names),
             'image': self.image
@@ -37,6 +41,8 @@ class ContainerInfo(object):
             if 'message' in data:
                 self.stopped = int(time.time())
                 self.info.info({
+                    'hash': self.hash,
+                    'host': IP,
                     'created': self.created,
                     'names': ','.join(self.names),
                     'image': self.image,
@@ -51,6 +57,8 @@ class ContainerInfo(object):
                     networks = data['NetworkSettings']['Networks']
                     self.ip = next(iter(networks.values()))['IPAddress']
                 self.info.info({
+                    'hash': self.hash,
+                    'host': IP,
                     'created': self.created,
                     'names': ','.join(self.names),
                     'image': self.image,
