@@ -81,12 +81,13 @@ class PeersThread(Thread):
         return None
 
     def add_peer(self, host, port):
-        with open('/prometheus/{}.json'.format(host), 'w') as f:
+        host_format = host.replace('.', '_')
+        with open('/prometheus/{}.json'.format(host_format), 'w') as f:
             f.write("[{\"labels\": {\"job\": \"prometheus\"},\"targets\": [\"")
             f.write("{}:{}".format(host, port))
-            f.write("\"]}]\n")
+            f.write("\"]}]")
 
-        info = Info('peer_{}'.format(host).replace('.', '_'), 'Peer')
+        info = Info('peer_{}'.format(host_format), 'Peer')
         info.info({'host': IP, 'port': port})
 
         p = Peer(host, port)

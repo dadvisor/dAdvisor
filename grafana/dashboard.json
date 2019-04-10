@@ -15,7 +15,6 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "panels": [
     {
@@ -163,7 +162,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "count({__name__=~\"container_.*\"}) -1",
+          "expr": "count({__name__=~\"container_.*\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -249,6 +248,7 @@
         {
           "expr": "count({__name__=~\"peer_.*\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
