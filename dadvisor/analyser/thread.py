@@ -24,6 +24,7 @@ class AnalyserThread(Thread):
 
         while self.running:
             dataflow = self.inspector_thread.data.get()
+            log.info(dataflow)
             self.add_port(dataflow.src)
             self.add_port(dataflow.dst)
             self.resolve_local_address(dataflow.src)
@@ -32,11 +33,11 @@ class AnalyserThread(Thread):
             self.resolve_remote_address(dataflow.dst)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
-            log.info('{} - {}'.format(src_id, dst_id))
+
             if not src_id or not dst_id:
                 continue
-            log.info(dataflow)
 
+            log.info('Mapping {} -> {}'.format(id_map(src_id), id_map(dst_id)))
             self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
 
     def add_port(self, address):
@@ -97,17 +98,6 @@ class AnalyserThread(Thread):
             if address.host == item.host and address.container == item.container_ip:
                 return item
         return ''
-
-    # @staticmethod
-    # def adjust_width(edges):
-    #     try:
-    #         max_width = max([edge['data']['bytes'] for edge in edges])
-    #         scale = MAX_WIDTH / max_width
-    #     except ValueError:
-    #         scale = 1
-    #     for edge in edges:
-    #         edge['data']['width'] = edge['data']['bytes'] * scale
-    #     return edges
 
 
 def id_map(container):
