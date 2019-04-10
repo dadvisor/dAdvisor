@@ -57,7 +57,7 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
 
     @app.route('/ports')
     def ports():
-        return jsonify(analyser_thread.ports)
+        return jsonify(analyser_thread.port_mapping)
 
     @app.route('/peers')
     def peers():
