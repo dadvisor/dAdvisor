@@ -23,10 +23,7 @@ class PeersThread(Thread):
         self.init_peers()
 
     def set_my_peer(self, port):
-        if os.environ.get('USE_TOR', default=False):
-            self.my_peer = Peer(IP, str(80))
-        else:
-            self.my_peer = Peer(IP, port)
+        self.my_peer = Peer(IP, port)
         self.my_peer.can_be_removed = False
         self.peers.append(self.my_peer)
 

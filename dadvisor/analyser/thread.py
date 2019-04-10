@@ -30,16 +30,14 @@ class AnalyserThread(Thread):
             self.resolve_local_address(dataflow.dst)
 
             self.resolve_remote_address(dataflow.dst)
-            # check if dataflow.src is not empty for host port and container => then primt
 
-            log.info('{} - {}'.format(dataflow.src, dataflow.dst))
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
 
             if not src_id or not dst_id:
                 continue
+            log.info('{} - {}: {}'.format(dataflow.src, dataflow.dst, dataflow.size))
 
-            log.info('Mapping {} -> {}: {}'.format(id_map(src_id)[:12], id_map(dst_id)[:12], dataflow.size))
             self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
 
     def add_port(self, address):

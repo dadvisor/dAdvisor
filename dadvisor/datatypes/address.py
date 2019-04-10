@@ -1,14 +1,9 @@
-import os
 import re
 import socket
 import requests
 
 INTERNAL_IP = socket.gethostbyname(socket.gethostname())
-
-if os.environ.get('USE_TOR', default=False):
-    IP = open("etc/tor/temp/hostname", "r").read().strip()
-else:
-    IP = requests.get('https://api.ipify.org?format=json').json()['ip']
+IP = requests.get('https://api.ipify.org?format=json').json()['ip']
 
 
 class Address(object):
