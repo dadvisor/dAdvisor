@@ -41,7 +41,6 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
         edges = analyser_thread.get_edges()
         for p in peers_thread.other_peers:
             edges += get_edges_from_peer(p)
-        container_thread.validate_edges(edges, nodes)
 
         return jsonify({
             'nodes': nodes,
