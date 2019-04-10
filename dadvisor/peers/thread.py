@@ -1,3 +1,4 @@
+import json
 import os
 from threading import Thread
 from time import sleep
@@ -83,9 +84,9 @@ class PeersThread(Thread):
     def add_peer(self, host, port):
         host_format = host.replace('.', '_')
         with open('/prometheus/{}.json'.format(host_format), 'w') as f:
-            f.write("[{\"labels\":{\"job\":\"prometheus\",\"env\":\"prod\"},\"targets\":[\"")
-            f.write("{}:{}".format(host, port))
-            f.write("\"]}]")
+            data = [{"labels": {"job": "prometheus"},
+                     "targets": ["{}:{}".format(host, port)]}]
+            f.write(json.dumps(data))
 
         try:
             info = Info('peer_{}'.format(host_format), 'Peer')
