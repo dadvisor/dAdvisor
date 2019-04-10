@@ -34,6 +34,10 @@ def create_web_app(container_thread, peers_thread, inspector_thread, analyser_th
     def size():
         return jsonify(inspector_thread.data.qsize())
 
+    @app.route('/hosts')
+    def hosts():
+        return jsonify(peers_thread.host_mapping)
+
     @app.route('/data')
     def data():
         hash_length = 12
