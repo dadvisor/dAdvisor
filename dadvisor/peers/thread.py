@@ -86,7 +86,7 @@ class PeersThread(Thread):
             f.write("{}:{}".format(host, port))
             f.write("\"]}]\n")
 
-        info = Info('peer_{}'.format(host), 'Container info')
+        info = Info('peer_{}'.format(host).replace('.', '_'), 'Peer')
         info.info({'host': IP, 'port': port})
 
         p = Peer(host, port)
