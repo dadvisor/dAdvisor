@@ -58,6 +58,10 @@ class PeersThread(Thread):
     def validate_peers(self):
         log.info('Validating peers: {}'.format(len(self.peers)))
         for p in self.other_peers:
+            # Create mapping
+            internal, external = get_ip(p)
+            self.host_mapping[internal] = external
+
             try:
                 peer_list = fetch_peers(p)
                 # Expose own node if it is not in the other_peers-list
@@ -67,7 +71,7 @@ class PeersThread(Thread):
                 # Add new peers (if they're not in the list)
                 for p2 in peer_list:
                     if p2 not in self.peers:
-                        self.peers.append(p2)
+                        self.add_peer(p2.host, p2.address)
             except requests.ConnectionError as e:
                 log.error(e)
                 if p.can_be_removed:
@@ -97,8 +101,6 @@ class PeersThread(Thread):
             if p not in self.peers:
                 self.peers.append(p)
                 expose_peer(self.my_peer, p)
-                internal, external = get_ip(p)
-                self.host_mapping[internal] = external
         except Exception as e:
             log.error(e)
         return p

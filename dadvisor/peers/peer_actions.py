@@ -1,5 +1,6 @@
 import requests
 
+from datatypes.address import IP, INTERNAL_IP
 from ..datatypes.peer import Peer
 from ..log import log
 
@@ -32,5 +33,9 @@ def get_containers(peer):
 
 
 def get_ip(peer):
-    data = requests.get('http://{}:{}/ip'.format(peer.host, peer.port)).json()
-    return data['internal'], data['external']
+    try:
+        data = requests.get('http://{}:{}/ip'.format(peer.host, peer.port)).json()
+        return data['internal'], data['external']
+    except Exception as e:
+        log.error(e)
+        return INTERNAL_IP, IP
