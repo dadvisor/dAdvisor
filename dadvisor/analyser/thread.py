@@ -33,7 +33,7 @@ class AnalyserThread(Thread):
 
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
-            log.info('{} - {}: {}'.format(dataflow.src, dataflow.dst, dataflow.size))
+            log.info(dataflow)
 
             if not src_id or not dst_id:
                 continue
