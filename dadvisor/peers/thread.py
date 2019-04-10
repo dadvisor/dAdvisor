@@ -83,9 +83,9 @@ class PeersThread(Thread):
     def add_peer(self, host, port):
         host_format = host.replace('.', '_')
         with open('/prometheus/{}.json'.format(host_format), 'w') as f:
-            f.write("{\"labels\": {\"job\": \"prometheus\"},\"targets\": [\"")
+            f.write("[{\"labels\": {\"job\": \"prometheus\"},\"targets\": [\"")
             f.write("{}:{}".format(host, port))
-            f.write("\"]}")
+            f.write("\"]}] ")
 
         try:
             info = Info('peer_{}'.format(host_format), 'Peer')
