@@ -1,12 +1,10 @@
 import os
 
-from stem.control import Controller
 from werkzeug.serving import run_simple
 
 from .analyser import AnalyserThread
 from .containers import ContainerThread
 from .inspector import InspectorThread
-from .log import log
 from .peers import PeersThread
 from .web import create_web_app
 
@@ -21,19 +19,12 @@ if __name__ == '__main__':
     container_thread.analyser_thread = analyser_thread
 
     app = create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread)
-    controller = Controller.from_port(port=9051)
-    try:
-        controller.authenticate()
-        controller.set_options([
-            ("HiddenServiceDir", "/etc/tor/temp"),
-            ("HiddenServicePort", "80 %s:%s" % (HOST, str(PORT)))
-        ])
-        peers_thread.set_my_peer(PORT)
-        peers_thread.start()
-        container_thread.start()
-        inspector_thread.start()
-        analyser_thread.start()
 
-        run_simple(HOST, int(PORT), app, use_reloader=False)
-    except Exception as e:
-        print(e)
+    peers_thread.set_my_peer(PORT)
+    peers_thread.start()
+    container_thread.start()
+    inspector_thread.start()
+    analyser_thread.start()
+
+    run_simple(HOST, int(PORT), app, use_reloader=False)
+
