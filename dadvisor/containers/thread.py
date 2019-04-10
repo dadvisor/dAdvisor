@@ -38,6 +38,9 @@ class ContainerThread(Thread):
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         data = json.loads(p.communicate()[0].decode('utf-8'))
         for c in data:
+            if c['Image'].endswith('dadvisor'):
+                log.info('Skipping: {}'.format(c))
+                continue
             if c['Id'] not in [c.hash for c in self.own_containers]:
                 self.own_containers.append(ContainerInfo(c['Id'], c))
 
