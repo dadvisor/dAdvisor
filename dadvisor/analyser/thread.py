@@ -32,7 +32,7 @@ class AnalyserThread(Thread):
             self.resolve_remote_address(dataflow.dst)
             src_id = self.address_id(dataflow.src)
             dst_id = self.address_id(dataflow.dst)
-
+            log.info(src_id + ' - ' + dst_id)
             if not src_id or not dst_id:
                 continue
             log.info(dataflow)
