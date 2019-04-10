@@ -6,7 +6,7 @@ from time import sleep
 import requests
 from prometheus_client import Info
 
-from ..datatypes.address import IP
+from ..datatypes.address import IP, INTERNAL_IP
 from ..datatypes.peer import Peer
 from ..log import log
 from ..peers.peer_actions import fetch_peers, expose_peer, get_ip
@@ -21,7 +21,7 @@ class PeersThread(Thread):
         self.my_peer = None
         self.peers = []  # List of Peer
         self.init_peers()
-        self.host_mapping = {}  # a dict from internal IP to external IP
+        self.host_mapping = {INTERNAL_IP: IP}  # a dict from internal IP to external IP
 
     def set_my_peer(self, port):
         self.my_peer = Peer(IP, port)
