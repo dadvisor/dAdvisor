@@ -93,9 +93,12 @@ class PeersThread(Thread):
             pass
 
         p = Peer(host, port)
-        if p not in self.peers:
-            self.peers.append(p)
-            expose_peer(self.my_peer, p)
-            internal, external = get_ip(p)
-            self.host_mapping[internal] = external
+        try:
+            if p not in self.peers:
+                self.peers.append(p)
+                expose_peer(self.my_peer, p)
+                internal, external = get_ip(p)
+                self.host_mapping[internal] = external
+        except Exception as e:
+            log.error(e)
         return p
