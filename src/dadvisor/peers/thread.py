@@ -6,12 +6,11 @@ from time import sleep
 import requests
 from prometheus_client import Info
 
-from __main__ import PORT
-from config import INTERNAL_IP, IP
-from ..datatypes.peer import Peer
-from ..log import log
-from ..peers.client import announce
-from ..peers.peer_actions import fetch_peers, expose_peer, get_ip
+from dadvisor.config import INTERNAL_IP, IP, PORT
+from dadvisor.datatypes.peer import Peer
+from dadvisor.log import log
+from dadvisor.peers.client import announce
+from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_ip
 
 
 class PeersThread(Thread):
@@ -25,8 +24,8 @@ class PeersThread(Thread):
         self.init_peers()
         self.host_mapping = {INTERNAL_IP: IP}  # a dict from internal IP to external IP
 
-    def set_my_peer(self, port):
-        self.my_peer = Peer(IP, port)
+    def set_my_peer(self):
+        self.my_peer = Peer(IP, PORT)
         self.my_peer.can_be_removed = False
         self.peers.append(self.my_peer)
 
@@ -49,6 +48,7 @@ class PeersThread(Thread):
         """ Read peers from the environment variable and add them to the list.
             input: OTHER_PEERS=35.204.153.106:8800,35.204.153.106:8800
         """
+        self.set_my_peer()
         loop = asyncio.get_event_loop()
         peers = loop.run_until_complete(announce((IP, int(PORT))))
 

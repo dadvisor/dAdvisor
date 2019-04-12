@@ -1,8 +1,8 @@
 import requests
 
-from config import INTERNAL_IP, IP
-from ..datatypes.peer import Peer
-from ..log import log
+from dadvisor.config import INTERNAL_IP, IP
+from dadvisor.datatypes.peer import Peer
+from dadvisor.log import log
 
 
 def fetch_peers(peer):

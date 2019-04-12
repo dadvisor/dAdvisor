@@ -1,6 +1,6 @@
 import re
 
-from config import IP
+from dadvisor.config import IP
 
 
 class Address(object):

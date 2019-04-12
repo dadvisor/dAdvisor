@@ -1,4 +1,4 @@
-from ..datatypes.dataflow import DataFlow
+from dadvisor.datatypes.dataflow import DataFlow
 
 
 def to_address(address):

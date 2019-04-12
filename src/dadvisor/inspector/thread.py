@@ -3,8 +3,8 @@ import sys
 from queue import Queue
 from threading import Thread
 
-from ..inspector.parser import parse_row
-from ..log import log
+from dadvisor.inspector.parser import parse_row
+from dadvisor.log import log
 
 
 class InspectorThread(Thread):

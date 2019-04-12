@@ -2,10 +2,10 @@ from threading import Thread
 
 from prometheus_client import Counter
 
-from ..datatypes.address import Address
-from config import IP
-from ..log import log
-from ..peers.peer_actions import get_ports
+from dadvisor.datatypes.address import Address
+from dadvisor.config import IP
+from dadvisor.log import log
+from dadvisor.peers.peer_actions import get_ports
 
 MAX_WIDTH = 10.0
 

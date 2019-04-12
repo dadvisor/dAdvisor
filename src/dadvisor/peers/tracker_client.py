@@ -5,7 +5,7 @@ import sys
 from collections import defaultdict
 from urllib.parse import urlparse
 
-from .udp_tracker_client_proto import UdpTrackerClientProto
+from dadvisor.peers.udp_tracker_client_proto import UdpTrackerClientProto
 
 
 class TrackerClient:

@@ -1,5 +1,5 @@
-from config import TRACKER_URI, MY_INFO_HASH
-from .tracker_client import TrackerClient
+from dadvisor.config import TRACKER_URI, MY_INFO_HASH
+from dadvisor.peers.tracker_client import TrackerClient
 
 
 async def announce(address):

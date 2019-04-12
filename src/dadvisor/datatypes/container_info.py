@@ -4,7 +4,7 @@ import time
 
 from prometheus_client import Info
 
-from config import IP
+from dadvisor.config import IP
 
 
 class ContainerInfo(object):
