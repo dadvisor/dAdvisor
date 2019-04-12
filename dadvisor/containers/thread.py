@@ -3,7 +3,7 @@ import subprocess
 from threading import Thread, active_count
 from time import sleep
 
-from ..datatypes.address import IP
+from config import IP
 from ..datatypes.container_info import ContainerInfo
 from ..datatypes.container_mapping import ContainerMapping
 from ..log import log

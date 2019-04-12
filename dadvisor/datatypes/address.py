@@ -1,9 +1,6 @@
 import re
-import socket
-import requests
 
-INTERNAL_IP = socket.gethostbyname(socket.gethostname())
-IP = requests.get('https://api.ipify.org?format=json').json()['ip']
+from config import IP
 
 
 class Address(object):

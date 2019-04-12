@@ -4,7 +4,7 @@ import time
 
 from prometheus_client import Info
 
-from .address import IP
+from config import IP
 
 
 class ContainerInfo(object):

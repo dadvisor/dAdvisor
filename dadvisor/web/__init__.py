@@ -5,7 +5,7 @@ from flask_cors import CORS
 from prometheus_client import make_wsgi_app
 from werkzeug.wsgi import DispatcherMiddleware
 
-from ..datatypes.address import IP, INTERNAL_IP
+from config import INTERNAL_IP, IP
 from ..datatypes.encoder import JSONCustomEncoder
 from ..peers.peer_actions import get_edges_from_peer
 

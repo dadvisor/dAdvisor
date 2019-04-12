@@ -1,9 +1,10 @@
+from config import TRACKER_URI, MY_INFO_HASH
 from .tracker_client import TrackerClient
 
 
 async def announce(address):
-    client = TrackerClient(announce_uri='udp://35.204.250.252:6969', address=address)
+    client = TrackerClient(announce_uri=TRACKER_URI, address=address)
     await client.start()
-    peers = await client.start_announce(b'myhash')
+    peers = await client.start_announce(MY_INFO_HASH)
     client.logger.info('Peers: {}'.format(peers))
     return peers

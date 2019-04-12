@@ -7,7 +7,7 @@ import requests
 from prometheus_client import Info
 
 from __main__ import PORT
-from ..datatypes.address import IP, INTERNAL_IP
+from config import INTERNAL_IP, IP
 from ..datatypes.peer import Peer
 from ..log import log
 from ..peers.client import announce

@@ -2,7 +2,8 @@ from threading import Thread
 
 from prometheus_client import Counter
 
-from ..datatypes.address import Address, IP
+from ..datatypes.address import Address
+from config import IP
 from ..log import log
 from ..peers.peer_actions import get_ports
 

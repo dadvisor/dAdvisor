@@ -1,6 +1,6 @@
 import requests
 
-from ..datatypes.address import IP, INTERNAL_IP
+from config import INTERNAL_IP, IP
 from ..datatypes.peer import Peer
 from ..log import log
 
