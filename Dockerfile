@@ -33,7 +33,7 @@ COPY ./grafana/datasource.yaml /grafana/datasources/
 
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 COPY . .
-RUN pip install -r dadvisor/requirements.txt
+RUN pip install -r dadvisor/src/requirements.txt
 
 EXPOSE 8800
 EXPOSE 3000
