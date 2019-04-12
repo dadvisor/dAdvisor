@@ -1,14 +1,16 @@
+import asyncio
 import json
-import os
 from threading import Thread
 from time import sleep
 
 import requests
 from prometheus_client import Info
 
+from __main__ import PORT
 from ..datatypes.address import IP, INTERNAL_IP
 from ..datatypes.peer import Peer
 from ..log import log
+from ..peers.client import announce
 from ..peers.peer_actions import fetch_peers, expose_peer, get_ip
 
 
@@ -47,13 +49,13 @@ class PeersThread(Thread):
         """ Read peers from the environment variable and add them to the list.
             input: OTHER_PEERS=35.204.153.106:8800,35.204.153.106:8800
         """
-        peers = os.environ.get('OTHER_PEERS', '')
-        if peers != '':
-            for peer in peers.split(','):
-                host, port = peer.split(':')
-                log.info('Adding peer: {}, {}'.format(host, port))
-                p = self.add_peer(host, port)
-                p.can_be_removed = False
+        loop = asyncio.get_event_loop()
+        peers = loop.run_until_complete(announce((IP, int(PORT))))
+
+        for host, port in peers:
+            log.info('Adding peer: {}, {}'.format(host, port))
+            p = self.add_peer(host, port)
+            p.can_be_removed = False
 
     def validate_peers(self):
         log.info('Validating peers: {}'.format(len(self.peers)))

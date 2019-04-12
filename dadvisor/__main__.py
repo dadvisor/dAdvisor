@@ -27,4 +27,3 @@ if __name__ == '__main__':
     analyser_thread.start()
 
     run_simple(HOST, int(PORT), app, use_reloader=False)
-
