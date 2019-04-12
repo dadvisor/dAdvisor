@@ -1,6 +1,7 @@
 from werkzeug.serving import run_simple
 
 from dadvisor.analyser import AnalyserThread
+from dadvisor.config import PORT
 from dadvisor.containers import ContainerThread
 from dadvisor.inspector import InspectorThread
 from dadvisor.peers import PeersThread
@@ -22,4 +23,4 @@ if __name__ == '__main__':
     inspector_thread.start()
     analyser_thread.start()
 
-    run_simple(HOST, int(PORT), app, use_reloader=False)
+    run_simple(HOST, PORT, app, use_reloader=False)
