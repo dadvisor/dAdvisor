@@ -54,8 +54,7 @@ class PeersThread(Thread):
 
         for host, port in peers:
             log.info('Adding peer: {}, {}'.format(host, port))
-            p = self.add_peer(host, port)
-            p.can_be_removed = False
+            self.add_peer(host, port)
 
     def validate_peers(self):
         log.info('Validating peers: {}'.format(len(self.peers)))
