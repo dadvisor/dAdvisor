@@ -1,0 +1,5 @@
+werkzeug
+prometheus_client
+requests
+flask
+flask_cors
