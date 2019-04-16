@@ -25,17 +25,17 @@ RUN grafana-cli plugins update-all
 RUN rm -rf /tmp/setup
 
 # Install cAdvisor
-RUN apk --no-cache add device-mapper findutils \
- && apk --no-cache add zfs --repository http://dl-3.alpinelinux.org/alpine/edge/main/ \
- && apk --no-cache add thin-provisioning-tools --repository http://dl-3.alpinelinux.org/alpine/edge/main/ \
- && curl -f -L -o  /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
- && curl -f -L -o  glibc-2.28-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk \ 
- && curl -f -L -o  glibc-bin-2.28-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-bin-2.28-r0.apk \
- && apk add glibc-2.28-r0.apk glibc-bin-2.28-r0.apk \
- && /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib \
- && rm glibc-2.28-r0.apk glibc-bin-2.28-r0.apk \
- && echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf \
- && rm -rf /var/cache/apk/*
+RUN apk --no-cache add device-mapper findutils
+RUN apk --no-cache add zfs --repository http://dl-3.alpinelinux.org/alpine/edge/main/
+RUN apk --no-cache add thin-provisioning-tools --repository http://dl-3.alpinelinux.org/alpine/edge/main/
+RUN curl -f -L -o  /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+RUN curl -f -L -o  glibc-2.28-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk 
+RUN curl -f -L -o  glibc-bin-2.28-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-bin-2.28-r0.apk
+RUN apk add glibc-2.28-r0.apk glibc-bin-2.28-r0.apk
+RUN /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib
+RUN rm glibc-2.28-r0.apk glibc-bin-2.28-r0.apk
+RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
+RUN rm -rf /var/cache/apk/*
 
 
 
