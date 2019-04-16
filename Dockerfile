@@ -1,9 +1,7 @@
 FROM alpine:3.8
 
 # Install inspector
-RUN apk add --update tcpdump curl git
-RUN apk add easy_install
-RUN easy_install pip
+RUN apk add --update tcpdump curl git python-pip
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
 # Install prometheus
