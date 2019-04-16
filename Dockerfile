@@ -25,7 +25,7 @@ RUN set -ex \
  && rm -rf /tmp/setup
 
 # Install cAdvisor
-RUN apk --no-cache add ca-certificates device-mapper findutils \
+RUN apk --no-cache add device-mapper findutils \
  && apk --no-cache add zfs --repository http://dl-3.alpinelinux.org/alpine/edge/main/ \
  && apk --no-cache add thin-provisioning-tools --repository http://dl-3.alpinelinux.org/alpine/edge/main/ \
  && curl -f -L -o  /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
