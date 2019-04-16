@@ -8,7 +8,7 @@ RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 RUN wget https://github.com/prometheus/prometheus/releases/download/v2.8.1/prometheus-2.8.1.linux-amd64.tar.gz -O - | tar -xz
 
 # Install cAdvisor
-RUN apk --no-cache add device-mapper findutils
+RUN apk --no-cache add device-mapper findutils make
 RUN apk --no-cache add zfs --repository http://dl-3.alpinelinux.org/alpine/edge/main/
 RUN apk --no-cache add thin-provisioning-tools --repository http://dl-3.alpinelinux.org/alpine/edge/main/
 RUN curl -f -L -o  /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
