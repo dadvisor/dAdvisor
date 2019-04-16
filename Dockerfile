@@ -20,8 +20,7 @@ RUN rm glibc-2.28-r0.apk glibc-bin-2.28-r0.apk
 RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
 RUN rm -rf /var/cache/apk/*
 RUN git clone https://github.com/google/cadvisor
-RUN cd cadvisor
-RUN make build
+RUN cd cadvisor && make build
 ADD cadvisor /usr/bin/cadvisor
 
 
