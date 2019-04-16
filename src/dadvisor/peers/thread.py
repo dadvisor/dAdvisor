@@ -50,7 +50,7 @@ class PeersThread(Thread):
         """
         self.set_my_peer()
         loop = asyncio.get_event_loop()
-        peers = loop.run_until_complete(announce((IP, int(PORT))))
+        peers = loop.run_until_complete(announce((IP, PORT)))
 
         for host, port in peers:
             log.info('Adding peer: {}, {}'.format(host, port))
