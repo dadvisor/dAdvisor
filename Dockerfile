@@ -2,7 +2,7 @@ FROM alpine:3.8
 
 # Install inspector
 RUN apk add --update tcpdump curl git python3
-RUN python3 -m ensurepip
+RUN python3 -m ensurepip --upgrade
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
 # Install prometheus
@@ -53,7 +53,7 @@ COPY ./grafana/defaults.ini /grafana/conf/
 COPY ./grafana/datasource.yaml /grafana/datasources/
 
 COPY . .
-RUN pip install -r src/requirements.txt
+RUN pip3 install -r src/requirements.txt
 
 EXPOSE 8800
 EXPOSE 3000
