@@ -11,4 +11,4 @@ fi
 cd /grafana/plugins/containers-panel && git pull && cd /
 su-exec grafana grafana-server --homepath=/grafana &
 
-python src/main.py
+python3 src/main.py
