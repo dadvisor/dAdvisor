@@ -16,11 +16,11 @@ RUN curl -f -L -o  glibc-2.28-r0.apk https://github.com/sgerrand/alpine-pkg-glib
 RUN curl -f -L -o  glibc-bin-2.28-r0.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-bin-2.28-r0.apk
 RUN apk add glibc-2.28-r0.apk glibc-bin-2.28-r0.apk
 RUN /usr/glibc-compat/sbin/ldconfig /lib /usr/glibc-compat/lib
-RUN rm glibc-2.28-r0.apk glibc-bin-2.28-r0.apk
-RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
+RUN rm glibc-2.28-r0.apk glibc-bin-2.28-r0.apk \
+ && echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
 RUN rm -rf /var/cache/apk/*
-RUN git clone https://github.com/google/cadvisor
-RUN cd cadvisor && make build
+RUN git clone https://github.com/google/cadvisor \
+ && cd cadvisor && make build
 ADD cadvisor /usr/bin/cadvisor
 
 
