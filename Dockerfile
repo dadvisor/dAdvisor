@@ -22,7 +22,7 @@ RUN apk --no-cache add ca-certificates curl device-mapper findutils && \
     echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf && \
 rm -rf /var/cache/apk/*
 
-RUN git clone https://github.com/google/cadvisor
+# RUN git clone https://github.com/google/cadvisor
 ADD cadvisor /usr/bin/cadvisor
 
 # Install grafana
