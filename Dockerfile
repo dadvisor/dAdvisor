@@ -44,4 +44,4 @@ RUN pip3 install -r src/requirements.txt
 EXPOSE 8800
 EXPOSE 3000
 
-ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["sh", "start.sh"]
