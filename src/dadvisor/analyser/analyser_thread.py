@@ -31,6 +31,7 @@ class AnalyserThread(Thread):
         self.inspector_thread.data = Queue()
 
         while self.running:
+            log.info('blabal')
             dataflow = await self.inspector_thread.data.get()
             log.info(dataflow)
             self.add_port(dataflow.src)

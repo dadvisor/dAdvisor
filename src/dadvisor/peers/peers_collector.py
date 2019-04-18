@@ -41,7 +41,6 @@ class PeersCollector(object):
         """
         for p in await get_peer_list():
             host, port = p
-            log.info('Adding peer: {}:{}'.format(host, port))
             await self.add_peer(host, port)
 
     async def validate_peers(self):
@@ -96,6 +95,7 @@ class PeersCollector(object):
         try:
             if p not in self.peers:
                 self.peers.append(p)
+                log.info('Adding peer: {}'.format(p))
                 await expose_peer(self.my_peer, p)
         except Exception as e:
             log.error(e)
