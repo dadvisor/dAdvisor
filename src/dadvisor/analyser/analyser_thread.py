@@ -14,6 +14,7 @@ class AnalyserThread(Thread):
 
     def __init__(self, inspector_thread, container_collector, peers_collector):
         Thread.__init__(self, name='AnalyserThread')
+        container_collector.analyser_thread = self
         self.running = True
         self.inspector_thread = inspector_thread
         self.container_collector = container_collector
