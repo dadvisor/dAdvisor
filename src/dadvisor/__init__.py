@@ -1,6 +1,6 @@
 import asyncio
 
-from dadvisor.inspector import Inspector
+from dadvisor.inspector import InspectorThread
 from dadvisor.peers import PeersCollector
 from dadvisor.web import run_app, get_app
 from dadvisor.log import log
@@ -12,7 +12,8 @@ def run_forever():
 
     # Create objects
     peers_collector = PeersCollector()
-    inspector = Inspector(peers_collector)
+    inspector_thread = InspectorThread(peers_collector)
+    inspector_thread.start()
 
     # Create tasks
     app = get_app(loop, peers_collector)

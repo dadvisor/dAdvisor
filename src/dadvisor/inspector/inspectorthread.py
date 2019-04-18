@@ -1,23 +1,26 @@
 import subprocess
 import sys
+from threading import Thread
 from queue import Queue
 
+from dadvisor.config import PORT
 from dadvisor.inspector.parser import parse_row
 from dadvisor.log import log
 
 
-class Inspector(object):
+class InspectorThread(Thread):
     """
     Reads data from the tcpdump program and store it in a queue, so that it can be processed further
     """
 
     def __init__(self, peers_collector):
+        Thread.__init__(self, name='InspectorThread')
         self.data = Queue()
         self.peers_collector = peers_collector
 
-    async def run(self):
-        await self.check_installation()
-        p = subprocess.Popen(('tcpdump', '-i', 'any', '-n', '-l', 'not', 'port', '22', 'and', 'not', 'port', '8800'),
+    def run(self):
+        self.check_installation()
+        p = subprocess.Popen(('tcpdump', '-i', 'any', '-n', '-l', 'not', 'port', '22', 'and', 'not', 'port', str(PORT)),
                              stdout=subprocess.PIPE)
 
         for row in iter(p.stdout.readline, b''):
@@ -29,7 +32,7 @@ class Inspector(object):
                 log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
     @staticmethod
-    async def check_installation():
+    def check_installation():
         try:
             subprocess.Popen(['tcpdump', '-D'], stdout=subprocess.PIPE)
         except ProcessLookupError:
