@@ -27,8 +27,7 @@ class InspectorThread(Thread):
                 data_flow = parse_row(row.decode('utf-8'))
                 if data_flow.size > 0 and not self.is_p2p_communication(data_flow):
                     if self.data:
-                        log.info('put on queue')
-                        self.data.put(data_flow)
+                        await self.data.put(data_flow)
             except ValueError:
                 log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
