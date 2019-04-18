@@ -17,7 +17,7 @@ def run_forever():
     container_collector = ContainerCollector(peers_collector)
 
     inspector_thread = InspectorThread(peers_collector)
-    analyser_thread = AnalyserThread(inspector_thread, container_collector, peers_collector)
+    analyser_thread = AnalyserThread(loop, inspector_thread, container_collector, peers_collector)
 
     # Start threads
     inspector_thread.start()

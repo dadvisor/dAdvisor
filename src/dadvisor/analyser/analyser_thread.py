@@ -11,21 +11,20 @@ from dadvisor.peers.peer_actions import get_ports
 
 class AnalyserThread(Thread):
 
-    def __init__(self, inspector_thread, container_collector, peers_collector):
+    def __init__(self, loop, inspector_thread, container_collector, peers_collector):
         Thread.__init__(self, name='AnalyserThread')
         container_collector.analyser_thread = self
         inspector_thread.analyser_thread = self
-        self.running = True
         self.inspector_thread = inspector_thread
         self.container_collector = container_collector
         self.peers_collector = peers_collector
         self.port_mapping = {}  # a dict from port to container_id
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
-        self.loop = asyncio.new_event_loop()
+        self.loop = loop
 
     def run(self):
         log.info('Analysing thread looping forever')
-        self.loop.run_forever()
+        # self.loop.run_forever()
         log.info('Can not reach here')
 
     async def analyse_dataflow(self, dataflow):
