@@ -4,8 +4,6 @@ import subprocess
 
 from dadvisor.config import IP
 from dadvisor.datatypes.container_info import ContainerInfo
-from dadvisor.datatypes.container_mapping import ContainerMapping
-from dadvisor.peers.peer_actions import get_containers
 
 SLEEP_TIME = 5
 
@@ -16,15 +14,12 @@ class ContainerCollector(object):
         self.peers_collector = peers_collector
         self.running = True
         self.own_containers = []  # list of ContainerInfo objects
-        self.old_containers = []  # list of ContainerInfo objects
-        self.other_containers = []  # list of ContainerMapping objects
         self.analyser_thread = None
 
     async def run(self):
         while self.running:
             await asyncio.sleep(SLEEP_TIME)
             await self.collect_own_containers()
-            await self.collect_remote_containers()
             await self.validate_own_containers()
 
     async def collect_own_containers(self):
@@ -42,7 +37,6 @@ class ContainerCollector(object):
             info.validate()
             if info.stopped:
                 self.own_containers.remove(info)
-                self.old_containers.append(info)
                 continue
 
             for port_map in info.ports:
@@ -52,19 +46,7 @@ class ContainerCollector(object):
                         self.analyser_thread.port_mapping[key] = info.ip
 
     def get_all_containers(self):
-        return self.other_containers + \
-               [c.to_container_mapping(IP) for c in self.containers_filtered]
-
-    async def collect_remote_containers(self):
-        for p in self.peers_collector.other_peers:
-            containers = get_containers(p)
-            # remove previous containers
-            for c in self.other_containers:
-                if c.host == p.host:
-                    self.other_containers.remove(c)
-            for c in containers:
-                if c['ip']:  # only add containers that have an ip
-                    self.other_containers.append(ContainerMapping(p.host, c['ip'], c['image'], c['hash']))
+        return [c.to_container_mapping(IP) for c in self.containers_filtered]
 
     @property
     def containers_filtered(self):

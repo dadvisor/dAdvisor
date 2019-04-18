@@ -30,7 +30,6 @@ def run_forever():
     loop.create_task(peers_collector.run())
 
     try:
-        log.info('Running forever')
         loop.run_forever()
     except KeyboardInterrupt:
         log.info('Stopping loop')
