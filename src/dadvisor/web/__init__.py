@@ -3,14 +3,14 @@ import json
 from aiohttp import web
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
-from dadvisor.config import INTERNAL_IP, IP
+from dadvisor.config import INTERNAL_IP, IP, PORT
 from dadvisor.datatypes.encoder import JSONCustomEncoder
 
 
 async def run_app(app):
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, '0.0.0.0', 8080)
+    site = web.TCPSite(runner, '0.0.0.0', PORT)
     await site.start()
 
 
