@@ -25,11 +25,12 @@ class InspectorThread(Thread):
 
         for row in iter(p.stdout.readline, b''):
             try:
-                data_flow = parse_row(row.decode('utf-8'))
-                if data_flow.size > 0 and not self.is_p2p_communication(data_flow):
+                dataflow = parse_row(row.decode('utf-8'))
+                if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
                     if self.analyser_thread:
+                        log.info('Adding: {}'.format(dataflow))
                         self.analyser_thread.loop.create_task(
-                            self.analyser_thread.analyse_dataflow(data_flow))
+                            self.analyser_thread.analyse_dataflow(dataflow))
             except ValueError:
                 log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
