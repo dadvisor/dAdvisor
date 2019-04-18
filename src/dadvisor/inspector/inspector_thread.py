@@ -12,11 +12,11 @@ class InspectorThread(Thread):
     Reads data from the tcpdump program and store it in a queue, so that it can be processed further
     """
 
-    def __init__(self, peers_collector):
+    def __init__(self, peers_collector, analyser):
         Thread.__init__(self, name='InspectorThread')
         self.data = None
         self.peers_collector = peers_collector
-        self.analyser_thread = None
+        self.analyser_thread = analyser
 
     def run(self):
         self.check_installation()
@@ -28,7 +28,6 @@ class InspectorThread(Thread):
                 dataflow = parse_row(row.decode('utf-8'))
                 if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
                     if self.analyser_thread:
-                        log.info('Adding: {}'.format(dataflow))
                         self.analyser_thread.loop.create_task(
                             self.analyser_thread.analyse_dataflow(dataflow))
             except ValueError:
