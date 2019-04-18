@@ -1,5 +1,6 @@
 from prometheus_client import Counter
 
+from dadvisor.log import log
 from dadvisor.config import IP
 from dadvisor.datatypes.address import Address
 from dadvisor.peers.peer_actions import get_ports
@@ -28,6 +29,7 @@ class Analyser(object):
         if not src_id or not dst_id:
             return
 
+        log.info(dataflow)
         self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
 
     def add_port(self, address):
