@@ -1,1 +1,1 @@
-from dadvisor.inspector.thread import InspectorThread
+from dadvisor.inspector.inspector import Inspector

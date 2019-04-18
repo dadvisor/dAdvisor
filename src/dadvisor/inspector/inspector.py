@@ -1,24 +1,22 @@
 import subprocess
 import sys
 from queue import Queue
-from threading import Thread
 
 from dadvisor.inspector.parser import parse_row
 from dadvisor.log import log
 
 
-class InspectorThread(Thread):
+class Inspector(object):
     """
     Reads data from the tcpdump program and store it in a queue, so that it can be processed further
     """
 
-    def __init__(self, peers_thread):
-        Thread.__init__(self, name='InspectorThread')
+    def __init__(self, peers_collector):
         self.data = Queue()
-        self.peers_thread = peers_thread
+        self.peers_collector = peers_collector
 
-    def run(self):
-        self.check_installation()
+    async def run(self):
+        await self.check_installation()
         p = subprocess.Popen(('tcpdump', '-i', 'any', '-n', '-l', 'not', 'port', '22', 'and', 'not', 'port', '8800'),
                              stdout=subprocess.PIPE)
 
@@ -31,7 +29,7 @@ class InspectorThread(Thread):
                 log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
     @staticmethod
-    def check_installation():
+    async def check_installation():
         try:
             subprocess.Popen(['tcpdump', '-D'], stdout=subprocess.PIPE)
         except ProcessLookupError:
@@ -44,7 +42,7 @@ class InspectorThread(Thread):
         Skip communication between peers
         :return:
         """
-        for p in self.peers_thread.peers:
+        for p in self.peers_collector.peers:
             if (data_flow.src.host == p.address.host and str(data_flow.src.port) == str(p.address.port)) or \
                     (data_flow.dst.host == p.address.host and str(data_flow.dst.port) == str(p.address.port)):
                 return True

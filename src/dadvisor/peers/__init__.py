@@ -1,1 +1,2 @@
-from dadvisor.peers.thread import PeersThread
+from dadvisor.peers.peers_collector import PeersCollector
+

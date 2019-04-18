@@ -1,84 +1,89 @@
-import logging
+import json
 
-from flask import Flask, jsonify
-from flask_cors import CORS
-from prometheus_client import make_wsgi_app
-from werkzeug.wsgi import DispatcherMiddleware
+from aiohttp import web
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from dadvisor.config import INTERNAL_IP, IP
 from dadvisor.datatypes.encoder import JSONCustomEncoder
-from dadvisor.peers.peer_actions import get_edges_from_peer
 
 
-def create_web_app(container_thread, peers_thread, inspector_thread, analyser_thread):
-    app = Flask(__name__)
-    app.json_encoder = JSONCustomEncoder
-    CORS(app)
+async def run_app(app):
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 8080)
+    await site.start()
 
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.INFO)
 
-    @app.route('/containers')
-    def containers():
-        return jsonify(container_thread.containers_filtered)
+def get_app(loop, peers_collector):
+    async def metrics(request):
+        resp = web.Response(body=generate_latest())
+        resp.content_type = CONTENT_TYPE_LATEST
+        return resp
 
-    @app.route('/containers/all')
-    def containers_all():
-        return jsonify(container_thread.get_all_containers())
+    async def ip(request):
+        return web.json_response({'internal': INTERNAL_IP, 'external': IP})
 
-    @app.route('/ip')
-    def ip():
-        return jsonify({'internal': INTERNAL_IP, 'external': IP})
+    async def hosts(request):
+        return web.json_response(text=json.dumps(peers_collector.host_mapping,
+                                                 cls=JSONCustomEncoder))
 
-    @app.route('/size')
-    def size():
-        return jsonify(inspector_thread.data.qsize())
+    async def peers(request):
+        return web.json_response(text=json.dumps(peers_collector.peers,
+                                                 cls=JSONCustomEncoder))
 
-    @app.route('/hosts')
-    def hosts():
-        return jsonify(peers_thread.host_mapping)
+    async def add_peer(request):
+        peer = request.match_info['peer']
+        host, port = peer.split(':')
+        await peers_collector.add_peer(host, port)
+        return web.json_response({'message': 'ok'})
 
-    @app.route('/data')
-    def data():
-        hash_length = 12
-        nodes = container_thread.get_nodes(hash_length)
-        edges = analyser_thread.get_edges()
-        for p in peers_thread.other_peers:
-            edges += get_edges_from_peer(p)
+    app = web.Application(loop=loop)
+    app.add_routes([web.get('/metrics', metrics),
+                    web.get('/peers', peers),
+                    web.get('/peers/add/{peer}', add_peer),
+                    web.get('/hosts', hosts),
+                    web.get('/ip', ip)])
 
-        return jsonify({
-            'nodes': nodes,
-            'edges': edges
-        })
+    return app
 
-    @app.route('/edges')
-    def get_edges():
-        return jsonify(analyser_thread.get_edges())
+    # app = Flask(__name__)
+    # app.json_encoder = JSONCustomEncoder
+    # CORS(app)
+    #
+    # log = logging.getLogger('werkzeug')
+    # log.setLevel(logging.INFO)
+    #
+    # @app.route('/containers')
+    # def containers():
+    #     return jsonify(container_thread.containers_filtered)
+    #
+    # @app.route('/containers/all')
+    # def containers_all():
+    #     return jsonify(container_thread.get_all_containers())
+    #
 
-    @app.route('/resolve_port/<port>')
-    def resolve_port(port):
-        return jsonify(analyser_thread.resolve_port(port))
-
-    @app.route('/ports')
-    def ports():
-        return jsonify(analyser_thread.port_mapping)
-
-    @app.route('/peers')
-    def peers():
-        return jsonify(peers_thread.peers)
-
-    @app.route('/peers/add/<host_port>')
-    def peers_add(host_port):
-        """
-        :param host_port: Example: 35.204.153.106:8800
-        :return: A json object with {'host': '35.204.153.106', 'port': '8800'}
-        """
-        host, port = host_port.split(':')
-        p = peers_thread.add_peer(host, port)
-        return jsonify(p)
-
-    app_dispatch = DispatcherMiddleware(app, {
-        '/metrics': make_wsgi_app()
-    })
-
-    return app_dispatch
+    # @app.route('/data')
+    # def data():
+    #     hash_length = 12
+    #     nodes = container_thread.get_nodes(hash_length)
+    #     edges = analyser_thread.get_edges()
+    #     for p in peers_thread.other_peers:
+    #         edges += get_edges_from_peer(p)
+    #
+    #     return jsonify({
+    #         'nodes': nodes,
+    #         'edges': edges
+    #     })
+    #
+    # @app.route('/edges')
+    # def get_edges():
+    #     return jsonify(analyser_thread.get_edges())
+    #
+    # @app.route('/resolve_port/<port>')
+    # def resolve_port(port):
+    #     return jsonify(analyser_thread.resolve_port(port))
+    #
+    # @app.route('/ports')
+    # def ports():
+    #     return jsonify(analyser_thread.port_mapping)
+    #
