@@ -32,6 +32,7 @@ class AnalyserThread(Thread):
 
         while self.running:
             dataflow = await self.inspector_thread.data.get()
+            log.info(dataflow)
             self.add_port(dataflow.src)
             self.add_port(dataflow.dst)
             self.resolve_local_address(dataflow.src)
