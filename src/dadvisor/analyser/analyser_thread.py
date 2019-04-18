@@ -1,6 +1,7 @@
 import asyncio
 from threading import Thread
 
+from asyncio import Queue
 from prometheus_client import Counter
 
 from dadvisor.config import IP
@@ -26,6 +27,7 @@ class AnalyserThread(Thread):
         self.loop.run_forever()
 
     async def async_run(self):
+        self.inspector_thread.data = Queue()
 
         while self.running:
             dataflow = await self.inspector_thread.data.get()

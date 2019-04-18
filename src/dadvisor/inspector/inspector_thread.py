@@ -1,7 +1,6 @@
 import subprocess
 import sys
 from threading import Thread
-from asyncio import Queue
 
 from dadvisor.config import PORT
 from dadvisor.inspector.parser import parse_row
@@ -15,7 +14,7 @@ class InspectorThread(Thread):
 
     def __init__(self, peers_collector):
         Thread.__init__(self, name='InspectorThread')
-        self.data = Queue()
+        self.data = None
         self.peers_collector = peers_collector
 
     def run(self):
@@ -27,7 +26,8 @@ class InspectorThread(Thread):
             try:
                 data_flow = parse_row(row.decode('utf-8'))
                 if data_flow.size > 0 and not self.is_p2p_communication(data_flow):
-                    self.data.put(data_flow)
+                    if self.data:
+                        self.data.put(data_flow)
             except ValueError:
                 log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
