@@ -16,6 +16,7 @@ class InspectorThread(Thread):
         Thread.__init__(self, name='InspectorThread')
         self.data = None
         self.peers_collector = peers_collector
+        self.analyser_thread = None
 
     def run(self):
         self.check_installation()
@@ -26,8 +27,9 @@ class InspectorThread(Thread):
             try:
                 data_flow = parse_row(row.decode('utf-8'))
                 if data_flow.size > 0 and not self.is_p2p_communication(data_flow):
-                    if self.data:
-                        await self.data.put(data_flow)
+                    if self.analyser_thread:
+                        self.analyser_thread.loop.create_task(
+                            self.analyser_thread.analyse_dataflow(data_flow))
             except ValueError:
                 log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 

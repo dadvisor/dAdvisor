@@ -15,6 +15,7 @@ class AnalyserThread(Thread):
     def __init__(self, inspector_thread, container_collector, peers_collector):
         Thread.__init__(self, name='AnalyserThread')
         container_collector.analyser_thread = self
+        inspector_thread.analyser_thread = self
         self.running = True
         self.inspector_thread = inspector_thread
         self.container_collector = container_collector
@@ -24,8 +25,25 @@ class AnalyserThread(Thread):
         self.loop = asyncio.new_event_loop()
 
     def run(self):
-        self.loop.create_task(self.async_run())
         self.loop.run_forever()
+
+    async def analyse_dataflow(self, dataflow):
+        log.info(dataflow)
+        self.add_port(dataflow.src)
+        self.add_port(dataflow.dst)
+        self.resolve_local_address(dataflow.src)
+        self.resolve_local_address(dataflow.dst)
+
+        await self.resolve_remote_address(dataflow.dst)
+
+        src_id = self.address_id(dataflow.src)
+        dst_id = self.address_id(dataflow.dst)
+        log.info(dataflow)
+
+        if not src_id or not dst_id:
+            return
+
+        self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
 
     async def async_run(self):
         self.inspector_thread.data = Queue()
