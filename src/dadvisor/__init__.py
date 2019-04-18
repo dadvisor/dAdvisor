@@ -17,7 +17,7 @@ def run_forever():
     # Create tasks
     app = get_app(loop, peers_collector)
     loop.create_task(run_app(app))
-    loop.create_task(inspector.run())
+    # loop.create_task(inspector.run())
     loop.create_task(peers_collector.run())
 
     try:
