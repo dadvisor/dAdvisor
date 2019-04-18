@@ -8,10 +8,11 @@ from dadvisor.peers.peer_actions import get_ports
 
 class Analyser(object):
 
-    def __init__(self, container_collector, peers_collector):
+    def __init__(self, container_collector, peers_collector, loop):
         container_collector.analyser_thread = self
         self.container_collector = container_collector
         self.peers_collector = peers_collector
+        self.loop = loop
         self.port_mapping = {}  # a dict from port to container_id
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
 
