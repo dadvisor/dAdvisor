@@ -1,39 +1,33 @@
+import asyncio
 import json
 import subprocess
-from threading import Thread, active_count
-from time import sleep
 
 from dadvisor.config import IP
 from dadvisor.datatypes.container_info import ContainerInfo
 from dadvisor.datatypes.container_mapping import ContainerMapping
-from dadvisor.log import log
 from dadvisor.peers.peer_actions import get_containers
 
+SLEEP_TIME = 5
 
-class ContainerThread(Thread):
 
-    def __init__(self, peers_thread):
-        Thread.__init__(self, name='ContainerThread')
-        self.peers_thread = peers_thread
+class ContainerCollector(object):
+
+    def __init__(self, peers_collector):
+        self.peers_collector = peers_collector
         self.running = True
-        self.sleep_time = 5
         self.own_containers = []  # list of ContainerInfo objects
         self.old_containers = []  # list of ContainerInfo objects
         self.other_containers = []  # list of ContainerMapping objects
         self.analyser_thread = None
 
-    def run(self):
+    async def run(self):
         while self.running:
-            try:
-                log.info('Running threads: {}'.format(active_count()))
-                self.collect_own_containers()
-                self.collect_remote_containers()
-                self.validate_own_containers()
-            except Exception as e:
-                log.error(e)
-            sleep(self.sleep_time)
+            await asyncio.sleep(SLEEP_TIME)
+            await self.collect_own_containers()
+            await self.collect_remote_containers()
+            await self.validate_own_containers()
 
-    def collect_own_containers(self):
+    async def collect_own_containers(self):
         cmd = 'curl -s --unix-socket /var/run/docker.sock http://localhost/containers/json'
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         data = json.loads(p.communicate()[0].decode('utf-8'))
@@ -43,7 +37,7 @@ class ContainerThread(Thread):
             if c['Id'] not in [c.hash for c in self.own_containers]:
                 self.own_containers.append(ContainerInfo(c['Id'], c))
 
-    def validate_own_containers(self):
+    async def validate_own_containers(self):
         for info in self.own_containers:
             info.validate()
             if info.stopped:
@@ -61,8 +55,8 @@ class ContainerThread(Thread):
         return self.other_containers + \
                [c.to_container_mapping(IP) for c in self.containers_filtered]
 
-    def collect_remote_containers(self):
-        for p in self.peers_thread.other_peers:
+    async def collect_remote_containers(self):
+        for p in self.peers_collector.other_peers:
             containers = get_containers(p)
             # remove previous containers
             for c in self.other_containers:
@@ -72,29 +66,29 @@ class ContainerThread(Thread):
                 if c['ip']:  # only add containers that have an ip
                     self.other_containers.append(ContainerMapping(p.host, c['ip'], c['image'], c['hash']))
 
-    def get_nodes(self, hash_length):
-        """
-        :return: A list of dicts with the containers
-        """
-        all_containers = self.get_all_containers()
-        hosts = set([c.host for c in all_containers])
-        images = {}  # a dict of sets
-        for container in all_containers:
-            if container.host not in images:
-                images[container.host] = {container.image}
-            else:
-                images[container.host].add(container.image)
-
-        data = [{'data': {'id': host,
-                          'name': host}} for host in hosts]
-        for host, image_set in images.items():
-            data += [{'data': {'id': host + i,
-                               'parent': host,
-                               'name': i}} for i in image_set]
-        data += [{'data': {'id': c.id,
-                           'parent': c.host + c.image,
-                           'name': c.id[:hash_length]}} for c in all_containers]
-        return data
+    # def get_nodes(self, hash_length):
+    #     """
+    #     :return: A list of dicts with the containers
+    #     """
+    #     all_containers = self.get_all_containers()
+    #     hosts = set([c.host for c in all_containers])
+    #     images = {}  # a dict of sets
+    #     for container in all_containers:
+    #         if container.host not in images:
+    #             images[container.host] = {container.image}
+    #         else:
+    #             images[container.host].add(container.image)
+    #
+    #     data = [{'data': {'id': host,
+    #                       'name': host}} for host in hosts]
+    #     for host, image_set in images.items():
+    #         data += [{'data': {'id': host + i,
+    #                            'parent': host,
+    #                            'name': i}} for i in image_set]
+    #     data += [{'data': {'id': c.id,
+    #                        'parent': c.host + c.image,
+    #                        'name': c.id[:hash_length]}} for c in all_containers]
+    #     return data
 
     def to_internal_port(self, port):
         """

@@ -28,9 +28,14 @@ def get_edges_from_peer(peer):
     return requests.get('http://{}:{}/edges'.format(peer.host, peer.port)).json()
 
 
-def get_ports(peer):
-    return requests.get('http://{}:{}/ports'.format(peer.host, peer.port)).json()
-
+async def get_ports(peer):
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get('http://{}:{}/ports'.format(peer.host, peer.port)) as resp:
+                return resp.json()
+        except Exception as e:
+            log.error(e)
+            return ''
 
 def get_containers(peer):
     return requests.get('http://{}:{}/containers'.format(peer.host, peer.port)).json()
