@@ -19,7 +19,7 @@ def run_forever():
     loop.create_task(run_app(app))
     loop.create_task(inspector.run())
     loop.create_task(peers_collector.run())
-    
+
     try:
         log.info('Running forever')
         loop.run_forever()
