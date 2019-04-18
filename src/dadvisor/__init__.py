@@ -1,6 +1,6 @@
 import asyncio
 
-from dadvisor.analyser import AnalyserThread
+from dadvisor.analyser import Analyser
 from dadvisor.containers import ContainerCollector
 from dadvisor.inspector import InspectorThread
 from dadvisor.peers import PeersCollector
@@ -17,11 +17,10 @@ def run_forever():
     container_collector = ContainerCollector(peers_collector)
 
     inspector_thread = InspectorThread(peers_collector)
-    analyser_thread = AnalyserThread(loop, inspector_thread, container_collector, peers_collector)
+    Analyser(container_collector, peers_collector)
 
     # Start threads
     inspector_thread.start()
-    analyser_thread.start()
 
     # Create tasks
     app = get_app(loop, peers_collector)

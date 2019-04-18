@@ -1,35 +1,20 @@
-import asyncio
-from threading import Thread
-
 from prometheus_client import Counter
 
 from dadvisor.config import IP
 from dadvisor.datatypes.address import Address
-from dadvisor.log import log
 from dadvisor.peers.peer_actions import get_ports
 
 
-class AnalyserThread(Thread):
+class Analyser(object):
 
-    def __init__(self, loop, inspector_thread, container_collector, peers_collector):
-        Thread.__init__(self, name='AnalyserThread')
+    def __init__(self, container_collector, peers_collector):
         container_collector.analyser_thread = self
-        inspector_thread.analyser_thread = self
-        self.inspector_thread = inspector_thread
         self.container_collector = container_collector
         self.peers_collector = peers_collector
         self.port_mapping = {}  # a dict from port to container_id
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
-        self.loop = loop
-
-    def run(self):
-        log.info('Analysing thread looping forever')
-        # self.loop.run_forever()
-        log.info('Can not reach here')
 
     async def analyse_dataflow(self, dataflow):
-        log.info('-' * 30)
-        log.info(dataflow)
         self.add_port(dataflow.src)
         self.add_port(dataflow.dst)
         self.resolve_local_address(dataflow.src)
@@ -39,7 +24,6 @@ class AnalyserThread(Thread):
 
         src_id = self.address_id(dataflow.src)
         dst_id = self.address_id(dataflow.dst)
-        log.info(dataflow)
 
         if not src_id or not dst_id:
             return
@@ -75,22 +59,6 @@ class AnalyserThread(Thread):
                 ports = await get_ports(p)
                 if address.port in ports:
                     address.container = ports[address.port]
-
-    # def get_edges(self):
-    #     """
-    #     :return: A list with a dict per data-flow of the containers
-    #     """
-    #     edges = []
-    #     for src_id in self.container_thread.get_all_containers():
-    #         for dst_id in [dst_id for dst_id in self.container_thread.get_all_containers() if
-    #                        dst_id != src_id and
-    #                        self.counter.labels(id_map(src_id), id_map(dst_id))._value.get() > 0]:
-    #             edges.append({'data': {
-    #                 'source': id_map(src_id),
-    #                 'target': id_map(dst_id),
-    #                 'bytes': self.counter.labels(id_map(src_id), id_map(dst_id))._value.get()
-    #             }})
-    #     return edges
 
     def address_id(self, address):
         """
