@@ -31,7 +31,6 @@ class AnalyserThread(Thread):
         self.inspector_thread.data = Queue()
 
         while self.running:
-            log.info('blabal')
             dataflow = await self.inspector_thread.data.get()
             log.info(dataflow)
             self.add_port(dataflow.src)
@@ -46,9 +45,11 @@ class AnalyserThread(Thread):
             log.info(dataflow)
 
             if not src_id or not dst_id:
+                self.inspector_thread.data.task_done()
                 continue
 
             self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
+            self.inspector_thread.data.task_done()
 
     def add_port(self, address):
         if address.is_local():

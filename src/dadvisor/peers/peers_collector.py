@@ -44,7 +44,7 @@ class PeersCollector(object):
             await self.add_peer(host, port)
 
     async def validate_peers(self):
-        log.info('Validating peers: {}'.format(len(self.peers)))
+        log.info('Validating other peers: {}'.format(len(self.other_peers)))
         if not self.other_peers:
             await self.init_peers()
         for p in self.other_peers:
