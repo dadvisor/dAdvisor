@@ -1,7 +1,6 @@
 import asyncio
 from threading import Thread
 
-from asyncio import Queue
 from prometheus_client import Counter
 
 from dadvisor.config import IP
@@ -25,9 +24,12 @@ class AnalyserThread(Thread):
         self.loop = asyncio.new_event_loop()
 
     def run(self):
+        log.info('Analysing thread looping forever')
         self.loop.run_forever()
+        log.info('Can not reach here')
 
     async def analyse_dataflow(self, dataflow):
+        log.info('-' * 30)
         log.info(dataflow)
         self.add_port(dataflow.src)
         self.add_port(dataflow.dst)
@@ -44,30 +46,6 @@ class AnalyserThread(Thread):
             return
 
         self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
-
-    async def async_run(self):
-        self.inspector_thread.data = Queue()
-
-        while self.running:
-            dataflow = await self.inspector_thread.data.get()
-            log.info(dataflow)
-            self.add_port(dataflow.src)
-            self.add_port(dataflow.dst)
-            self.resolve_local_address(dataflow.src)
-            self.resolve_local_address(dataflow.dst)
-
-            await self.resolve_remote_address(dataflow.dst)
-
-            src_id = self.address_id(dataflow.src)
-            dst_id = self.address_id(dataflow.dst)
-            log.info(dataflow)
-
-            if not src_id or not dst_id:
-                self.inspector_thread.data.task_done()
-                continue
-
-            self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
-            self.inspector_thread.data.task_done()
 
     def add_port(self, address):
         if address.is_local():

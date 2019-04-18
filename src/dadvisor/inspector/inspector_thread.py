@@ -28,6 +28,7 @@ class InspectorThread(Thread):
                 data_flow = parse_row(row.decode('utf-8'))
                 if data_flow.size > 0 and not self.is_p2p_communication(data_flow):
                     if self.analyser_thread:
+                        log.info('Adding tasks')
                         self.analyser_thread.loop.create_task(
                             self.analyser_thread.analyse_dataflow(data_flow))
             except ValueError:
