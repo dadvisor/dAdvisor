@@ -1,1 +1,1 @@
-from dadvisor.analyser.thread import AnalyserThread
+from dadvisor.analyser.analyser_thread import AnalyserThread

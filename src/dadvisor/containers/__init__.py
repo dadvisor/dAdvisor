@@ -1,1 +1,1 @@
-from dadvisor.containers.containerthread import ContainerCollector
+from dadvisor.containers.container_collector import ContainerCollector

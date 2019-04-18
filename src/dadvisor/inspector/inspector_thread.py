@@ -1,7 +1,7 @@
 import subprocess
 import sys
 from threading import Thread
-from queue import Queue
+from asyncio import Queue
 
 from dadvisor.config import PORT
 from dadvisor.inspector.parser import parse_row
