@@ -40,8 +40,14 @@ def get_app(loop, peers_collector):
             path = '/' + path
         async with aiohttp.ClientSession() as session:
             async with session.request(request.method, 'http://localhost:9090{}'.format(path)) as resp:
-                raw = await resp.read()
-        return web.Response(body=raw, status=resp.status, headers=resp.headers)
+                response = web.StreamResponse(status=200, reason='OK', headers={'Content-Type': 'text/html'})
+                while True:
+                    chunk = await resp.content.read()
+                    if not chunk:
+                        break
+                    await response.write(chunk)
+                return response
+        # return web.Response(body=raw, status=resp.status, headers=resp.headers)
 
     async def add_peer(request):
         peer = request.match_info['peer']
