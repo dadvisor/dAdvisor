@@ -2,7 +2,7 @@
 set -e
 
 mkdir /prometheus
-./prometheus-*/prometheus &
+./prometheus-*/prometheus --web.route-prefix=/prometheus &
 
 if [[ "$(stat -c "%U:%G" /grafana/data)" != grafana:grafana ]]; then
 	chown grafana:grafana /grafana/data
