@@ -33,7 +33,7 @@ VOLUME /grafana/data
 RUN grafana-cli plugins install simpod-json-datasource
 RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins/containers-panel
 
-COPY .nginx.conf /etc/nginx
+COPY ./nginx.conf /etc/nginx
 COPY ./grafana/dashboard.json /grafana/dashboards
 COPY ./grafana/dashboard.yaml /grafana/dashboards
 COPY ./grafana/defaults.ini /grafana/conf/
