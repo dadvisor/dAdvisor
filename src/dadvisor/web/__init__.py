@@ -37,7 +37,7 @@ def get_app(loop, peers_collector):
     async def prometheus(request):
         path = request.match_info['path']
         async with aiohttp.ClientSession() as session:
-            async with session.get('localhost:9090/{}'.format(path)) as resp:
+            async with session.get('http://localhost:9090{}'.format(path)) as resp:
                 text = await resp.text()
                 return web.Response(text=text, status=resp.status, headers=resp.headers)
 
@@ -53,7 +53,7 @@ def get_app(loop, peers_collector):
                     web.get('/peers/add/{peer}', add_peer),
                     web.get('/hosts', hosts),
                     web.get('/ip', ip),
-                    web.get('/prometheus/{path:\w*}', prometheus)])
+                    web.get('/prometheus{path:\w*}', prometheus)])
 
     return app
 
