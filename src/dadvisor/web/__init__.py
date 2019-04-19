@@ -41,6 +41,7 @@ def get_app(loop, peers_collector):
         async with aiohttp.ClientSession() as session:
             async with session.request(request.method, 'http://localhost:9090{}'.format(path)) as resp:
                 response = web.StreamResponse(status=200, reason='OK', headers={'Content-Type': 'text/html'})
+                await response.prepare(request)
                 while True:
                     chunk = await resp.content.read()
                     if not chunk:
