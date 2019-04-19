@@ -12,7 +12,7 @@ cd /grafana/plugins/containers-panel && git pull && cd /
 /usr/bin/cadvisor &
 su-exec grafana grafana-server --homepath=/grafana &
 
-cd src/dadvisor
+cd src
 
 
-gunicorn start:run_forever --bind 0.0.0.0:8800 --worker-class aiohttp.GunicornWebWorker
+gunicorn dadvisor.start:run_forever --bind 0.0.0.0:8800 --worker-class aiohttp.GunicornWebWorker
