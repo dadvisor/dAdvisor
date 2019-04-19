@@ -1,7 +1,7 @@
 FROM google/cadvisor:latest
 
 # Install inspector
-RUN apk add --update tcpdump curl git python3
+RUN apk add --update tcpdump curl git python3 nginx
 RUN python3 -m ensurepip --upgrade
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
@@ -33,6 +33,7 @@ VOLUME /grafana/data
 RUN grafana-cli plugins install simpod-json-datasource
 RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins/containers-panel
 
+COPY .nginx.conf /etc/nginx
 COPY ./grafana/dashboard.json /grafana/dashboards
 COPY ./grafana/dashboard.yaml /grafana/dashboards
 COPY ./grafana/defaults.ini /grafana/conf/
