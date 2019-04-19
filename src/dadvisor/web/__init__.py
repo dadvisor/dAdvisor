@@ -1,5 +1,6 @@
 import json
 
+import aiohttp
 from aiohttp import web
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
@@ -33,6 +34,13 @@ def get_app(loop, peers_collector):
         return web.json_response(text=json.dumps(peers_collector.peers,
                                                  cls=JSONCustomEncoder))
 
+    async def prometheus(request):
+        path = request.match_info['path']
+        async with aiohttp.ClientSession() as session:
+            async with session.get('localhost:9090/{}'.format(path)) as resp:
+                text = await resp.text()
+                return web.Response(text=text, status=resp.status, headers=resp.headers)
+
     async def add_peer(request):
         peer = request.match_info['peer']
         host, port = peer.split(':')
@@ -44,7 +52,8 @@ def get_app(loop, peers_collector):
                     web.get('/peers', peers),
                     web.get('/peers/add/{peer}', add_peer),
                     web.get('/hosts', hosts),
-                    web.get('/ip', ip)])
+                    web.get('/ip', ip),
+                    web.get('/prometheus/{path:\w*}', prometheus)])
 
     return app
 

@@ -28,6 +28,7 @@ class PeersCollector(object):
         while self.running:
             await asyncio.sleep(SLEEP_TIME)
             await self.validate_peers()
+            await self.validate_node()
 
     @property
     def other_peers(self):
@@ -100,3 +101,10 @@ class PeersCollector(object):
         except Exception as e:
             log.error(e)
         return p
+
+    async def validate_node(self):
+        """
+        Ask the tracker for its children and it's parent.
+        For the children, let it scrape by prometheus
+        :return:
+        """
