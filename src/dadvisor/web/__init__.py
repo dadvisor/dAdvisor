@@ -41,7 +41,7 @@ def get_app(loop, peers_collector):
         async with aiohttp.ClientSession() as session:
             async with session.request(request.method, 'http://localhost:9090{}'.format(path)) as resp:
                 # resp.
-                response = web.StreamResponse(status=resp.status, reason='OK', headers=resp.headers)
+                response = web.StreamResponse(status=resp.status, reason='OK', headers=request.headers)
                 await response.prepare(request)
                 while True:
                     chunk = await resp.content.read()
