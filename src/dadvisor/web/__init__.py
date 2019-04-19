@@ -39,12 +39,9 @@ def get_app(loop, peers_collector):
         if not path.startswith('/'):
             path = '/' + path
         async with aiohttp.ClientSession() as session:
-            async with session.get('http://localhost:9090{}'.format(path)) as resp:
-                text = await resp.text()
-                log.info(resp.status)
-                log.info(str(resp.headers))
-                log.info(text)
-        return web.Response(text=text, status=resp.status, headers=resp.headers)
+            async with session.request(request.method, 'http://localhost:9090{}'.format(path)) as resp:
+                raw = await resp.read()
+        return web.Response(body=raw, status=resp.status, headers=resp.headers)
 
     async def add_peer(request):
         peer = request.match_info['peer']
@@ -57,9 +54,8 @@ def get_app(loop, peers_collector):
                     web.get('/peers', peers),
                     web.get('/peers/add/{peer}', add_peer),
                     web.get('/hosts', hosts),
-                    web.get('/ip', ip),
-                    web.get('/prometheus{path:\w*}', prometheus),
-                    web.get('/prometheus/{path:\w*}', prometheus)])
+                    web.get('/ip', ip)])
+    app.router.add_route('*', '/prometheus{path:.*?}', prometheus)
 
     return app
 
