@@ -63,7 +63,7 @@ def get_app(loop, peers_collector):
                     web.get('/peers/add/{peer}', add_peer),
                     web.get('/hosts', hosts),
                     web.get('/ip', ip)])
-    app.router.add_route('*', '/prometheus{path:.*?}', prometheus)
+    # app.router.add_route('*', '/prometheus{path:.*?}', prometheus)
 
     return app
 
