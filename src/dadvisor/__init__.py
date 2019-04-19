@@ -1,10 +1,12 @@
 import asyncio
 
+from dadvisor.log import log
+
 from dadvisor.analyser import Analyser
 from dadvisor.containers import ContainerCollector
 from dadvisor.inspector import InspectorThread
 from dadvisor.peers import PeersCollector
-from dadvisor.web import get_app
+from dadvisor.web import get_app, run_app
 
 
 def run_forever():
@@ -23,14 +25,13 @@ def run_forever():
 
     # Create tasks
     app = get_app(loop, peers_collector)
-    # loop.create_task(run_app(app))
+    loop.create_task(run_app(app))
     loop.create_task(container_collector.run())
     loop.create_task(peers_collector.run())
 
-    # try:
-    #     loop.run_forever()
-    # except KeyboardInterrupt:
-    #     log.info('Stopping loop')
-    # finally:
-    #     loop.close()
-    return app
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        log.info('Stopping loop')
+    finally:
+        loop.close()

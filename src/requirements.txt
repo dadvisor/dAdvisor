@@ -5,4 +5,3 @@ flask
 flask_cors
 asyncio
 aiohttp
-gunicorn
