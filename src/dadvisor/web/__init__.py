@@ -36,6 +36,8 @@ def get_app(loop, peers_collector):
 
     async def prometheus(request):
         path = request.match_info['path']
+        if not path.startswith('/'):
+            path = '/' + path
         async with aiohttp.ClientSession() as session:
             async with session.get('http://localhost:9090{}'.format(path)) as resp:
                 text = await resp.text()
