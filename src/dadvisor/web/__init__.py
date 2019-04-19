@@ -49,7 +49,7 @@ def get_app(loop, peers_collector):
         await peers_collector.add_peer(host, port)
         return web.json_response({'message': 'ok'})
 
-    app = web.Application(loop=loop)
+    app = web.Application(loop=loop, debug=True)
     app.add_routes([web.get('/metrics', metrics),
                     web.get('/peers', peers),
                     web.get('/peers/add/{peer}', add_peer),
