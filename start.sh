@@ -12,5 +12,5 @@ cd /grafana/plugins/containers-panel && git pull && cd /
 /usr/bin/cadvisor &
 su-exec grafana grafana-server --homepath=/grafana &
 
-
+nginx
 python3 -u src/main.py
