@@ -41,8 +41,10 @@ def get_app(loop, peers_collector):
         async with aiohttp.ClientSession() as session:
             async with session.get('http://localhost:9090{}'.format(path)) as resp:
                 text = await resp.text()
-                log.info(resp.status, resp.headers, text)
-                return web.Response(text=text, status=resp.status, headers=resp.headers)
+                log.info(resp.status)
+                log.info(str(resp.headers))
+                log.info(text)
+        return web.Response(text=text, status=resp.status, headers=resp.headers)
 
     async def add_peer(request):
         peer = request.match_info['peer']
