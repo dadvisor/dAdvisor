@@ -17,7 +17,7 @@ async def run_app(app):
     await site.start()
 
 
-def get_app(loop, peers_collector):
+async def get_app(loop, peers_collector):
     async def metrics(request):
         resp = web.Response(body=generate_latest())
         resp.content_type = CONTENT_TYPE_LATEST
