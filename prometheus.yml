@@ -4,10 +4,16 @@ global:
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
 scrape_configs:
-- job_name: 'prometheus'
+- job_name: 'cadvisor'
   static_configs:
-  - targets: ['localhost:8800', 'localhost:5000/dadvisor']
+  - targets: ['localhost:8800']
 
+- job_name: 'prometheus'
   file_sd_configs:
   - files:
     - /prometheus/*.json
+
+- job_name:       'dadvisor'
+  metrics_path: /dadvisor/metrics
+  static_configs:
+    - targets: ['localhost:5000']
