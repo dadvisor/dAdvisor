@@ -10,3 +10,4 @@ IP = requests.get('https://api.ipify.org?format=json').json()['ip']
 INFO_HASH = 'uniquetoken'
 
 TRACKER = 'http://35.204.250.252:8080'
+PREFIX = '/dadvisor'

@@ -4,11 +4,9 @@ import aiohttp
 from aiohttp import web
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
-from dadvisor.config import INTERNAL_IP, IP, PORT
+from dadvisor.config import INTERNAL_IP, IP, PORT, PREFIX
 from dadvisor.datatypes.encoder import JSONCustomEncoder
 from dadvisor.log import log
-
-PREFIX = '/dadvisor'
 
 
 async def run_app(app):
