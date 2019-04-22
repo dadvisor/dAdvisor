@@ -4,9 +4,11 @@ import aiohttp
 from aiohttp import web
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
-from dadvisor.log import log
 from dadvisor.config import INTERNAL_IP, IP, PORT
 from dadvisor.datatypes.encoder import JSONCustomEncoder
+from dadvisor.log import log
+
+PREFIX = '/dadvisor'
 
 
 async def run_app(app):
@@ -58,11 +60,11 @@ def get_app(loop, peers_collector):
         return web.json_response({'message': 'ok'})
 
     app = web.Application(loop=loop, debug=True, logger=log)
-    app.add_routes([web.get('/metrics', metrics),
-                    web.get('/peers', peers),
-                    web.get('/peers/add/{peer}', add_peer),
-                    web.get('/hosts', hosts),
-                    web.get('/ip', ip)])
+    app.add_routes([web.get('{}/metrics'.format(PREFIX), metrics),
+                    web.get('{}/peers'.format(PREFIX), peers),
+                    web.get('{}/peers/add/'.format(PREFIX) + '{peer}', add_peer),
+                    web.get('{}/hosts'.format(PREFIX), hosts),
+                    web.get('{}/ip'.format(PREFIX), ip)])
     # app.router.add_route('*', '/prometheus{path:.*?}', prometheus)
 
     return app
