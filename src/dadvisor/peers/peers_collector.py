@@ -109,7 +109,8 @@ class PeersCollector(object):
         :return:
         """
         data = await get_tracker_info(self.my_peer)
-        self.parent = from_list(data['parent'])
+        if data['parent']:
+            self.parent = from_list(data['parent'])
         self.children = []
         for child in data['children']:
             self.children.append(from_list(child))
