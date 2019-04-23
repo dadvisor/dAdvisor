@@ -121,7 +121,7 @@ class PeersCollector(object):
         with open('/prometheus-federation.json', 'w') as file:
             child_str = []
             for child in self.children:
-                child_str.append("'{}:{}'".format(child.host, child.port))
+                child_str.append("{}:{}".format(child.host, child.port))
 
             data = [{"labels": {"job": "promadvisor"},
                      "targets": ['{}'.format(', '.join(child_str))]}]
