@@ -119,10 +119,10 @@ class PeersCollector(object):
     def set_scraper(self):
         """ Set a line with federation information """
         with open('/prometheus-federation.json', 'w') as file:
-            child_str = []
+            child_list = []
             for child in self.children:
-                child_str.append("{}:{}".format(child.host, child.port))
+                child_list.append("{}:{}".format(child.host, child.port))
+            child_list = [', '.join(child_list)] if ', '.join(child_list) else []
 
-            data = [{"labels": {"job": "promadvisor"},
-                     "targets": ['{}'.format(', '.join(child_str))]}]
+            data = [{"labels": {"job": "promadvisor"}, "targets": child_list}]
             file.write(json.dumps(data))

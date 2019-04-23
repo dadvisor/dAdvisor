@@ -24,7 +24,7 @@ async def expose_peer(my_peer, other_peer):
                 return await resp.json()
         except Exception as e:
             log.error(e)
-            return ''
+            return []
 
 
 def get_edges_from_peer(peer):
