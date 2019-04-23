@@ -55,8 +55,10 @@ async def get_ports(peer):
             return []
 
 
-def get_containers(peer):
-    return requests.get(get_name(peer) + '/containers').json()
+async def get_containers(peer):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(get_name(peer) + '/containers') as resp:
+            return await resp.json()
 
 
 async def get_ip(peer):

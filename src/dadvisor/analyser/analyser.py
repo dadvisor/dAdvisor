@@ -32,7 +32,7 @@ class Analyser(object):
         if not src_id or not dst_id:
             return
 
-        log.info(dataflow)
+        log.info('Found dataflow: {}'.format(dataflow))
         self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
 
     def add_port(self, address):

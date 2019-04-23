@@ -18,7 +18,7 @@ async def run_app(app):
     await site.start()
 
 
-def get_app(loop, peers_collector, analyser):
+def get_app(loop, peers_collector, analyser, container_collector):
     async def metrics(request):
         resp = web.Response(body=generate_latest())
         resp.content_type = CONTENT_TYPE_LATEST
@@ -72,6 +72,10 @@ def get_app(loop, peers_collector, analyser):
                                                   'children': peers_collector.children},
                                                  cls=JSONCustomEncoder))
 
+    async def containers(request):
+        return web.json_response(text=json.dumps(container_collector.get_own_containers(),
+                                                 cls=JSONCustomEncoder))
+
     app = web.Application(loop=loop, debug=True, logger=log)
     app.add_routes([web.get('{}/metrics'.format(PREFIX), metrics),
                     web.get('{}/peers'.format(PREFIX), peers),
@@ -80,6 +84,8 @@ def get_app(loop, peers_collector, analyser):
                     web.get('{}/ip'.format(PREFIX), ip),
                     web.get('{}/ports'.format(PREFIX), ports),
                     web.get('{}/dashboard'.format(PREFIX), dashboard),
-                    web.get('{}/node_info'.format(PREFIX), node_info)])
+                    web.get('{}/node_info'.format(PREFIX), node_info),
+                    web.get('{}/containers'.format(PREFIX), containers)])
+
 
     return app
