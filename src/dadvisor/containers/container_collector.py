@@ -44,7 +44,6 @@ class ContainerCollector(object):
             for c in container_list:
                 self.remote_containers.append(ContainerMapping(c['host'], c['container'],
                                                                c['image'], c['id']))
-            self.remote_containers += container_list
 
     async def validate_own_containers(self):
         for info in self.own_containers:
