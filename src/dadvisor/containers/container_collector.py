@@ -4,6 +4,7 @@ import subprocess
 
 from dadvisor.config import IP
 from dadvisor.datatypes.container_info import ContainerInfo
+from dadvisor.datatypes.container_mapping import ContainerMapping
 from dadvisor.peers.peer_actions import get_containers
 
 SLEEP_TIME = 5
@@ -40,6 +41,9 @@ class ContainerCollector(object):
         for peer in self.peers_collector.other_peers:
             container_list = await get_containers(peer)
             self.remote_containers = [c for c in self.remote_containers if c.host != peer.host]
+            for c in container_list:
+                self.remote_containers.append(ContainerMapping(c['host'], c['container'],
+                                                               c['image'], c['id']))
             self.remote_containers += container_list
 
     async def validate_own_containers(self):
@@ -59,8 +63,7 @@ class ContainerCollector(object):
         return [c.to_container_mapping(IP) for c in self.containers_filtered]
 
     def get_all_containers(self):
-        return [c.to_container_mapping(IP) for c in self.containers_filtered] + \
-               self.remote_containers
+        return self.get_own_containers() + self.remote_containers
 
     @property
     def containers_filtered(self):
