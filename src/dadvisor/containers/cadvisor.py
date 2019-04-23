@@ -1,6 +1,6 @@
 import aiohttp
 
-CADVISOR_URL = 'http://localhost:8080'
+from dadvisor.config import CADVISOR_URL
 
 
 async def get_containers():

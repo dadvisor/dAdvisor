@@ -2,7 +2,7 @@ import asyncio
 
 from prometheus_client import Info
 
-from dadvisor.config import INTERNAL_IP, IP, PORT
+from dadvisor.config import INTERNAL_IP, IP, PROXY_PORT
 from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
 from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_ip, get_peer_list, register_peer
@@ -20,7 +20,7 @@ class PeersCollector(object):
         self.set_my_peer()
 
     def set_my_peer(self):
-        self.my_peer = Peer(IP, PORT)
+        self.my_peer = Peer(IP, PROXY_PORT)
         self.peers.append(self.my_peer)
 
     async def run(self):

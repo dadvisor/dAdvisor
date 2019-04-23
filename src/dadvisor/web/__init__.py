@@ -4,7 +4,7 @@ import aiohttp
 from aiohttp import web
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
-from dadvisor.config import INTERNAL_IP, IP, PORT, PREFIX
+from dadvisor.config import INTERNAL_IP, IP, INTERNAL_PORT, PREFIX
 from dadvisor.datatypes.encoder import JSONCustomEncoder
 from dadvisor.log import log
 
@@ -12,8 +12,8 @@ from dadvisor.log import log
 async def run_app(app):
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, '0.0.0.0', PORT)
-    log.info('Running on localhost:{}'.format(PORT))
+    site = web.TCPSite(runner, '0.0.0.0', INTERNAL_PORT)
+    log.info('Running on localhost:{}'.format(INTERNAL_PORT))
     await site.start()
 
 
@@ -66,45 +66,3 @@ def get_app(loop, peers_collector):
     # app.router.add_route('*', '/prometheus{path:.*?}', prometheus)
 
     return app
-
-    # app = Flask(__name__)
-    # app.json_encoder = JSONCustomEncoder
-    # CORS(app)
-    #
-    # log = logging.getLogger('werkzeug')
-    # log.setLevel(logging.INFO)
-    #
-    # @app.route('/containers')
-    # def containers():
-    #     return jsonify(container_thread.containers_filtered)
-    #
-    # @app.route('/containers/all')
-    # def containers_all():
-    #     return jsonify(container_thread.get_all_containers())
-    #
-
-    # @app.route('/data')
-    # def data():
-    #     hash_length = 12
-    #     nodes = container_thread.get_nodes(hash_length)
-    #     edges = analyser_thread.get_edges()
-    #     for p in peers_thread.other_peers:
-    #         edges += get_edges_from_peer(p)
-    #
-    #     return jsonify({
-    #         'nodes': nodes,
-    #         'edges': edges
-    #     })
-    #
-    # @app.route('/edges')
-    # def get_edges():
-    #     return jsonify(analyser_thread.get_edges())
-    #
-    # @app.route('/resolve_port/<port>')
-    # def resolve_port(port):
-    #     return jsonify(analyser_thread.resolve_port(port))
-    #
-    # @app.route('/ports')
-    # def ports():
-    #     return jsonify(analyser_thread.port_mapping)
-    #

@@ -2,7 +2,7 @@ import subprocess
 import sys
 from threading import Thread
 
-from dadvisor.config import PORT
+from dadvisor.config import PROXY_PORT
 from dadvisor.inspector.parser import parse_row
 from dadvisor.log import log
 
@@ -20,8 +20,9 @@ class InspectorThread(Thread):
 
     def run(self):
         self.check_installation()
-        p = subprocess.Popen(('tcpdump', '-i', 'any', '-n', '-l', 'not', 'port', '22', 'and', 'not', 'port', str(PORT)),
-                             stdout=subprocess.PIPE)
+        p = subprocess.Popen(
+            ('tcpdump', '-i', 'any', '-n', '-l', 'not', 'port', '22', 'and', 'not', 'port', str(PROXY_PORT)),
+            stdout=subprocess.PIPE)
 
         for row in iter(p.stdout.readline, b''):
             try:
