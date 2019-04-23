@@ -23,6 +23,9 @@ class Peer(object):
     def __str__(self):
         return self.address.__str__()
 
+    def __hash__(self):
+        return self.address.__hash__()
+
 
 def from_list(list):
     """ Returns a peer object, created from a list with length 2"""

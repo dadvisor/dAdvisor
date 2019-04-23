@@ -21,6 +21,9 @@ class Address(object):
     def __str__(self):
         return '{}:{}:{}'.format(self.host, self.container, self.port)
 
+    def __hash__(self):
+        return hash(str(self))
+
     def is_local(self):
         return self.host == IP and re.match(r'172.\d+.0.\d+', self.container)
 
