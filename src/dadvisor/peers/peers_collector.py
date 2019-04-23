@@ -3,11 +3,12 @@ import asyncio
 from prometheus_client import Info
 
 from dadvisor.config import INTERNAL_IP, IP, PROXY_PORT
-from dadvisor.datatypes.peer import Peer
+from dadvisor.datatypes.peer import Peer, from_list
 from dadvisor.log import log
 from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_ip, get_peer_list, register_peer, get_tracker_info
 
 SLEEP_TIME = 10
+LINE_INDEX = 14
 
 
 class PeersCollector(object):
@@ -18,6 +19,9 @@ class PeersCollector(object):
         self.peers = []  # List of Peer
         self.host_mapping = {INTERNAL_IP: IP}  # a dict from internal IP to external IP
         self.set_my_peer()
+
+        self.parent = None
+        self.children = []
 
     def set_my_peer(self):
         self.my_peer = Peer(IP, PROXY_PORT)
@@ -81,10 +85,6 @@ class PeersCollector(object):
 
     async def add_peer(self, host, port):
         host_format = host.replace('.', '_')
-        # with open('/prometheus/{}.json'.format(host_format), 'w') as f:
-        #     data = [{"labels": {"job": "prometheus"},
-        #              "targets": ["{}:{}".format(host, port)]}]
-        #     f.write(json.dumps(data))
 
         try:
             info = Info('peer_{}'.format(host_format), 'Peer')
@@ -109,4 +109,23 @@ class PeersCollector(object):
         :return:
         """
         data = await get_tracker_info(self.my_peer)
-        log.info('Validate node: {}'.format(data))
+        self.parent = from_list(data['parent'])
+        self.children = []
+        for child in data['children']:
+            self.children.append(from_list(child))
+        self.set_scraper()
+
+    def set_scraper(self):
+        """ Set a line with scraper information in line 15 (14th index) """
+        with open('/prometheus.yml', 'r') as file:
+            # read a list of lines into data
+            data = file.readlines()
+
+        child_str = []
+        for child in self.children:
+            child_str.append("'{}:{}'".format(child.host, child.port))
+
+        data[LINE_INDEX] = '  - targets: [{}]'.format(', '.join(child_str))
+
+        with open('/prometheus.yml', 'w') as file:
+            file.writelines(data)

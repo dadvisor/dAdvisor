@@ -9,9 +9,10 @@ scrape_configs:
   - targets: ['localhost:8800']
 
 - job_name: 'prometheus'
-  file_sd_configs:
-  - files:
-    - /prometheus/*.json
+  metrics_path: /prometheus/metrics
+  static_configs:
+  # Note line below must always be on line 15!!!!
+  - targets: []
 
 - job_name:       'dadvisor'
   metrics_path: /dadvisor/metrics
