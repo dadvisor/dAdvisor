@@ -47,7 +47,7 @@ class PeersCollector(object):
         """
         for p in await get_peer_list():
             host, port = p
-            internal, external = await get_ip(p)
+            internal, external = await get_ip(Peer(host, port))
             self.host_mapping[internal] = external
             await self.add_peer(host, port)
 
