@@ -36,7 +36,7 @@ def get_edges_from_peer(peer):
 
 
 async def get_ports(peer):
-    if PORTS_CACHE[peer] \
+    if peer in PORTS_CACHE and PORTS_CACHE[peer] \
             and PORTS_CACHE[peer]['value'] \
             and PORTS_CACHE[peer]['valid'] >= datetime.now():
         return PORTS_CACHE[peer]['value']
