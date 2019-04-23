@@ -36,17 +36,20 @@ def get_edges_from_peer(peer):
 
 
 async def get_ports(peer):
-    if PORTS_CACHE[peer] and PORTS_CACHE[peer]['valid'] >= datetime.now():
+    if PORTS_CACHE[peer] \
+            and PORTS_CACHE[peer]['value'] \
+            and PORTS_CACHE[peer]['valid'] >= datetime.now():
         return PORTS_CACHE[peer]['value']
 
     async with aiohttp.ClientSession() as session:
         try:
             async with session.get(get_name(peer) + '/ports') as resp:
+                value = await resp.json()
                 PORTS_CACHE[peer] = {
                     'valid': datetime.now() + timedelta(seconds=1),
-                    'value': await resp.json()
+                    'value': value
                 }
-                return PORTS_CACHE[peer]['value']
+                return value
         except Exception as e:
             log.error(e)
             return []
