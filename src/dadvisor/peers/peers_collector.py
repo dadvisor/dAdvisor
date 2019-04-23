@@ -126,7 +126,7 @@ class PeersCollector(object):
         for child in self.children:
             child_str.append("'{}:{}'".format(child.host, child.port))
 
-        data[LINE_INDEX] = '  - targets: [{}]'.format(', '.join(child_str))
+        data[LINE_INDEX] = '  - targets: [{}]\n'.format(', '.join(child_str))
         log.info(data)
 
         with open('/prometheus.yml', 'w') as file:
