@@ -15,7 +15,6 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "panels": [
     {
@@ -247,7 +246,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "count({__name__=~\"peer_.*\"})",
+          "expr": "count({__name__=~\"peer_.*\", exported_instance=\"\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -270,6 +269,8 @@
       "valueName": "avg"
     },
     {
+      "colorBackground": "white",
+      "colorValue": "white",
       "datasource": "Prometheus",
       "gridPos": {
         "h": 15,
