@@ -9,6 +9,7 @@ from dadvisor.log import log
 from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_ip, get_peer_list, register_peer, get_tracker_info
 
 SLEEP_TIME = 10
+FILENAME = '/prometheus-federation.json'
 
 
 class PeersCollector(object):
@@ -118,11 +119,20 @@ class PeersCollector(object):
 
     def set_scraper(self):
         """ Set a line with federation information """
-        with open('/prometheus-federation.json', 'w') as file:
-            child_list = []
-            for child in self.children:
-                child_list.append("{}:{}".format(child.host, child.port))
-            child_list = [', '.join(child_list)] if ', '.join(child_list) else []
+        try:
+            with open(FILENAME, 'r') as file:
+                old_data = file.read()
+        except FileNotFoundError:
+            old_data = ''
 
-            data = [{"labels": {"job": "promadvisor"}, "targets": child_list}]
-            file.write(json.dumps(data))
+        child_list = []
+        for child in self.children:
+            child_list.append("{}:{}".format(child.host, child.port))
+        child_list = [', '.join(child_list)] if ', '.join(child_list) else []
+
+        data = [{"labels": {"job": "promadvisor"}, "targets": child_list}]
+        new_data = json.dumps(data) + '\n'
+
+        if old_data != new_data:
+            with open(FILENAME, 'w') as file:
+                file.write(new_data)
