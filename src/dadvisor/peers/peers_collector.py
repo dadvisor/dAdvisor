@@ -47,6 +47,8 @@ class PeersCollector(object):
         """
         for p in await get_peer_list():
             host, port = p
+            internal, external = await get_ip(p)
+            self.host_mapping[internal] = external
             await self.add_peer(host, port)
 
     async def validate_peers(self):
