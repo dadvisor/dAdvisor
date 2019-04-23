@@ -65,3 +65,11 @@ async def register_peer(peer):
         async with session.get('{}/add/{}/{}:{}'.format(TRACKER, INFO_HASH, peer.host, peer.port)) as resp:
             if resp.status == 200:
                 return await resp.json()
+
+
+async def get_tracker_info(peer):
+    """ Get information about it's own node: parent and children """
+    async with aiohttp.ClientSession() as session:
+        async with session.get('{}/node_info/{}/{}:{}'.format(TRACKER, INFO_HASH, peer.host, peer.port)) as resp:
+            if resp.status == 200:
+                return await resp.json()

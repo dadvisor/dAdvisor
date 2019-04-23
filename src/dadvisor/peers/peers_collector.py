@@ -5,7 +5,7 @@ from prometheus_client import Info
 from dadvisor.config import INTERNAL_IP, IP, PROXY_PORT
 from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_ip, get_peer_list, register_peer
+from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_ip, get_peer_list, register_peer, get_tracker_info
 
 SLEEP_TIME = 10
 
@@ -108,3 +108,5 @@ class PeersCollector(object):
         For the children, let it scrape by prometheus
         :return:
         """
+        data = await get_tracker_info(self.my_peer)
+        log.info('Validate node: {}'.format(data))
