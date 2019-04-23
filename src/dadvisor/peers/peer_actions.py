@@ -35,7 +35,7 @@ async def get_ports(peer):
     async with aiohttp.ClientSession() as session:
         try:
             async with session.get(get_name(peer) + '/ports') as resp:
-                return resp.json()
+                return await resp.json()
         except Exception as e:
             log.error(e)
             return []
