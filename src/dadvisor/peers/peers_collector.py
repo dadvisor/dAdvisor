@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from prometheus_client import Info
@@ -8,6 +9,7 @@ from dadvisor.log import log
 from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_ip, get_peer_list, register_peer, get_tracker_info
 
 FILENAME = '/prometheus-federation.json'
+SLEEP_TIME = 10
 
 
 class PeersCollector(object):
@@ -29,6 +31,7 @@ class PeersCollector(object):
     async def run(self):
         await register_peer(self.my_peer)
         while self.running:
+            await asyncio.sleep(SLEEP_TIME)
             await self.validate_node()
             await self.validate_peers()
 
