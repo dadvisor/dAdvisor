@@ -17,7 +17,7 @@ class Analyser(object):
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
 
     async def analyse_dataflow(self, dataflow):
-        # log.info('Analysing: {}'.format(dataflow))
+        log.info('Analysing: {}'.format(dataflow))
         self.add_port(dataflow.src)
         self.add_port(dataflow.dst)
         self.resolve_local_address(dataflow.src)
