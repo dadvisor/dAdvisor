@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 from prometheus_client import Info
 
@@ -8,7 +9,6 @@ from dadvisor.log import log
 from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_ip, get_peer_list, register_peer, get_tracker_info
 
 SLEEP_TIME = 10
-LINE_INDEX = 14
 
 
 class PeersCollector(object):
@@ -117,17 +117,12 @@ class PeersCollector(object):
         self.set_scraper()
 
     def set_scraper(self):
-        """ Set a line with scraper information in line 15 (14th index) """
-        with open('/prometheus.yml', 'r') as file:
-            # read a list of lines into data
-            data = file.readlines()
+        """ Set a line with federation information """
+        with open('/prometheus-federation.json', 'w') as file:
+            child_str = []
+            for child in self.children:
+                child_str.append("'{}:{}'".format(child.host, child.port))
 
-        child_str = []
-        for child in self.children:
-            child_str.append("'{}:{}'".format(child.host, child.port))
-
-        data[LINE_INDEX] = '  - targets: [{}]\n'.format(', '.join(child_str))
-        log.info(data)
-
-        with open('/prometheus.yml', 'w') as file:
-            file.writelines(data)
+            data = [{"labels": {"job": "promadvisor"},
+                     "targets": ['{}'.format(', '.join(child_str))]}]
+            file.write(json.dumps(data))

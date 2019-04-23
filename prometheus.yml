@@ -8,11 +8,16 @@ scrape_configs:
   static_configs:
   - targets: ['localhost:8080']
 
-- job_name: 'prometheus'
-  metrics_path: /prometheus/metrics
-  static_configs:
-  # Note line below must always be on line 15!!!!
-  - targets: []
+- job_name: 'promadvisor'
+  metrics_path: '/prometheus/federate'
+
+  params:
+    'match[]':
+      - '{job=~".*advisor"}'  # match everything with *advisor
+
+  file_sd_configs:
+  - files:
+    - /prometheus-federation.json
 
 - job_name:       'dadvisor'
   metrics_path: /dadvisor/metrics
