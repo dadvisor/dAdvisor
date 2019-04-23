@@ -1,9 +1,13 @@
+from datetime import datetime, timedelta
+
 import aiohttp
 import requests
 
 from dadvisor.config import TRACKER, INFO_HASH, PREFIX
 from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
+
+PORTS_CACHE = {}
 
 
 def get_name(peer):
@@ -32,10 +36,17 @@ def get_edges_from_peer(peer):
 
 
 async def get_ports(peer):
+    if PORTS_CACHE[peer] and PORTS_CACHE[peer]['valid'] >= datetime.now():
+        return PORTS_CACHE[peer]['value']
+
     async with aiohttp.ClientSession() as session:
         try:
             async with session.get(get_name(peer) + '/ports') as resp:
-                return await resp.json()
+                PORTS_CACHE[peer] = {
+                    'valid': datetime.now() + timedelta(seconds=1),
+                    'value': await resp.json()
+                }
+                return PORTS_CACHE[peer]['value']
         except Exception as e:
             log.error(e)
             return []

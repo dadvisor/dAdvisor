@@ -68,8 +68,9 @@ def get_app(loop, peers_collector, analyser):
         return web.json_response(analyser.port_mapping)
 
     async def node_info(request):
-        return web.json_response({'parent': peers_collector.parent,
-                                  'children': peers_collector.children})
+        return web.json_response(text=json.dumps({'parent': peers_collector.parent,
+                                                  'children': peers_collector.children},
+                                                 cls=JSONCustomEncoder))
 
     app = web.Application(loop=loop, debug=True, logger=log)
     app.add_routes([web.get('{}/metrics'.format(PREFIX), metrics),
