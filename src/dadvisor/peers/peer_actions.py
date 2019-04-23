@@ -38,7 +38,7 @@ async def get_ports(peer):
                 return resp.json()
         except Exception as e:
             log.error(e)
-            return ''
+            return []
 
 
 def get_containers(peer):

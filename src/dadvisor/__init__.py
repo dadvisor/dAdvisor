@@ -24,7 +24,7 @@ def run_forever():
     inspector_thread.start()
 
     # Create tasks
-    app = get_app(loop, peers_collector)
+    app = get_app(loop, peers_collector, analyser)
     loop.create_task(run_app(app))
     loop.create_task(container_collector.run())
     loop.create_task(peers_collector.run())

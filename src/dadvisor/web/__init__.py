@@ -18,7 +18,7 @@ async def run_app(app):
     await site.start()
 
 
-def get_app(loop, peers_collector):
+def get_app(loop, peers_collector, analyser):
     async def metrics(request):
         resp = web.Response(body=generate_latest())
         resp.content_type = CONTENT_TYPE_LATEST
@@ -64,12 +64,16 @@ def get_app(loop, peers_collector):
         else:
             return web.HTTPFound('/grafana')
 
+    async def ports(request):
+        return web.json_response(analyser.port_mapping)
+
     app = web.Application(loop=loop, debug=True, logger=log)
     app.add_routes([web.get('{}/metrics'.format(PREFIX), metrics),
                     web.get('{}/peers'.format(PREFIX), peers),
                     web.get('{}/peers/add/'.format(PREFIX) + '{peer}', add_peer),
                     web.get('{}/hosts'.format(PREFIX), hosts),
                     web.get('{}/ip'.format(PREFIX), ip),
+                    web.get('{}/ports'.format(PREFIX), ports),
                     web.get('{}/dashboard'.format(PREFIX), dashboard)])
     # app.router.add_route('*', '/prometheus{path:.*?}', prometheus)
 
