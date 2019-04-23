@@ -67,6 +67,10 @@ def get_app(loop, peers_collector, analyser):
     async def ports(request):
         return web.json_response(analyser.port_mapping)
 
+    async def node_info(request):
+        return web.json_response({'parent': peers_collector.parent,
+                                  'children': peers_collector.children})
+
     app = web.Application(loop=loop, debug=True, logger=log)
     app.add_routes([web.get('{}/metrics'.format(PREFIX), metrics),
                     web.get('{}/peers'.format(PREFIX), peers),
@@ -74,7 +78,7 @@ def get_app(loop, peers_collector, analyser):
                     web.get('{}/hosts'.format(PREFIX), hosts),
                     web.get('{}/ip'.format(PREFIX), ip),
                     web.get('{}/ports'.format(PREFIX), ports),
-                    web.get('{}/dashboard'.format(PREFIX), dashboard)])
-    # app.router.add_route('*', '/prometheus{path:.*?}', prometheus)
+                    web.get('{}/dashboard'.format(PREFIX), dashboard),
+                    web.get('{}/node_info'.format(PREFIX), node_info)])
 
     return app
