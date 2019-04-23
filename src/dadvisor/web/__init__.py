@@ -7,6 +7,7 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from dadvisor.config import INTERNAL_IP, IP, INTERNAL_PORT, PREFIX
 from dadvisor.datatypes.encoder import JSONCustomEncoder
 from dadvisor.log import log
+from dadvisor.peers.peer_actions import get_name
 
 
 async def run_app(app):
@@ -57,12 +58,19 @@ def get_app(loop, peers_collector):
         await peers_collector.add_peer(host, port)
         return web.json_response({'message': 'ok'})
 
+    async def dashboard(request):
+        if peers_collector.parent:
+            return web.HTTPFound(get_name(peers_collector.parent) + '/dashboard')
+        else:
+            return web.HTTPFound('/grafana')
+
     app = web.Application(loop=loop, debug=True, logger=log)
     app.add_routes([web.get('{}/metrics'.format(PREFIX), metrics),
                     web.get('{}/peers'.format(PREFIX), peers),
                     web.get('{}/peers/add/'.format(PREFIX) + '{peer}', add_peer),
                     web.get('{}/hosts'.format(PREFIX), hosts),
-                    web.get('{}/ip'.format(PREFIX), ip)])
+                    web.get('{}/ip'.format(PREFIX), ip),
+                    web.get('{}/dashboard'.format(PREFIX), dashboard)])
     # app.router.add_route('*', '/prometheus{path:.*?}', prometheus)
 
     return app
