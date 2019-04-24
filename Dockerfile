@@ -15,7 +15,7 @@ RUN addgroup -S grafana
 RUN adduser -S -G grafana grafana
 RUN apk add --no-cache ca-certificates su-exec
 RUN mkdir /tmp/setup
-RUN wget -P /tmp/setup http://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.1.0.linux-amd64.tar.gz
+RUN wget -q -P /tmp/setup http://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-6.1.0.linux-amd64.tar.gz
 RUN tar -xzf /tmp/setup/grafana-6.1.0.linux-amd64.tar.gz -C /tmp/setup --strip-components=1
 RUN install -m 755 /tmp/setup/bin/grafana-server /usr/local/bin/
 RUN install -m 755 /tmp/setup/bin/grafana-cli /usr/local/bin/
