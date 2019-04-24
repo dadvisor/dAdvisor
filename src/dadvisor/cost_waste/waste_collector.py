@@ -12,17 +12,17 @@ class WasteCollector(object):
         self.peers_collector = peers_collector
         self.counter = Counter('computational_waste_dollar', 'Waste in dollars of this host', ['host'])
 
-    async def collect_waste(self, elapsed):
-        total = await self.collect_computational_waste(elapsed) + await self.collect_memory_waste(elapsed)
+    async def collect_waste(self, info, elapsed):
+        total = await self.collect_computational_waste(info, elapsed) + await self.collect_memory_waste(elapsed)
         self.counter.labels(self.peers_collector.my_peer.host).inc(total)
 
     @staticmethod
-    async def collect_computational_waste(elapsed_time):
+    async def collect_computational_waste(info, elapsed_time):
         data = await get_cpu_stat()
-        log.info(data)
-        num_cores = data['data']['result'][0]['value'][1]
-        log.info(num_cores)
-        return CPU_PRICE_SECOND * num_cores * elapsed_time
+        cores_used = float(data['data']['result'][0]['value'][1])
+        cores_unused = info['num_cores'] - cores_used
+        log.info('Cores unused: {}'.format(cores_unused))
+        return CPU_PRICE_SECOND * cores_unused * elapsed_time
 
     @staticmethod
     async def collect_memory_waste(elapsed_time):

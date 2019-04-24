@@ -28,11 +28,12 @@ class CostCollector(object):
             elapsed = (update_time - self.update_time).seconds
             self.update_time = update_time
 
-            await self.collect_cost(elapsed)
-            await self.waste_collector.collect_waste(elapsed)
+            info = await get_machine_info()
+            await self.collect_cost(info, elapsed)
+            await self.waste_collector.collect_waste(info, elapsed)
 
-    async def collect_cost(self, elapsed):
-        info = await get_machine_info()
+    async def collect_cost(self, info, elapsed):
+
         total = self.collect_computational_cost(info['num_cores'], elapsed) + self.collect_memory_cost(info, elapsed)
         self.counter.labels(self.peers_collector.my_peer.host).inc(total)
 
