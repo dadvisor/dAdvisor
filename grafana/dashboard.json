@@ -15,7 +15,6 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "panels": [
     {
@@ -333,6 +332,7 @@
         {
           "expr": "sum(computational_cost_dollar_total)",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
@@ -416,6 +416,7 @@
         {
           "expr": "sum(computational_waste_dollar_total)",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
