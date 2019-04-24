@@ -6,7 +6,7 @@ RUN python3 -m ensurepip --upgrade
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
 # Install prometheus
-RUN wget https://github.com/prometheus/prometheus/releases/download/v2.8.1/prometheus-2.8.1.linux-amd64.tar.gz -O prometheus | tar -xz
+RUN wget https://github.com/prometheus/prometheus/releases/download/v2.8.1/prometheus-2.8.1.linux-amd64.tar.gz -O prometheus.tar.gz | tar -xz
 
 # Install grafana
 RUN set -ex
