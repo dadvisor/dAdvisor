@@ -6,7 +6,8 @@ RUN python3 -m ensurepip --upgrade
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
 # Install prometheus
-RUN wget https://github.com/prometheus/prometheus/releases/download/v2.8.1/prometheus-2.8.1.linux-amd64.tar.gz -O prometheus.tar.gz | tar -xz
+RUN wget -qO- https://github.com/prometheus/prometheus/releases/download/v2.8.1/prometheus-2.8.1.linux-amd64.tar.gz | tar -xz
+RUN mv prometheus-2.8.1.linux-amd64 prometheus
 
 # Install grafana
 RUN set -ex
@@ -30,7 +31,6 @@ RUN rm -rf /tmp/setup
 # Grafana configuration
 VOLUME /grafana/data
 
-RUN grafana-cli plugins install simpod-json-datasource
 RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins/containers-panel
 
 COPY ./nginx.conf /etc/nginx/nginx.conf
@@ -42,7 +42,6 @@ COPY ./grafana/datasource.yaml /grafana/datasources/
 COPY . .
 RUN pip3 install -r src/requirements.txt
 
-EXPOSE 8800
-EXPOSE 3000
+EXPOSE 5000
 
 ENTRYPOINT ["sh", "start.sh"]
