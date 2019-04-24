@@ -17,7 +17,6 @@ class CostCollector(object):
         self.peers_collector = peers_collector
         self.waste_collector = WasteCollector()
         self.counter = Counter('computational_cost_dollar', 'Cost in dollar of providing this host', ['host'])
-        self.counter.labels()
         self.update_time = datetime.now()
 
     async def run(self):
