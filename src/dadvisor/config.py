@@ -27,3 +27,7 @@ GB_PRICE_SECOND = GB_PRICE_HOUR / 3600
 
 def hours_up():
     return (datetime.now() - STARTED).seconds / 3600.0
+
+
+def gb_to_bytes(gb):
+    return gb / 1024 / 1024 / 1024

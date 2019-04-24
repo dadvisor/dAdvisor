@@ -3,7 +3,7 @@ from datetime import datetime
 
 from prometheus_client import Counter
 
-from dadvisor.config import CPU_PRICE_SECOND, GB_PRICE_SECOND
+from dadvisor.config import CPU_PRICE_SECOND, GB_PRICE_SECOND, gb_to_bytes
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.cost_waste.waste_collector import WasteCollector
 
@@ -15,7 +15,7 @@ class CostCollector(object):
     def __init__(self, container_collector, peers_collector):
         self.container_collector = container_collector
         self.peers_collector = peers_collector
-        self.waste_collector = WasteCollector()
+        self.waste_collector = WasteCollector(peers_collector)
         self.counter = Counter('computational_cost_dollar', 'Cost in dollar of providing this host', ['host'])
         self.update_time = datetime.now()
 
@@ -46,5 +46,4 @@ class CostCollector(object):
         return GB_PRICE_SECOND * gb_to_bytes(memory) * elapsed_time
 
 
-def gb_to_bytes(gb):
-    return gb / 1024 / 1024 / 1024
+

@@ -1,14 +1,11 @@
-global:
-  scrape_interval: 15s
-
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
 scrape_configs:
 - job_name: 'cadvisor'
+  scrape_interval: 5s
   static_configs:
   - targets: ['localhost:8080']
 
 - job_name: 'promadvisor'
+  scrape_interval: 30s
   metrics_path: '/prometheus/federate'
 
   params:
@@ -20,6 +17,7 @@ scrape_configs:
     - /prometheus-federation.json
 
 - job_name:       'dadvisor'
+  scrape_interval: 10s
   metrics_path: /dadvisor/metrics
   static_configs:
     - targets: ['localhost:5000']
