@@ -21,7 +21,7 @@ def run_forever():
     analyser = Analyser(container_collector, peers_collector, loop)
     inspector_thread = InspectorThread(peers_collector, analyser)
 
-    cost_collector = CostCollector(container_collector)
+    cost_collector = CostCollector(container_collector, peers_collector)
 
     # Start threads
     inspector_thread.start()
