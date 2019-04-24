@@ -1,5 +1,6 @@
 import asyncio
 
+from dadvisor.cost_waste import CostCollector
 from dadvisor.log import log
 
 from dadvisor.analyser import Analyser
@@ -20,6 +21,8 @@ def run_forever():
     analyser = Analyser(container_collector, peers_collector, loop)
     inspector_thread = InspectorThread(peers_collector, analyser)
 
+    cost_collector = CostCollector(container_collector)
+
     # Start threads
     inspector_thread.start()
 
@@ -28,6 +31,7 @@ def run_forever():
     loop.create_task(run_app(app))
     loop.create_task(container_collector.run())
     loop.create_task(peers_collector.run())
+    loop.create_task(cost_collector.run())
 
     try:
         loop.run_forever()
