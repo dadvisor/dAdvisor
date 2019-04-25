@@ -1,6 +1,7 @@
 import aiohttp
 
 from dadvisor.config import PROMETHEUS_URL
+from dadvisor.log import log
 
 URL = '{}/api/v1/query?query=sum(rate(container_cpu_usage_seconds_total[15s]))'.format(PROMETHEUS_URL)
 
@@ -8,4 +9,8 @@ URL = '{}/api/v1/query?query=sum(rate(container_cpu_usage_seconds_total[15s]))'.
 async def get_cpu_stat():
     async with aiohttp.ClientSession() as session:
         async with session.get(URL) as resp:
-            return await resp.json()
+            try:
+                return await resp.json()
+            except Exception as e:
+                log.error(e)
+                log.info(resp)
