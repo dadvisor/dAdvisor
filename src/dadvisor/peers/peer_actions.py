@@ -8,6 +8,7 @@ from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
 
 PORTS_CACHE = {}
+CACHE_TIME = 5
 
 
 def get_name(peer):
@@ -46,7 +47,7 @@ async def get_ports(peer):
             async with session.get(get_name(peer) + '/ports') as resp:
                 value = await resp.json()
                 PORTS_CACHE[peer] = {
-                    'valid': datetime.now() + timedelta(seconds=1),
+                    'valid': datetime.now() + timedelta(seconds=CACHE_TIME),
                     'value': value
                 }
                 return value

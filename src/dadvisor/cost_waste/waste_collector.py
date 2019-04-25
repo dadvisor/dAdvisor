@@ -8,20 +8,21 @@ from dadvisor.containers.prometheus import get_cpu_stat
 
 class WasteCollector(object):
 
-    def __init__(self, peers_collector):
-        self.peers_collector = peers_collector
-        self.counter = Counter('computational_waste_dollar', 'Waste in dollars of this host', ['host'])
+    def __init__(self):
+        self.counter = Counter('computational_waste_dollar', 'Waste in dollars of this host')
 
     async def collect_waste(self, info, elapsed):
         total = await self.collect_computational_waste(info, elapsed) + await self.collect_memory_waste(elapsed)
-        self.counter.labels(self.peers_collector.my_peer.host).inc(total)
+        self.counter.inc(total)
 
     @staticmethod
     async def collect_computational_waste(info, elapsed_time):
         data = await get_cpu_stat()
         cores_used = float(data['data']['result'][0]['value'][1])
         cores_unused = info['num_cores'] - cores_used
-        log.info('Cores unused: {}'.format(cores_unused))
+        if cores_unused < 0:
+            log.warn('Number of cores: {}'.format(info['num_cores']))
+            log.warn('Cores unused: {}'.format(cores_unused))
         return CPU_PRICE_SECOND * cores_unused * elapsed_time
 
     @staticmethod

@@ -1,5 +1,3 @@
-werkzeug
 prometheus_client
-requests
 asyncio
 aiohttp
