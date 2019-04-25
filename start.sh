@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
 
-./prometheus/prometheus --web.external-url http://localhost:14102/prometheus/ &
+./prometheus/prometheus --web.listen-address=:14102 \
+--web.external-url http://localhost:14100/prometheus/ &
 
 if [[ "$(stat -c "%U:%G" /grafana/data)" != grafana:grafana ]]; then
 	chown grafana:grafana /grafana/data
