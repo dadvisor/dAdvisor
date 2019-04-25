@@ -14,7 +14,8 @@ PROMETHEUS_URL = 'http://localhost:{}/prometheus'.format(PROXY_PORT)
 async def get_ip():
     async with aiohttp.ClientSession() as session:
         async with session.get('https://api.ipify.org?format=json') as resp:
-            return (await resp.json())['ip']
+            data = await resp.json()
+            return data['ip']
 
 
 IP = await get_ip()
