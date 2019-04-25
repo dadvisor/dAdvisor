@@ -10,10 +10,10 @@ from datetime import datetime
 
 import aiohttp
 
-PROXY_PORT = int(os.environ.get('NGINX_PORT', 5000))
-INTERNAL_PORT = 8800
+PROXY_PORT = int(os.environ.get('NGINX_PORT', 14100))
+INTERNAL_PORT = 14101
 INTERNAL_IP = socket.gethostbyname(socket.gethostname())
-CADVISOR_URL = 'http://localhost:8080'
+CADVISOR_URL = 'http://localhost:14104'
 PROMETHEUS_URL = 'http://localhost:{}/prometheus'.format(PROXY_PORT)
 
 CACHE_TIME = 5
