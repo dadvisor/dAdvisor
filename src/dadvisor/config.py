@@ -31,7 +31,7 @@ IP = loop.run_until_complete(get_ip())
 
 INFO_HASH = os.environ.get('INFO_HASH', 'uniquetoken')
 
-TRACKER = 'http://35.204.250.252:8080'
+TRACKER = 'http://35.204.250.252:14100'
 PREFIX = '/dadvisor'
 
 STARTED = datetime.now()
