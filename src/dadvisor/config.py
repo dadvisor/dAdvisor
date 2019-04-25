@@ -1,3 +1,4 @@
+import asyncio
 import os
 import socket
 from datetime import datetime
@@ -17,8 +18,8 @@ async def get_ip():
             data = await resp.json()
             return data['ip']
 
-
-IP = await get_ip()
+loop = asyncio.get_event_loop()
+IP = loop.run_until_complete(get_ip())
 
 INFO_HASH = os.environ.get('INFO_HASH', 'uniquetoken')
 
