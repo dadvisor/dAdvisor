@@ -38,7 +38,7 @@ COPY ./grafana/defaults.ini /grafana/conf/
 COPY ./grafana/datasource.yaml /grafana/datasources/
 
 COPY . .
-RUN pip3 install --upgrade pip3
+RUN pip3 install --upgrade pip
 RUN pip3 install -r src/requirements.txt
 
 EXPOSE 5000
