@@ -28,7 +28,7 @@ In order to find out the traffic, you'll need the use the following command:
       --volume=/var/lib/docker/:/var/lib/docker:ro \
       --volume=/dev/disk/:/dev/disk:ro \
       --volume=/prometheus:/prometheus \
-      --volume=/grafana/data:/grafana:data \
+      --volume=/grafana/data:/grafana/data \
       --detach=true \
       --env INFO_HASH=abc1234567890 \
       dadvisor/dadvisor
