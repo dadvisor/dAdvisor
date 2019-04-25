@@ -28,9 +28,7 @@ RUN rm -rf /tmp/setup
 
 
 
-# Grafana configuration
-VOLUME /grafana/data
-
+# Configuration
 RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins/containers-panel
 
 COPY ./nginx.conf /etc/nginx/nginx.conf
@@ -40,6 +38,7 @@ COPY ./grafana/defaults.ini /grafana/conf/
 COPY ./grafana/datasource.yaml /grafana/datasources/
 
 COPY . .
+RUN pip3 install --upgrade pip3
 RUN pip3 install -r src/requirements.txt
 
 EXPOSE 5000

@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -ex
 
 ./prometheus/prometheus --web.listen-address=:14102 \
 --web.external-url http://localhost:14100/prometheus/ &

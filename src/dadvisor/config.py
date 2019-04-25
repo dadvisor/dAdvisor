@@ -6,9 +6,12 @@ In the future, set these values based on environment variables.
 import asyncio
 import os
 import socket
+import sys
 from datetime import datetime
 
 import aiohttp
+
+from dadvisor.log import log
 
 PROXY_PORT = int(os.environ.get('NGINX_PORT', 14100))
 INTERNAL_PORT = 14101
@@ -29,7 +32,12 @@ async def get_ip():
 loop = asyncio.get_event_loop()
 IP = loop.run_until_complete(get_ip())
 
-INFO_HASH = os.environ.get('INFO_HASH', 'uniquetoken')
+DEFAULT_INFO_HASH = 'abc1234567890'
+INFO_HASH = os.environ.get('INFO_HASH', DEFAULT_INFO_HASH)
+if INFO_HASH == DEFAULT_INFO_HASH:
+    log.error('Cannot use the default INFO_HASH. Run the program with the following command:')
+    log.error('docker run --env INFO_HASH=... dadvisor/dadvisor')
+    sys.exit(-1)
 
 TRACKER = 'http://35.204.250.252:14100'
 PREFIX = '/dadvisor'

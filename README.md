@@ -1,15 +1,20 @@
 # dAdvisor
-A Docker container to inspect inter-container traffic.
+A Docker container to inspect your existing Docker Container Distribution.
 
-Suppose you have a large project with many Docker containers, and you don't know which containers interact with each other. Then, this repository helps you to inspect the traffic between those.
-It even works across multiple virtual machines, but then you need to deploy this container on every host.
+Suppose you have a large project with many Docker containers, and you don't know which containers interact with each other. Then, this repository helps you to visualize the docker container distribution by monitoring the internet traffic that is being send between those containers. It also retrieves specific metrics about the price of hosting your machines, and the amount of money that you're wasting, because you are not using all resources.
 
-## A small demo
-An example docker-compose can be found in the root folder of this project.
-It will boot up a web-service (*web*) and a request-maker (*req*). Use the following command for starting those containers:
+If you use multiple machines, then it even works across multiple virtual machines, but then you need to deploy this container on every host.
 
-	docker run --name web -d dadvisor/web:latest
-	docker run --name req -d -e HOST=web:5000 --link web dadvisor/req:latest
+## Implementation
+dAdvisor is implemented in a P2P System. In order to find the peers, you have to specify a unique info hash, such that is doesn't mesh up deployments of other users.
+
+## Internally
+Internally, the following programs are installed that are all configured together and work out of the box:
+- [cAdvisor](https://github.com/google/cadvisor): for monitoring host metrics, and the containers that are deployed.
+- [Prometheus](https://github.com/prometheus/prometheus): for storing these information
+- dAdvisor: for finding out the internet traffic between hosts. Internally dAdvisor uses [TCPDUMP](https://www.tcpdump.org/manpages/tcpdump.1.html).
+- [Grafana](https://github.com/grafana/grafana): for displaying the obtained results.
+- [Nginx](https://www.nginx.com/): for allowing a reverse proxy between Prometheus, dAdvisor and Grafana.
 
 ## Find out the network traffic
 In order to find out the traffic, you'll need the use the following command:
@@ -17,14 +22,21 @@ In order to find out the traffic, you'll need the use the following command:
 	docker run \
 	  --name=dadvisor \
 	  --net=host \
-	  --volume=/var/run/docker.sock:/var/run/docker.sock \
-	  --volume=/var/lib/docker/:/var/lib/docker:ro \
-	  --detach=true \
-	  dadvisor/dadvisor:latest
+	  --volume=/:/rootfs:ro \
+      --volume=/var/run:/var/run:ro \
+      --volume=/sys:/sys:ro \
+      --volume=/var/lib/docker/:/var/lib/docker:ro \
+      --volume=/dev/disk/:/dev/disk:ro \
+      --volume=/prometheus:/prometheus \
+      --volume=/grafana/data:/grafana:data \
+      --detach=true \
+      --env INFO_HASH=abc1234567890 \
+      dadvisor/dadvisor
 
 ## Output
-When the containers are up and running, it generates a graph that can be visualized on: [localhost:8800/graph](localhost:8800/graph).
+When the containers are up and running, it generates the output on one of the Grafana dashboard.
+Visit the following link for redirecting to this dashboard: [localhost:14100/dadvisor/dashboard](localhost:14100/dadvisor/dashboard).
 
-A possible graph for two containers that produces requests and one web-service is shown below.
-
-![Graph](docs/graph.png)
+## Dashboard example
+![Figure 1](docs/fig1.png)
+![Figure 2](docs/fig1.png)
