@@ -1,6 +1,5 @@
 import json
 
-import aiohttp
 from aiohttp import web
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
@@ -19,7 +18,16 @@ async def run_app(app):
 
 
 def get_app(loop, peers_collector, analyser, container_collector):
+    """
+    Expose a number of endpoints, such that peers can communicate with each other.
+    Note that every endpoint starts with PREFIX. This has been done, because all
+    processes (dAdvisor, Prometheus, and Grafana) are reversed proxied to NGINX_PORT.
+    Internally, they all have a different port, but now only one port needs to be opened
+    on the host, to allow the communication.
+    """
+
     async def metrics(request):
+        """ Each endpoint might use a request argument, but most of them don't need it."""
         resp = web.Response(body=generate_latest())
         resp.content_type = CONTENT_TYPE_LATEST
         return resp
@@ -35,23 +43,6 @@ def get_app(loop, peers_collector, analyser, container_collector):
         return web.json_response(text=json.dumps(peers_collector.peers,
                                                  cls=JSONCustomEncoder))
 
-    async def prometheus(request):
-        path = request.match_info['path']
-        if not path.startswith('/'):
-            path = '/' + path
-        async with aiohttp.ClientSession() as session:
-            async with session.request(request.method, 'http://localhost:9090{}'.format(path)) as resp:
-                # resp.
-                response = web.StreamResponse(status=resp.status, reason='OK', headers=request.headers)
-                await response.prepare(request)
-                while True:
-                    chunk = await resp.content.read()
-                    if not chunk:
-                        break
-                    await response.write(chunk)
-                return response
-        # return web.Response(body=raw, status=resp.status, headers=resp.headers)
-
     async def add_peer(request):
         peer = request.match_info['peer']
         host, port = peer.split(':')
@@ -59,6 +50,12 @@ def get_app(loop, peers_collector, analyser, container_collector):
         return web.json_response({'message': 'ok'})
 
     async def dashboard(request):
+        """
+        All data is in the Prometheus of the root, so check if it has a parent. If it has,
+        visit this endpoint of the parent. If not, redirect to /grafana.
+        :param request:
+        :return:
+        """
         if peers_collector.parent:
             return web.HTTPFound(get_name(peers_collector.parent) + '/dashboard')
         else:
@@ -86,6 +83,4 @@ def get_app(loop, peers_collector, analyser, container_collector):
                     web.get('{}/dashboard'.format(PREFIX), dashboard),
                     web.get('{}/node_info'.format(PREFIX), node_info),
                     web.get('{}/containers'.format(PREFIX), containers)])
-
-
     return app

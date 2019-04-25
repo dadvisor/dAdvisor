@@ -1,3 +1,8 @@
+"""
+This file contains all configurable options.
+In the future, set these values based on environment variables.
+"""
+
 import asyncio
 import os
 import socket
@@ -11,12 +16,15 @@ INTERNAL_IP = socket.gethostbyname(socket.gethostname())
 CADVISOR_URL = 'http://localhost:8080'
 PROMETHEUS_URL = 'http://localhost:{}/prometheus'.format(PROXY_PORT)
 
+CACHE_TIME = 5
+
 
 async def get_ip():
     async with aiohttp.ClientSession() as session:
         async with session.get('https://api.ipify.org?format=json') as resp:
             data = await resp.json()
             return data['ip']
+
 
 loop = asyncio.get_event_loop()
 IP = loop.run_until_complete(get_ip())
@@ -41,4 +49,4 @@ def hours_up():
 
 
 def gb_to_bytes(gb):
-    return gb / 2**30
+    return gb / 2 ** 30

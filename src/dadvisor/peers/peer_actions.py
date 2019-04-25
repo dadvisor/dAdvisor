@@ -2,12 +2,11 @@ from datetime import datetime, timedelta
 
 import aiohttp
 
-from dadvisor.config import TRACKER, INFO_HASH, PREFIX
+from dadvisor.config import TRACKER, INFO_HASH, PREFIX, CACHE_TIME
 from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
 
 PORTS_CACHE = {}
-CACHE_TIME = 5
 
 
 def get_name(peer):
@@ -34,7 +33,7 @@ async def expose_peer(my_peer, other_peer):
 async def get_ports(peer):
     if peer in PORTS_CACHE and PORTS_CACHE[peer] \
             and PORTS_CACHE[peer]['value'] \
-            and PORTS_CACHE[peer]['valid'] >= datetime.now():
+            and PORTS_CACHE[peer]['valid'] > datetime.now():
         return PORTS_CACHE[peer]['value']
 
     async with aiohttp.ClientSession() as session:

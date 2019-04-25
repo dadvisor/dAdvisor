@@ -1,4 +1,9 @@
 class ContainerMapping(object):
+    """
+    Shorthand object, used because all properties are exposed as a
+    Python dict in JSONCustomEncoder.
+    """
+
     def __init__(self, host, container_ip, image, container_id):
         self.host = host
         self.container_ip = container_ip

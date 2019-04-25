@@ -1,5 +1,4 @@
 import subprocess
-import sys
 from threading import Thread
 
 from dadvisor.config import PROXY_PORT, INTERNAL_PORT
@@ -14,7 +13,6 @@ class InspectorThread(Thread):
 
     def __init__(self, peers_collector, analyser):
         Thread.__init__(self, name='InspectorThread')
-        self.data = None
         self.peers_collector = peers_collector
         self.analyser = analyser
 
@@ -40,8 +38,7 @@ class InspectorThread(Thread):
         try:
             subprocess.Popen(['tcpdump', '-D'], stdout=subprocess.PIPE)
         except ProcessLookupError:
-            sys.stderr.write('tcpdump is not installed. Please install it before running this code.\n')
-            sys.stderr.flush()
+            log.error('tcpdump is not installed. Please install it before running this code.\n')
             exit(-1)
 
     def is_p2p_communication(self, data_flow):

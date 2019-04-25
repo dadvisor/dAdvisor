@@ -23,6 +23,7 @@ class WasteCollector(object):
         if cores_unused < 0:
             log.warn('Number of cores: {}'.format(info['num_cores']))
             log.warn('Cores unused: {}'.format(cores_unused))
+            cores_unused = abs(cores_unused)
         return CPU_PRICE_SECOND * cores_unused * elapsed_time
 
     @staticmethod

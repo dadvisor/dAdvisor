@@ -13,6 +13,10 @@ SLEEP_TIME = 10
 
 
 class PeersCollector(object):
+    """
+    Collect information about other peers. The dAdvisor needs to be fully connected, as it needs to communicate with
+    other peers if it detects a dataflow between its own peer and a remote peer.
+    """
 
     def __init__(self):
         self.running = True
@@ -119,7 +123,8 @@ class PeersCollector(object):
         self.set_scraper()
 
     def set_scraper(self):
-        """ Set a line with federation information """
+        """ Set a line with federation information. Prometheus is configured in
+        such a way that it reads this file. """
         try:
             with open(FILENAME, 'r') as file:
                 old_data = file.read()

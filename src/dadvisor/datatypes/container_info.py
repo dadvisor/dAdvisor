@@ -5,6 +5,7 @@ import time
 from prometheus_client import Info
 
 from dadvisor.config import IP
+from dadvisor.datatypes.container_mapping import ContainerMapping
 
 
 class ContainerInfo(object):
@@ -77,5 +78,4 @@ class ContainerInfo(object):
         }
 
     def to_container_mapping(self, host):
-        from ..datatypes.container_mapping import ContainerMapping
         return ContainerMapping(host, self.ip, self.image, self.hash)

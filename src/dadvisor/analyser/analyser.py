@@ -1,8 +1,9 @@
+import asyncio
+
 from prometheus_client import Counter
 
+from dadvisor.config import IP, CACHE_TIME
 from dadvisor.log import log
-from dadvisor.config import IP
-from dadvisor.datatypes.address import Address
 from dadvisor.peers.peer_actions import get_ports
 
 
@@ -17,32 +18,43 @@ class Analyser(object):
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
 
     async def analyse_dataflow(self, dataflow):
+        """
+        In order to reduce the amount of http requests that is made to other peers,
+        this function starts to sleep CACHE_TIME seconds. By doing this in an asynchronous
+        manner, there is almost no overhead for the program itself.
+        The flow for analysing a dataflow is the following:
+            1. Add the ports from the source and destination to its own port mapping.
+               Note that this is only done if the address is local.
+            2. In case an other peers wants to analyse the port mapping, then this new
+               port mapping is already returned. (Therefore, it is performed before sleeping.)
+            3. The local host address is mapped from internal IP to external IP. Also, in case
+               of a port mapping, the port is mapped from public to private (external to internal).
+            4. In case the address is from a remote address, retrieve the container from the other peer.
+            5. Increment the label from the local/remote source to the local/remote destination.
+            6. The data is exposed as a prometheus_client-counter, such that the prometheus server scrapes
+               this and stores this in its database.
+        :param dataflow: the dataflow-object to be analysed
+        """
 
         self.add_port(dataflow.src)
         self.add_port(dataflow.dst)
+
         self.resolve_local_address(dataflow.src)
         self.resolve_local_address(dataflow.dst)
-        log.info('Analysing: {}'.format(dataflow))
 
+        await asyncio.sleep(CACHE_TIME)
         await self.resolve_remote_address(dataflow.dst)
 
         src_id = self.address_id(dataflow.src)
         dst_id = self.address_id(dataflow.dst)
 
-        if not src_id or not dst_id:
-            return
-
-        log.info('Found dataflow: {}'.format(dataflow))
-        self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
+        if src_id and dst_id:
+            log.info('Found dataflow: {}'.format(dataflow))
+            self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
 
     def add_port(self, address):
         if address.is_local():
             self.port_mapping[address.port] = address.container
-
-    def resolve_port(self, port):
-        if port in self.port_mapping:
-            return Address(IP, self.port_mapping[port], port)
-        return None
 
     def resolve_local_address(self, address):
         if address.host in self.peers_collector.host_mapping:
@@ -78,6 +90,12 @@ class Analyser(object):
 
 
 def id_map(container):
+    """
+    Prometheus allows only labels that start with an alphabetic character ([a-z] or [A-Z]).
+    Therefore, prefix the label with 'id_'
+    :param container: either a containerInfo object, or a dict, or a string.
+    :return:
+    """
     try:
         c_id = container.id
     except AttributeError:

@@ -1,3 +1,7 @@
+"""
+Declare some logging configuration, such that it prints pretty
+"""
+
 import logging
 
 log = logging.getLogger()
