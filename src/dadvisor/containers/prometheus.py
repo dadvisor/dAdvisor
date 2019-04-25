@@ -13,4 +13,4 @@ async def get_cpu_stat():
                 return await resp.json()
             except Exception as e:
                 log.error(e)
-                log.info(resp)
+                return resp
