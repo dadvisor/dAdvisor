@@ -37,6 +37,6 @@ class WasteCollector(object):
         try:
             cores_used = float(data['data']['result'][0]['value'][1])
             return info['num_cores'] - cores_used
-        except IndexError:
+        except (IndexError, TypeError):
             log.warn('Cannot retrieve cores_used: {}'.format(data))
             return 0
