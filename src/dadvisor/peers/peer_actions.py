@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import aiohttp
-import requests
 
 from dadvisor.config import TRACKER, INFO_HASH, PREFIX
 from dadvisor.datatypes.peer import Peer
@@ -30,10 +29,6 @@ async def expose_peer(my_peer, other_peer):
         except Exception as e:
             log.error(e)
             return []
-
-
-def get_edges_from_peer(peer):
-    return requests.get(get_name(peer) + '/edges').json()
 
 
 async def get_ports(peer):
