@@ -51,14 +51,6 @@ if INFO_HASH == DEFAULT_INFO_HASH:
 log.info('INFO_HASH: {}'.format(INFO_HASH))
 PREFIX = '/dadvisor'
 
-# PRICE CONFIGURATION
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CPU_PRICE_HOUR = 0.021925  # Currency is in USD
-GB_PRICE_HOUR = 0.002938
-
-CPU_PRICE_SECOND = CPU_PRICE_HOUR / 3600
-GB_PRICE_SECOND = GB_PRICE_HOUR / 3600
-
 # DEFAULT FUNCTIONS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 STARTED = datetime.now()
@@ -66,7 +58,3 @@ STARTED = datetime.now()
 
 def hours_up():
     return (datetime.now() - STARTED).seconds / 3600.0
-
-
-def gb_to_bytes(gb):
-    return gb / 2 ** 30

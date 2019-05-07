@@ -1,14 +1,10 @@
 import asyncio
-from datetime import datetime
 
-from prometheus_client import Counter
+from prometheus_client import Gauge
 
-from dadvisor.log import log
-from dadvisor.config import CPU_PRICE_SECOND, GB_PRICE_SECOND, gb_to_bytes
-from dadvisor.containers.cadvisor import get_machine_info
-from dadvisor.cost_waste.waste_collector import WasteCollector
+from dadvisor.containers.prometheus import get_container_utilization
 
-SLEEP_TIME = 15
+SLEEP_TIME = 5
 
 
 class CostCollector(object):
@@ -21,39 +17,16 @@ class CostCollector(object):
 
         This also keeps track of the amount of elapsed seconds, which is used in the computation.
         """
-        self.waste_collector = WasteCollector()
-        self.counter = Counter('computational_cost_dollar', 'Cost in dollar of providing this host')
-        self.update_time = datetime.now()
+        self.gauge = Gauge('container_utilization', 'Utilization (in percentage) of a certain container', ['id'])
 
     async def run(self):
         while True:
             await asyncio.sleep(SLEEP_TIME)
 
-            # compute elapsed time (in seconds)
-            update_time = datetime.now()
-            elapsed = (update_time - self.update_time).seconds
-            self.update_time = update_time
+            info = await get_container_utilization()
+            await self.store_utilization(info)
 
-            info = await get_machine_info()
-            await self.collect_cost(info, elapsed)
-            await self.waste_collector.collect_waste(info, elapsed)
-
-    async def collect_cost(self, info, elapsed):
-
-        total = self.collect_computational_cost(info['num_cores'], elapsed) + self.collect_memory_cost(info, elapsed)
-        if total < 0:
-            log.warn('Collected cost cannot be negative: {}'.format(total))
-            total = abs(total)
-        self.counter.inc(total)
-
-    @staticmethod
-    def collect_computational_cost(num_cores, elapsed_time):
-        return CPU_PRICE_SECOND * num_cores * elapsed_time
-
-    @staticmethod
-    def collect_memory_cost(info, elapsed_time):
-        memory = sum([fs['capacity'] for fs in info['filesystems'] if fs['device'].startswith('/dev/')])
-        return GB_PRICE_SECOND * gb_to_bytes(memory) * elapsed_time
-
-
-
+    async def store_utilization(self, info):
+        for container in info['data']['result']:
+            name = container['metric']['id'][len('/docker/'):]
+            self.gauge.labels(name).set(float(container['value'][1]))
