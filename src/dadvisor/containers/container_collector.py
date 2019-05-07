@@ -81,4 +81,4 @@ class ContainerCollector(object):
         info = await get_machine_info()
         num_cores = info['num_cores']
         memory = sum([fs['capacity'] for fs in info['filesystems'] if fs['device'].startswith('/dev/')])
-        self.default_host_price.info({'num_cores': num_cores, 'memory': memory})
+        self.default_host_price.info({'num_cores': str(num_cores), 'memory': str(memory)})
