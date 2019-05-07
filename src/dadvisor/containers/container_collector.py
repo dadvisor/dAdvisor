@@ -2,7 +2,10 @@ import asyncio
 import json
 import subprocess
 
+from prometheus_client import Info
+
 from dadvisor.config import IP
+from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.container_info import ContainerInfo
 from dadvisor.datatypes.container_mapping import ContainerMapping
 from dadvisor.peers.peer_actions import get_containers
@@ -18,8 +21,10 @@ class ContainerCollector(object):
         self.own_containers = []  # list of ContainerInfo objects
         self.remote_containers = []  # list of ContainerMapping objects
         self.analyser_thread = None
+        self.default_host_price = Info('default_host_price', 'Default host price in dollars')
 
     async def run(self):
+        await self.collect_host_price()
         while self.running:
             await asyncio.sleep(SLEEP_TIME)
             await self.collect_own_containers()
@@ -71,3 +76,9 @@ class ContainerCollector(object):
         """
         skip = '/dadvisor'
         return [info for info in self.own_containers if skip not in info.names]
+
+    async def collect_host_price(self):
+        info = await get_machine_info()
+        num_cores = info['num_cores']
+        memory = sum([fs['capacity'] for fs in info['filesystems'] if fs['device'].startswith('/dev/')])
+        self.default_host_price.info({'num_cores': num_cores, 'memory': memory})

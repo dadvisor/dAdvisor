@@ -95,7 +95,10 @@ class PeersCollector(object):
 
         try:
             info = Info('peer_{}'.format(host_format), 'Peer')
-            info.info({'host': IP, 'port': str(port)})
+            info.info({
+                'host': IP,
+                'port': str(port)
+            })
         except ValueError:
             pass
 
