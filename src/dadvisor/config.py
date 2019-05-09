@@ -51,6 +51,16 @@ if INFO_HASH == DEFAULT_INFO_HASH:
 log.info('INFO_HASH: {}'.format(INFO_HASH))
 PREFIX = '/dadvisor'
 
+# PRICE CONFIGURATION
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+CPU_PRICE_HOUR = 0.021925  # Currency is in USD
+GB_PRICE_HOUR = 0.002938
+
+
+def get_price_per_hour(num_cpu, num_gb):
+    return num_cpu * CPU_PRICE_HOUR + num_gb * GB_PRICE_HOUR
+
+
 # DEFAULT FUNCTIONS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 STARTED = datetime.now()
