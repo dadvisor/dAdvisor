@@ -1,8 +1,7 @@
 import asyncio
 
-from dadvisor.analyser import Analyser
+from dadvisor.analyzer import Analyzer
 from dadvisor.containers import ContainerCollector
-from dadvisor.cost_waste import CostCollector
 from dadvisor.inspector import InspectorThread
 from dadvisor.log import log
 from dadvisor.peers import PeersCollector
@@ -16,10 +15,9 @@ def run_forever():
     # Create objects and threads
     peers_collector = PeersCollector()
     container_collector = ContainerCollector(peers_collector)
-    analyser = Analyser(container_collector, peers_collector, loop)
-    inspector_thread = InspectorThread(peers_collector, analyser)
-    cost_collector = CostCollector()
-    app = get_app(loop, peers_collector, analyser, container_collector)
+    analyzer = Analyzer(container_collector, peers_collector, loop)
+    inspector_thread = InspectorThread(peers_collector, analyzer)
+    app = get_app(loop, peers_collector, analyzer, container_collector)
 
     # Start threads
     inspector_thread.start()
@@ -28,7 +26,6 @@ def run_forever():
     loop.create_task(run_app(app))
     loop.create_task(container_collector.run())
     loop.create_task(peers_collector.run())
-    loop.create_task(cost_collector.run())
 
     try:
         log.info('Started and running')

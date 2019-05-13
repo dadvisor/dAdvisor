@@ -236,7 +236,7 @@
           "refId": "B"
         },
         {
-          "expr": "avg_over_time(container_utilization[1h])",
+          "expr": "avg_over_time(rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[15s])[1h:1h])",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,

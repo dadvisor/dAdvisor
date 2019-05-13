@@ -7,7 +7,7 @@ from dadvisor.log import log
 from dadvisor.peers.peer_actions import get_ports
 
 
-class Analyser(object):
+class Analyzer(object):
 
     def __init__(self, container_collector, peers_collector, loop):
         container_collector.analyser_thread = self
