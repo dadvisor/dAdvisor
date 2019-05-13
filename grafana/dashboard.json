@@ -255,7 +255,7 @@
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
-          "legendFormat": "containter_total_util",
+          "legendFormat": "container_total_util",
           "refId": "E"
         }
       ],
