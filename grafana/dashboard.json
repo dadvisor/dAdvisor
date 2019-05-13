@@ -326,6 +326,13 @@
           "intervalFactor": 1,
           "legendFormat": "container_utilization",
           "refId": "C"
+        },
+        {
+          "expr": "default_host_price_total",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "D"
         }
       ],
       "timeFrom": null,
