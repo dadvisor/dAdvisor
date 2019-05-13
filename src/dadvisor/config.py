@@ -66,5 +66,5 @@ def get_price_per_hour(num_cpu, num_gb):
 STARTED = datetime.now()
 
 
-def hours_up():
-    return (datetime.now() - STARTED).seconds / 3600.0
+def seconds_up():
+    return (datetime.now() - STARTED).seconds
