@@ -22,7 +22,7 @@ class ContainerCollector(object):
         self.remote_containers = []  # list of ContainerMapping objects
         self.analyser_thread = None
         self.default_host_price = Counter('default_host_price', 'Default host price in dollars',
-                                          ['num_cores', 'memory'])
+                                          ['host', 'num_cores', 'memory'])
 
     async def run(self):
         await self.collect_host_price()
@@ -83,4 +83,4 @@ class ContainerCollector(object):
         num_cores = info['num_cores']
         memory = sum([fs['capacity'] for fs in info['filesystems'] if fs['device'].startswith('/dev/')])
         price = get_price_per_hour(num_cores, memory / 2 ** 30)  # covert bytes into Giga bytes
-        self.default_host_price.labels(num_cores=str(num_cores), memory=str(memory)).inc(price)
+        self.default_host_price.labels(host=IP, num_cores=str(num_cores), memory=str(memory)).inc(price)
