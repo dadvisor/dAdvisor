@@ -22,7 +22,6 @@ class CostCollector(object):
     async def run(self):
         while True:
             await asyncio.sleep(SLEEP_TIME)
-
             info = await get_container_utilization()
             await self.store_utilization(info)
 
