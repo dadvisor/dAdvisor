@@ -33,11 +33,22 @@ class PeersCollector(object):
         self.peers.append(self.my_peer)
 
     async def run(self):
-        await register_peer(self.my_peer)
+        succeeded = False
+        while not succeeded:
+            try:
+                await register_peer(self.my_peer)
+                succeeded = True
+            except Exception as e:
+                log.error(e)
+                await asyncio.sleep(SLEEP_TIME)
+
         while self.running:
-            await asyncio.sleep(SLEEP_TIME)
-            await self.validate_node()
-            await self.validate_peers()
+            try:
+                await asyncio.sleep(SLEEP_TIME)
+                await self.validate_node()
+                await self.validate_peers()
+            except Exception as e:
+                log.error(e)
 
     @property
     def other_peers(self):

@@ -4,6 +4,7 @@ import subprocess
 
 from prometheus_client import Counter
 
+from dadvisor.log import log
 from dadvisor.config import IP, get_price_per_hour
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.container_info import ContainerInfo
@@ -25,12 +26,23 @@ class ContainerCollector(object):
                                           ['host', 'num_cores', 'memory'])
 
     async def run(self):
-        await self.collect_host_price()
+        succeeded = False
+        while not succeeded:
+            try:
+                await self.collect_host_price()
+                succeeded = True
+            except Exception as e:
+                log.error(e)
+                await asyncio.sleep(SLEEP_TIME)
+
         while self.running:
-            await asyncio.sleep(SLEEP_TIME)
-            await self.collect_own_containers()
-            await self.validate_own_containers()
-            await self.collect_remote_containers()
+            try:
+                await asyncio.sleep(SLEEP_TIME)
+                await self.collect_own_containers()
+                await self.validate_own_containers()
+                await self.collect_remote_containers()
+            except Exception as e:
+                log.error(e)
 
     async def collect_own_containers(self):
         cmd = 'curl -s --unix-socket /var/run/docker.sock http://localhost/containers/json'

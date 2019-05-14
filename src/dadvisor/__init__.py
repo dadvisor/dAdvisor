@@ -15,17 +15,17 @@ def run_forever():
     # Create objects and threads
     peers_collector = PeersCollector()
     container_collector = ContainerCollector(peers_collector)
-    analyzer = Analyzer(container_collector, peers_collector, loop)
-    inspector_thread = InspectorThread(peers_collector, analyzer)
-    app = get_app(loop, peers_collector, analyzer, container_collector)
+    traffic_analyzer = Analyzer(container_collector, peers_collector, loop)
+    inspector_thread = InspectorThread(peers_collector, traffic_analyzer)
+    app = get_app(loop, peers_collector, traffic_analyzer, container_collector)
 
     # Start threads
     inspector_thread.start()
 
     # Create tasks
     loop.create_task(run_app(app))
-    loop.create_task(container_collector.run())
     loop.create_task(peers_collector.run())
+    loop.create_task(container_collector.run())
 
     try:
         log.info('Started and running')
