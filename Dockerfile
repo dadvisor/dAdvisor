@@ -1,8 +1,9 @@
 FROM google/cadvisor:latest
 
 # Install inspector
-RUN apk add --update tcpdump curl git python3 nginx gfortran gcc g++ python-dev python-devel
+RUN apk add --update tcpdump curl git python3 nginx gfortran g++
 RUN python3 -m ensurepip --upgrade
+RUN pip install numpy
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
 # Install prometheus
