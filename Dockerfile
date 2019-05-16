@@ -1,7 +1,7 @@
 FROM google/cadvisor:latest
 
 # Install inspector
-RUN apk add --update tcpdump curl git python3 nginx gfortran g++ build-base python-dev
+RUN apk add --update tcpdump curl git python3 nginx gfortran g++ build-base python-dev freetype-dev libpng-dev openblas-dev
 RUN python3 -m ensurepip --upgrade
 RUN pip3 install --upgrade pip
 RUN pip install numpy
