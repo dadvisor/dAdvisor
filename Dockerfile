@@ -1,7 +1,7 @@
 FROM google/cadvisor:latest
 
 # Install inspector
-RUN apk add --update tcpdump curl git python3 nginx gfortran gcc g++
+RUN apk add --update tcpdump curl git python3 nginx gfortran gcc g++ python-dev
 RUN python3 -m ensurepip --upgrade
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
