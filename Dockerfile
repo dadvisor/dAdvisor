@@ -3,6 +3,7 @@ FROM google/cadvisor:latest
 # Install inspector
 RUN apk add --update tcpdump curl git python3 nginx gfortran g++
 RUN python3 -m ensurepip --upgrade
+RUN pip3 install --upgrade pip
 RUN pip install numpy
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
@@ -39,7 +40,6 @@ COPY ./grafana/defaults.ini /grafana/conf/
 COPY ./grafana/datasource.yaml /grafana/datasources/
 
 COPY . .
-RUN pip3 install --upgrade pip
 RUN pip3 install -r src/requirements.txt
 
 EXPOSE 5000
