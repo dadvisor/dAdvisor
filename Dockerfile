@@ -1,7 +1,11 @@
 FROM google/cadvisor:latest
 
 # Install inspector
-RUN apk add --update tcpdump curl git python3 nginx gfortran g++ build-base python-dev freetype-dev libpng-dev openblas-dev
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" > /etc/apk/repositories
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories
+RUN apk --no-cache --update-cache add gcc gfortran python3-dev py-pip build-base wget freetype-dev libpng-dev openblas-dev
+RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
+RUN apk add --update tcpdump curl git python3 nginx
 RUN python3 -m ensurepip --upgrade
 RUN pip3 install --upgrade pip
 RUN pip install numpy
