@@ -4,7 +4,7 @@ FROM google/cadvisor:latest
 RUN apk add --update tcpdump curl git python3 nginx gfortran g++
 RUN python3 -m ensurepip --upgrade
 RUN pip3 install --upgrade pip
-RUN pip install numpy
+RUN pip install numpy==1.14.3
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
 # Install prometheus
