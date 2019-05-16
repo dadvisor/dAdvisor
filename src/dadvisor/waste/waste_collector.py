@@ -23,6 +23,7 @@ class WasteCollector(object):
         while True:
             try:
                 await asyncio.sleep(SLEEP_TIME)
+                log.info('Computing waste')
                 await self.compute_waste()
             except Exception as e:
                 log.error(e)
