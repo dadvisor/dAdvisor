@@ -254,7 +254,7 @@
           "refId": "D"
         },
         {
-          "expr": "sum_over_time(avg_over_time(rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[1m])[1y:1h]) [1y:1h])",
+          "expr": "sum_over_time(avg_over_time(rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[1m])[1h:1h]) [1h:1h])",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -262,12 +262,19 @@
           "refId": "E"
         },
         {
-          "expr": "sum_over_time((( 1 - avg_over_time(rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[1m])[1y:1h]) / scalar(sum(avg_over_time(rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[1m])[1y:1h])\n)) ) * (1 - scalar(sum(avg_over_time(rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[1m])[1y:1h]))) ))[1y:1h])",
+          "expr": "waste_container",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
-          "legendFormat": "waste_total_util",
           "refId": "F"
+        },
+        {
+          "expr": "sum_over_time(waste_container[1h:1h])",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "total_waste",
+          "refId": "G"
         }
       ],
       "timeFrom": null,
