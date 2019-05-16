@@ -23,7 +23,6 @@ class WasteCollector(object):
         while True:
             try:
                 await asyncio.sleep(SLEEP_TIME)
-                log.info('Computing waste')
                 await self.compute_waste()
             except Exception as e:
                 log.error(e)
@@ -32,6 +31,7 @@ class WasteCollector(object):
         info = await get_container_utilization()
         util_list = [float(container['value'][1]) for container in info['data']['result']]
         waste_list = self.get_waste(util_list)
+        log.info('Computing waste: {}'.format(util_list))
         for i, container in enumerate(info['data']['result']):
             name = container['metric']['id'][len('/docker/'):]
             self.waste_container.labels(name).set(waste_list[i])
