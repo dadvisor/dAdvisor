@@ -15,14 +15,17 @@ from dadvisor.log import log
 
 # INTERNAL PORTS AND ADDRESSES
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-PROXY_PORT = int(os.environ.get('NGINX_PORT', 14100))
+PROXY_PORT = int(os.environ.get('DADVISOR_PORT', 14100))
 INTERNAL_PORT = 14101
 
 CADVISOR_URL = 'http://localhost:14104'
 PROMETHEUS_URL = 'http://localhost:{}/prometheus'.format(PROXY_PORT)
-TRACKER = 'http://35.204.250.252:14100'
+TRACKER = os.environ.get('TRACKER', 'http://35.204.250.252:14100')
 
 CACHE_TIME = 5
+
+FILTER_PORTS = os.environ.get('FILTER_PORTS', '22,{},{}'.format(PROXY_PORT, INTERNAL_PORT)).split(',')
+log.info('Filtering internet traffic ports: {}'.format(FILTER_PORTS))
 
 
 # IP ADDRESSES
@@ -50,15 +53,6 @@ if INFO_HASH == DEFAULT_INFO_HASH:
 
 log.info('INFO_HASH: {}'.format(INFO_HASH))
 PREFIX = '/dadvisor'
-
-# PRICE CONFIGURATION
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CPU_PRICE_HOUR = 0.021925  # Currency is in USD
-GB_PRICE_HOUR = 0.002938
-
-
-def get_price_per_hour(num_cpu, num_gb):
-    return num_cpu * CPU_PRICE_HOUR + num_gb * GB_PRICE_HOUR
 
 
 # DEFAULT FUNCTIONS

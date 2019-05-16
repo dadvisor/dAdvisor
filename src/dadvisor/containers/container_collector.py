@@ -2,13 +2,13 @@ import asyncio
 import json
 import subprocess
 
-from prometheus_client import Counter
+from prometheus_client import Info
 
-from dadvisor.log import log
-from dadvisor.config import IP, get_price_per_hour
+from dadvisor.config import IP
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.container_info import ContainerInfo
 from dadvisor.datatypes.container_mapping import ContainerMapping
+from dadvisor.log import log
 from dadvisor.peers.peer_actions import get_containers
 
 SLEEP_TIME = 5
@@ -22,8 +22,7 @@ class ContainerCollector(object):
         self.own_containers = []  # list of ContainerInfo objects
         self.remote_containers = []  # list of ContainerMapping objects
         self.analyser_thread = None
-        self.default_host_price = Counter('default_host_price', 'Default host price in dollars',
-                                          ['host', 'num_cores', 'memory'])
+        self.default_host_price = Info('default_host_price', 'Default host price in dollars')
 
     async def run(self):
         succeeded = False
@@ -94,5 +93,7 @@ class ContainerCollector(object):
         info = await get_machine_info()
         num_cores = info['num_cores']
         memory = sum([fs['capacity'] for fs in info['filesystems'] if fs['device'].startswith('/dev/')])
-        price = get_price_per_hour(num_cores, memory / 2 ** 30)  # covert bytes into Giga bytes
-        self.default_host_price.labels(host=IP, num_cores=str(num_cores), memory=str(memory)).inc(price)
+        self.default_host_price.info({
+            'host': IP,
+            'num_cores': str(num_cores),
+            'memory': str(memory)})

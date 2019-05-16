@@ -1,7 +1,7 @@
 import subprocess
 from threading import Thread
 
-from dadvisor.config import PROXY_PORT, INTERNAL_PORT
+from dadvisor.config import FILTER_PORTS
 from dadvisor.inspector.parser import parse_row
 from dadvisor.log import log
 
@@ -18,11 +18,12 @@ class InspectorThread(Thread):
 
     def run(self):
         self.check_installation()
-        p = subprocess.Popen(
-            ('tcpdump', '-i', 'any', '-n', '-l', 'not', 'port', '22',
-             'and', 'not', 'port', str(PROXY_PORT),
-             'and', 'not', 'port', str(INTERNAL_PORT)),
-            stdout=subprocess.PIPE)
+        args = [['not', 'port', str(port), 'and'] for port in FILTER_PORTS]
+        args = [j for i in args for j in i]
+        args.pop()  # remove last element (because it is 'and')
+
+        p = subprocess.Popen(['tcpdump', '-i', 'any', '-n', '-l'] + args,
+                             stdout=subprocess.PIPE)
 
         for row in iter(p.stdout.readline, b''):
             try:

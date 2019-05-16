@@ -75,8 +75,9 @@ class PeersCollector(object):
             try:
                 internal, external = await get_ip(p)
                 self.host_mapping[internal] = external
-            except Exception:
+            except Exception as e:
                 log.error('Cannot connect to peer: {}'.format(p))
+                log.error(e)
                 if p in self.peers:
                     self.peers.remove(p)
 
