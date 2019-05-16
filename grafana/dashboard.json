@@ -232,7 +232,7 @@
           "refId": "A"
         },
         {
-          "expr": "{__name__=\"bytes_send_total\"}",
+          "expr": "bytes_send_total",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -247,7 +247,7 @@
           "refId": "C"
         },
         {
-          "expr": "default_host_price_total",
+          "expr": "default_host_price_info",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -300,5 +300,5 @@
   "timezone": "",
   "title": "dAdvisor",
   "uid": "st9fPw6mk",
-  "version": 7
+  "version": 1
 }
