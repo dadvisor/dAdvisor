@@ -1,4 +1,4 @@
 prometheus_client
 asyncio
 aiohttp
-numpy
+numpy==1.14.3
