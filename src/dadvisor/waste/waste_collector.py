@@ -1,13 +1,12 @@
 import asyncio
+from datetime import datetime, timedelta
 
-from prometheus_client import Gauge
+from prometheus_client import Gauge, Counter
 import numpy as np
 
 from dadvisor.containers.prometheus import get_container_utilization
 from dadvisor.log import log
 from numpy.linalg import inv
-
-SLEEP_TIME = 15
 
 
 class WasteCollector(object):
@@ -17,12 +16,17 @@ class WasteCollector(object):
     """
 
     def __init__(self):
-        self.waste_container = Gauge('waste_container', 'Waste utilization given for this container', ['id'])
+        self.waste_container = Gauge('waste_container', 'Waste utilization for a container', ['id'])
+        self.waste_container_sum = Counter('waste_container', 'Total waste utilization for a container', ['id'])
 
     async def run(self):
         while True:
             try:
-                await asyncio.sleep(SLEEP_TIME)
+                now = datetime.utcnow()
+                next_hour = now.replace(minute=1, second=0) + timedelta(hours=1)
+                sleep_time = (next_hour - now).seconds
+                await asyncio.sleep(sleep_time)
+                # Execute once per hour (in the first minute)
                 await self.compute_waste()
             except Exception as e:
                 log.error(e)
@@ -35,6 +39,7 @@ class WasteCollector(object):
         for i, container in enumerate(info['data']['result']):
             name = container['metric']['id'][len('/docker/'):]
             self.waste_container.labels(name).set(waste_list[i])
+            self.waste_container_sum.labels(name).inc(waste_list[i])
 
     @staticmethod
     def get_waste(util_list):
