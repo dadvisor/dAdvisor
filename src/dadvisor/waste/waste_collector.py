@@ -23,7 +23,7 @@ class WasteCollector(object):
         while True:
             try:
                 now = datetime.utcnow()
-                next_hour = now.replace(minute=1, second=0) + timedelta(hours=1)
+                next_hour = now.replace(minute=0, second=20) + timedelta(hours=1)
                 sleep_time = (next_hour - now).seconds
                 await asyncio.sleep(sleep_time)
                 # Execute once per hour (in the first minute)
