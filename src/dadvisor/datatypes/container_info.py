@@ -23,7 +23,7 @@ class ContainerInfo(object):
         self.image = str(load['Image'])
         self.ports = load['Ports']
         self.ip = ''
-        self.info = Info('docker_container_{}'.format(self.hash), 'Container info')
+        self.info = Info('docker_container', 'Container info')
         self.info.info({
             'hash': self.hash,
             'host': IP,
