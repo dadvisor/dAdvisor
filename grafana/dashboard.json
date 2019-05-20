@@ -225,7 +225,7 @@
       "ruleMappings": [],
       "targets": [
         {
-          "expr": "docker_container",
+          "expr": "docker_container_info",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
