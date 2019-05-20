@@ -37,6 +37,9 @@ In order to find out the traffic, you'll need the use the following command:
 When the containers are up and running, it generates the output on one of the Grafana dashboard.
 Visit the following link for redirecting to this dashboard: [localhost:14100/dadvisor/dashboard](localhost:14100/dadvisor/dashboard).
 
+## Grafana
+By default, the credentials for Grafana are *username* `admin` and *password* `A2avyaFZCr`.
+
 ## Dashboard example
 ![Figure 1](docs/fig1.png)
 ![Figure 2](docs/fig1.png)

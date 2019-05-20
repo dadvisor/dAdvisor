@@ -39,7 +39,6 @@ RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins/cont
 
 COPY ./nginx.conf /etc/nginx/nginx.conf
 COPY ./grafana/dashboard.json /grafana/dashboards
-COPY ./grafana/dashboard.yaml /grafana/dashboards
 COPY ./grafana/defaults.ini /grafana/conf/
 COPY ./grafana/datasource.yaml /grafana/datasources/
 
