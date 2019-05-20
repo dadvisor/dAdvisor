@@ -273,7 +273,6 @@
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
-          "legendFormat": "total_waste",
           "refId": "G"
         }
       ],
