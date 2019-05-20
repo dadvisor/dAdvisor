@@ -269,7 +269,7 @@
           "refId": "F"
         },
         {
-          "expr": "sum_over_time(waste_container[1h:1h])",
+          "expr": "waste_container_total",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
