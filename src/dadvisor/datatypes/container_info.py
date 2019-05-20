@@ -7,6 +7,8 @@ from prometheus_client import Info
 from dadvisor.config import IP
 from dadvisor.datatypes.container_mapping import ContainerMapping
 
+INFO = Info('docker_container', 'Container info', ['hash'])
+
 
 class ContainerInfo(object):
     """
@@ -23,8 +25,7 @@ class ContainerInfo(object):
         self.image = str(load['Image'])
         self.ports = load['Ports']
         self.ip = ''
-        self.info = Info('docker_container', 'Container info', ['hash'])
-        self.info.labels(hash=self.hash).info({
+        INFO.labels(hash=self.hash).info({
             'host': IP,
             'created': self.created,
             'names': ','.join(self.names),
@@ -40,7 +41,7 @@ class ContainerInfo(object):
             data = json.loads(p.communicate()[0].decode('utf-8'))
             if 'message' in data:
                 self.stopped = int(time.time())
-                self.info.labels(hash=self.hash).info({
+                INFO.labels(hash=self.hash).info({
                     'host': IP,
                     'created': self.created,
                     'names': ','.join(self.names),
@@ -55,7 +56,7 @@ class ContainerInfo(object):
                 else:
                     networks = data['NetworkSettings']['Networks']
                     self.ip = next(iter(networks.values()))['IPAddress']
-                self.info.labels(hash=self.hash).info({
+                INFO.labels(hash=self.hash).info({
                     'host': IP,
                     'created': self.created,
                     'names': ','.join(self.names),
