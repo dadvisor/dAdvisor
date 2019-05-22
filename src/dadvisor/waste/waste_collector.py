@@ -63,3 +63,24 @@ class WasteCollector(object):
         b = np.zeros(n)
         b[n - 1] = total_waste
         return np.matmul(inv(A), np.transpose(b)).tolist()
+    
+    @staticmethod
+    def get_waste_fast(util_list):        
+        n = len(util_list)
+        w = 1 - sum(util_list)
+        w_list = []
+        for item in util_list:
+            upper = w * product(util_list) / item
+            s = 0
+            for si in util_list:
+                s += product(util_list) / si
+            w_list.append(upper / s)
+        return w_list
+    
+    @staticmethod
+    def product(list_of_items):
+        p = 1
+        for item in list_of_items:
+            p *= item
+        return p
+
