@@ -62,16 +62,5 @@ class WasteCollector(object):
         b = np.zeros(n)
         b[n - 1] = total_waste
         return np.linalg.solve(A, b).tolist()
-    
-    @staticmethod
-    def get_waste_fast(util_list):
-        w = 1 - sum(util_list)
-        w_list = []
-        for item in util_list:
-            upper = w * np.product(util_list) / item
-            s = 0
-            for si in util_list:
-                s += np.product(util_list) / si
-            w_list.append(upper / s)
-        return w_list
+
 
