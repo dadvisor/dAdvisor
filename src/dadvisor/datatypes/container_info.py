@@ -39,7 +39,11 @@ class ContainerInfo(object):
             cmd = 'curl -s --unix-socket /var/run/docker.sock http://localhost/containers{}/json'.format(name)
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
             data = json.loads(p.communicate()[0].decode('utf-8'))
-            if 'message' in data:
+            try:
+                key = data['State']['Status']
+            except KeyError:
+                key = ''
+            if 'message' in data or key != 'running':
                 self.stopped = int(time.time())
                 INFO.labels(hash=self.hash).info({
                     'host': IP,
