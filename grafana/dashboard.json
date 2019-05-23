@@ -15,6 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
+  "iteration": 1558600496839,
   "links": [],
   "panels": [
     {
@@ -39,7 +40,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 1
+        "y": 0
       },
       "id": 6,
       "interval": "15s",
@@ -123,7 +124,7 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 1
+        "y": 0
       },
       "id": 8,
       "interval": "15s",
@@ -205,9 +206,92 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 8,
+        "w": 6,
         "x": 8,
-        "y": 1
+        "y": 0
+      },
+      "id": 18,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "$TOTAL_WASTE + $TOTAL_COST",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Total Cost",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Prometheus",
+      "decimals": 2,
+      "format": "currencyUSD",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 14,
+        "y": 0
       },
       "id": 19,
       "interval": null,
@@ -255,7 +339,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Total Cost",
+      "title": "Total Effective Cost",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -288,11 +372,11 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 8,
-        "x": 16,
-        "y": 1
+        "w": 5,
+        "x": 19,
+        "y": 0
       },
-      "id": 18,
+      "id": 20,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -364,7 +448,7 @@
         "h": 15,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 4
       },
       "id": 2,
       "interval": null,
@@ -374,7 +458,7 @@
         "values": true
       },
       "links": [],
-      "mode": "Containers",
+      "mode": "Total waste grouped",
       "repeat": null,
       "ruleMappings": [],
       "targets": [
@@ -445,8 +529,8 @@
     "list": [
       {
         "current": {
-          "text": "0.0",
-          "value": "0.0"
+          "text": "1.05",
+          "value": "1.05"
         },
         "hide": 2,
         "label": null,
@@ -464,8 +548,8 @@
       },
       {
         "current": {
-          "text": "0.0",
-          "value": "0.0"
+          "text": "1.28",
+          "value": "1.28"
         },
         "hide": 2,
         "label": null,
@@ -499,5 +583,5 @@
   "timezone": "",
   "title": "dAdvisor",
   "uid": "st9fPw6mk",
-  "version": 12
+  "version": 13
 }
