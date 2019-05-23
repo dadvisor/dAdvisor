@@ -512,7 +512,14 @@
           "instant": true,
           "intervalFactor": 1,
           "refId": "G"
-        }
+        },
+        {
+          "expr": "container_network_receive_bytes_total{id=~\"/docker/.*\", name!=\"dadvisor\"}",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "H"
+        },
       ],
       "timeFrom": null,
       "timeShift": null,
