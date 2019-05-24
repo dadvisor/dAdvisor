@@ -458,7 +458,7 @@
         "values": true
       },
       "links": [],
-      "mode": "Utilization (last hour average)",
+      "mode": "Containers",
       "repeat": null,
       "ruleMappings": [],
       "targets": [
@@ -507,11 +507,11 @@
           "refId": "F"
         },
         {
-          "expr": "waste_container_total",
+          "expr": "delta(container_network_transmit_bytes_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[$TIME_WINDOW])",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
-          "refId": "G"
+          "refId": "H"
         },
         {
           "expr": "delta(container_network_receive_bytes_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[$TIME_WINDOW])",
