@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1558600496839,
+  "iteration": 1558690581570,
   "links": [],
   "panels": [
     {
@@ -458,12 +458,12 @@
         "values": true
       },
       "links": [],
-      "mode": "Total waste grouped",
+      "mode": "Utilization (last hour average)",
       "repeat": null,
       "ruleMappings": [],
       "targets": [
         {
-          "expr": "docker_container_info{stopped=\"\"}",
+          "expr": "docker_container_info",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -512,17 +512,11 @@
           "instant": true,
           "intervalFactor": 1,
           "refId": "G"
-        },
-        {
-          "expr": "container_network_receive_bytes_total{id=~\"/docker/.*\", name!=\"dadvisor\"}",
-          "format": "time_series",
-          "instant": true,
-          "intervalFactor": 1,
-          "refId": "H"
-        },
+        }
       ],
       "timeFrom": null,
       "timeShift": null,
+      "timeWindow": "10m",
       "title": "Container-graph",
       "type": "grafana-container-panel",
       "valueName": "current"
@@ -536,8 +530,8 @@
     "list": [
       {
         "current": {
-          "text": "1.05",
-          "value": "1.05"
+          "text": "0.00",
+          "value": "0.00"
         },
         "hide": 2,
         "label": null,
@@ -555,8 +549,8 @@
       },
       {
         "current": {
-          "text": "1.28",
-          "value": "1.28"
+          "text": "0.00",
+          "value": "0.00"
         },
         "hide": 2,
         "label": null,
@@ -569,6 +563,25 @@
           }
         ],
         "query": "0.0",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "current": {
+          "text": "1h",
+          "value": "1h"
+        },
+        "hide": 2,
+        "label": null,
+        "name": "TIME_WINDOW",
+        "options": [
+          {
+            "selected": true,
+            "text": "1h",
+            "value": "1h"
+          }
+        ],
+        "query": "1h",
         "skipUrlSync": false,
         "type": "constant"
       }
@@ -590,5 +603,5 @@
   "timezone": "",
   "title": "dAdvisor",
   "uid": "st9fPw6mk",
-  "version": 13
+  "version": 14
 }
