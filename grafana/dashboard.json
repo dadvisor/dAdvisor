@@ -470,7 +470,7 @@
           "refId": "A"
         },
         {
-          "expr": "bytes_send_total",
+          "expr": "delta(bytes_send_total[$TIME_WINDOW])",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -500,7 +500,7 @@
           "refId": "E"
         },
         {
-          "expr": "waste_container",
+          "expr": "{__name__=~\"waste_container(_total|)\"}",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -512,7 +512,14 @@
           "instant": true,
           "intervalFactor": 1,
           "refId": "G"
-        }
+        },
+        {
+          "expr": "delta(container_network_receive_bytes_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[$TIME_WINDOW])",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "H"
+        },
       ],
       "timeFrom": null,
       "timeShift": null,
