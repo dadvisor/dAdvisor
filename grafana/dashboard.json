@@ -463,7 +463,7 @@
       "ruleMappings": [],
       "targets": [
         {
-          "expr": "docker_container_info",
+          "expr": "docker_container_info{stopped=\"\"}",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -478,10 +478,10 @@
         },
         {
           "expr": "avg_over_time(rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[1m])[1h:1h])",
+          "legendFormat": "container_utilization",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
-          "legendFormat": "container_utilization",
           "refId": "C"
         },
         {
@@ -493,10 +493,10 @@
         },
         {
           "expr": "sum_over_time(avg_over_time(rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\", name!=\"dadvisor\"}[1m])[1h:1h]) [1y:1h])",
+          "legendFormat": "container_total_util",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
-          "legendFormat": "container_total_util",
           "refId": "E"
         },
         {
