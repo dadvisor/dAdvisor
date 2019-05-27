@@ -54,6 +54,10 @@ if INFO_HASH == DEFAULT_INFO_HASH:
 log.info('INFO_HASH: {}'.format(INFO_HASH))
 PREFIX = '/dadvisor'
 
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'WARN')
+log.setLevel(LOG_LEVEL)
+# Possible log values: 'CRITICAL', 'FATAL', 'ERROR', 'WARN', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'
+
 
 # DEFAULT FUNCTIONS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
