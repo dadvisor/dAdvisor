@@ -37,7 +37,8 @@ async def get_ip():
             return data['ip']
 
 
-INTERNAL_IP = socket.gethostbyname(socket.gethostname())
+INTERNAL_IP = os.environ.get('INTERNAL_IP',
+                             socket.gethostbyname(socket.gethostname()))
 loop = asyncio.get_event_loop()
 IP = loop.run_until_complete(get_ip())
 log.info('IP: {}'.format(IP))
