@@ -29,7 +29,7 @@ class PeersCollector(object):
         self.children = []
 
     def set_my_peer(self):
-        self.my_peer = Peer(IP, PROXY_PORT)
+        self.my_peer = Peer(INTERNAL_IP, PROXY_PORT)
         self.peers.append(self.my_peer)
 
     async def run(self):
