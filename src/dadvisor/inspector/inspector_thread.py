@@ -31,8 +31,9 @@ class InspectorThread(Thread):
                 if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
                     self.analyser.loop.create_task(
                         self.analyser.analyse_dataflow(dataflow))
-            except ValueError:
-                log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
+            except Exception as e:
+                log.error(e)
+                log.error('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
     @staticmethod
     def check_installation():
