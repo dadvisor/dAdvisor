@@ -108,7 +108,7 @@ class PeersCollector(object):
         try:
             info = Info('peer_{}'.format(host_format), 'Peer')
             info.info({
-                'host': INTERNAL_IP,
+                'host': host,
                 'port': str(port)
             })
         except ValueError:
