@@ -3,8 +3,8 @@ import aiohttp
 from dadvisor.config import PROMETHEUS_URL
 from dadvisor.log import log
 
-URL = PROMETHEUS_URL + '/api/v1/query?query=avg_over_time(rate(container_cpu_usage_seconds_total{id=~"/docker/.*",' \
-                       'instance=~"localhost:.*",name!="dadvisor"}[1m])[1h:1h])'
+URL = PROMETHEUS_URL + '/api/v1/query?query=avg_over_time((sum(rate(container_cpu_usage_seconds_total{id=~"/docker/.*",' \
+                       'instance=~"localhost:.*",name!="dadvisor"}[1m])) by (id))[1h:1h])'
 
 
 async def get_container_utilization():
