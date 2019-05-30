@@ -452,7 +452,7 @@
       },
       "id": 2,
       "interval": null,
-      "layoutType": "grid",
+      "layoutType": "dagre",
       "legend": {
         "show": true,
         "values": true
