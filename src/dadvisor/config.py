@@ -28,6 +28,12 @@ FILTER_PORTS = os.environ.get('FILTER_PORTS', '22,{},{}'.format(PROXY_PORT, INTE
 log.info('Filtering internet traffic ports: {}'.format(FILTER_PORTS))
 
 
+# INTERNET TRAFFIC
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TRAFFIC_SLEEP_TIME = int(os.environ.get('TRAFFIC_SLEEP_TIME', '600'))
+TRAFFIC_SAMPLE = os.environ.get('TRAFFIC_SAMPLE', '1000')
+
+
 # IP ADDRESSES
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 async def get_ip():

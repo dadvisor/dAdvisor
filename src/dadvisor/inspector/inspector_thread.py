@@ -1,7 +1,8 @@
 import subprocess
+import time
 from threading import Thread
 
-from dadvisor.config import FILTER_PORTS
+from dadvisor.config import FILTER_PORTS, TRAFFIC_SAMPLE, TRAFFIC_SLEEP_TIME
 from dadvisor.inspector.parser import parse_row
 from dadvisor.log import log
 
@@ -15,6 +16,7 @@ class InspectorThread(Thread):
         Thread.__init__(self, name='InspectorThread')
         self.peers_collector = peers_collector
         self.analyser = analyser
+        self.factor = 1
 
     def run(self):
         self.check_installation()
@@ -22,18 +24,26 @@ class InspectorThread(Thread):
         args = [j for i in args for j in i]
         args.pop()  # remove last element (because it is 'and')
 
-        p = subprocess.Popen(['tcpdump', '-i', 'any', '-n', '-l'] + args,
-                             stdout=subprocess.PIPE)
+        while True:
 
-        for row in iter(p.stdout.readline, b''):
-            try:
-                dataflow = parse_row(row.decode('utf-8'))
-                if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
-                    self.analyser.loop.create_task(
-                        self.analyser.analyse_dataflow(dataflow))
-            except Exception as e:
-                log.warn(e)
-                log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
+            t = time.time()
+            p = subprocess.Popen(['tcpdump', '-c', TRAFFIC_SAMPLE, '-i', 'any', '-n', '-l'] + args,
+                                 stdout=subprocess.PIPE)
+
+            for row in iter(p.stdout.readline, b''):
+                try:
+                    dataflow = parse_row(row.decode('utf-8'))
+                    if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
+                        dataflow.size = round(dataflow.size * self.factor)
+                        self.analyser.loop.create_task(
+                            self.analyser.analyse_dataflow(dataflow))
+                except Exception as e:
+                    log.warn(e)
+                    log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
+
+            time.sleep(TRAFFIC_SLEEP_TIME)
+            self.factor = TRAFFIC_SLEEP_TIME / (time.time() - t)
+            log.debug('Set factor to: {}'.format(self.factor))
 
     @staticmethod
     def check_installation():

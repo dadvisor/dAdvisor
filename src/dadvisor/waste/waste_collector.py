@@ -2,7 +2,6 @@ import asyncio
 from datetime import datetime, timedelta
 
 from prometheus_client import Gauge, Counter
-import numpy as np
 
 from dadvisor.containers.prometheus import get_container_utilization
 from dadvisor.log import log
@@ -45,22 +44,15 @@ class WasteCollector(object):
         """
         :return: A list of the waste per container, in the same order as the given util_list
         """
-        n = len(util_list)
-        if n == 0:
-            return []  # return empty list if there is nothing to compute
+        waste_list = []
+        for u_i in util_list:
+            waste_list.append(max(1 / len(util_list) - u_i, 0))
 
-        total_util = sum(util_list)
-        total_waste = 1 - total_util
+        u = sum(util_list)
+        w = sum(waste_list)
 
-        A = np.zeros((n, n))
-        for i in range(n - 1):
-            A[i][0] = util_list[0]
-            A[i][i + 1] = -util_list[i + 1]
-            A[n - 1][i] = 1
-        A[n - 1][n - 1] = 1
-
-        b = np.zeros(n)
-        b[n - 1] = total_waste
-        return np.linalg.solve(A, b).tolist()
-
+        if u + w != 1:
+            for i, elem in enumerate(waste_list):
+                waste_list[i] = elem * (1 - u) / w
+        return waste_list
 
