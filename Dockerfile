@@ -38,10 +38,9 @@ RUN rm -rf /tmp/setup
 RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins/containers-panel
 
 COPY ./nginx /etc/nginx
-COPY ./grafana/dashboard.json /grafana/dashboards
-COPY ./grafana/dashboard.yaml /grafana/dashboards
-COPY ./grafana/defaults.ini /grafana/conf/
-COPY ./grafana/datasource.yaml /grafana/datasources/
+COPY ./grafana-config/dashboard.json /grafana/dashboards
+COPY ./grafana-config/defaults.ini /grafana/conf/
+COPY ./grafana-config/datasource.yaml /grafana/datasources/
 
 COPY . .
 RUN pip3 install -r src/requirements.txt
