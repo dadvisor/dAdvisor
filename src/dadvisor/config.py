@@ -30,7 +30,7 @@ log.info('Filtering internet traffic ports: {}'.format(FILTER_PORTS))
 
 # INTERNET TRAFFIC
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TRAFFIC_SLEEP_TIME = int(os.environ.get('TRAFFIC_SLEEP_TIME', '600'))
+TRAFFIC_SLEEP_TIME = int(os.environ.get('TRAFFIC_SLEEP_TIME', '60'))
 TRAFFIC_SAMPLE = os.environ.get('TRAFFIC_SAMPLE', '1000')
 
 
