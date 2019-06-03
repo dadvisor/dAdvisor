@@ -8,7 +8,6 @@ RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 RUN apk add --update tcpdump curl git python3 nginx
 RUN python3 -m ensurepip --upgrade
 RUN pip3 install --upgrade pip
-RUN pip install numpy
 RUN mv /usr/sbin/tcpdump /usr/bin/tcpdump
 
 # Install prometheus
