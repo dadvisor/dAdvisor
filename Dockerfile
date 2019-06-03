@@ -31,13 +31,11 @@ RUN ln -s /grafana/plugins /var/lib/grafana/plugins
 RUN grafana-cli plugins update-all
 RUN rm -rf /tmp/setup
 
-
-
 # Configuration
 RUN git clone https://github.com/dAdvisor/containers-panel /grafana/plugins/containers-panel
 
 COPY ./nginx /etc/nginx
-COPY ./grafana-config/dashboard.json /grafana/dashboards
+# COPY ./grafana-config/dashboard.json /grafana/dashboards
 COPY ./grafana-config/defaults.ini /grafana/conf/
 COPY ./grafana-config/datasource.yaml /grafana/datasources/
 
