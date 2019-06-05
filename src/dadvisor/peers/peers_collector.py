@@ -90,7 +90,7 @@ class PeersCollector(object):
                 # Add new peers (if they're not in the list)
                 for p2 in peer_list:
                     if p2 not in self.peers:
-                        await self.add_peer(p2.host, p2.address)
+                        await self.add_peer(p2.host, p2.port)
             except Exception as e:
                 log.error(e)
                 if p in self.peers:
