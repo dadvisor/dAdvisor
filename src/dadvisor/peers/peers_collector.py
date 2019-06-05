@@ -150,11 +150,11 @@ class PeersCollector(object):
 
         child_list = []
         for child in self.children:
-            child_list.append("{}:{}".format(child.host, child.port))
-        child_list = [', '.join(child_list)] if ', '.join(child_list) else []
+            child_list.append('{}:{}'.format(child.host, child.port))
 
         data = [{"labels": {"job": "promadvisor"}, "targets": child_list}]
         new_data = json.dumps(data) + '\n'
+        log.error(new_data)
 
         if old_data != new_data:
             with open(FILENAME, 'w') as file:
