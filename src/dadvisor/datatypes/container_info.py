@@ -4,7 +4,7 @@ import time
 
 from prometheus_client import Info
 
-from dadvisor.config import IP
+from dadvisor.config import INTERNAL_IP
 from dadvisor.datatypes.container_mapping import ContainerMapping
 
 INFO = Info('docker_container', 'Container info', ['hash'])
@@ -26,7 +26,7 @@ class ContainerInfo(object):
         self.ports = load['Ports']
         self.ip = ''
         INFO.labels(hash=self.hash).info({
-            'host': IP,
+            'host': INTERNAL_IP,
             'created': self.created,
             'names': ','.join(self.names),
             'image': self.image
@@ -46,7 +46,7 @@ class ContainerInfo(object):
             if 'message' in data or key != 'running':
                 self.stopped = int(time.time())
                 INFO.labels(hash=self.hash).info({
-                    'host': IP,
+                    'host': INTERNAL_IP,
                     'created': self.created,
                     'names': ','.join(self.names),
                     'image': self.image,
@@ -61,7 +61,7 @@ class ContainerInfo(object):
                     networks = data['NetworkSettings']['Networks']
                     self.ip = next(iter(networks.values()))['IPAddress']
                 INFO.labels(hash=self.hash).info({
-                    'host': IP,
+                    'host': INTERNAL_IP,
                     'created': self.created,
                     'names': ','.join(self.names),
                     'image': self.image,
