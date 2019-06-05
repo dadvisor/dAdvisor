@@ -19,7 +19,10 @@ class Address(object):
                self.container == other.container
 
     def __str__(self):
-        return '{}:{}:{}'.format(self.host, self.container, self.port)
+        if not self.container:
+            return '{}:{}'.format(self.host, self.port)
+        else:
+            return '{}:{}:{}'.format(self.host, self.container, self.port)
 
     def __hash__(self):
         return hash(str(self))
