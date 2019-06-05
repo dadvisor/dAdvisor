@@ -104,6 +104,7 @@ class PeersCollector(object):
 
     async def add_peer(self, host, port):
         host_format = host.replace('.', '_')
+        log.error(host, port)
 
         try:
             info = Info('peer_{}'.format(host_format), 'Peer')
@@ -118,7 +119,7 @@ class PeersCollector(object):
         try:
             if p not in self.peers:
                 self.peers.append(p)
-                log.info('Adding peer: {}'.format(p))
+                log.error('Adding peer: {}'.format(p))
                 await expose_peer(self.my_peer, p)
         except Exception as e:
             log.error(e)

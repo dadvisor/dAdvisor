@@ -10,6 +10,7 @@ PORTS_CACHE = {}
 
 
 def get_name(peer):
+    log.info('http://{}:{}{}'.format(peer.host, peer.port, PREFIX))
     return 'http://{}:{}{}'.format(peer.host, peer.port, PREFIX)
 
 
