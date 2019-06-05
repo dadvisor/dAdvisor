@@ -154,7 +154,7 @@ class PeersCollector(object):
 
         data = [{"labels": {"job": "promadvisor"}, "targets": child_list}]
         new_data = json.dumps(data) + '\n'
-        log.error(new_data)
+        log.debug(new_data)
 
         if old_data != new_data:
             with open(FILENAME, 'w') as file:
