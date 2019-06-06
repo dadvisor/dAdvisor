@@ -58,7 +58,7 @@ class Analyzer(object):
 
     def add_port(self, address):
         if address.is_local():
-            self.port_mapping[address.port] = self.container_collector.ip_to_hash(address.container)
+            self.port_mapping[address.port] = address.container
 
     # def resolve_local_address(self, address):
     #     if address.host == INTERNAL_IP:
