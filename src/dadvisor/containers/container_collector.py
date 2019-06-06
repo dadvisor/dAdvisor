@@ -70,8 +70,10 @@ class ContainerCollector(object):
             for port_map in info.ports:
                 if 'PublicPort' in port_map:
                     key = int(port_map['PublicPort'])
-                    if key not in self.analyser_thread.port_mapping and info.ip:
-                        self.analyser_thread.port_mapping[key] = info.ip
+                    self.analyser_thread.port_mapping[key] = info.ip
+                if 'PrivatePort' in port_map:
+                    key = int(port_map['PrivatePort'])
+                    self.analyser_thread.port_mapping[key] = info.ip
 
     @property
     def container_mapping(self) -> Dict[str, str]:
