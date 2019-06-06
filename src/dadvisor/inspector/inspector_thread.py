@@ -27,8 +27,21 @@ class InspectorThread(Thread):
         log.info('Running command: {}'.format(' '.join(command)))
 
         while True:
-            # start timer
-            t = time.time()
+            """
+            One iteration of this while loop performns the following actions:
+            1. Run the tcpdump command that captures TRAFFIC_SAMPLE requests
+            2. Resolve these requests by communicating with the other peers
+            3. Sleep X seconds.
+            
+            The multiplication factor for the sampling is calculated as: 
+               TRAFFIC_SLEEP_TIME over the time it takes to perform step 1.
+               
+            Step 2 and step 3 together consume TRAFFIC_SLEEP_TIME seconds.
+            Therefore, the X from step 3 can be resolved as:
+               TRAFFIC_SLEEP_TIME - time it takes to perform step 2.
+            """
+
+            start_time = time.time()
             p = subprocess.Popen(command, stdout=subprocess.PIPE)
 
             # parse results
@@ -42,9 +55,13 @@ class InspectorThread(Thread):
                     log.warn(e)
                     log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
-            elapsed = max(time.time() - t, 1)
+            end_time = time.time()
+            elapsed = max(end_time - start_time, 1)
+
+            self.analyser.cache.resolve()
+
             self.factor = max(TRAFFIC_SLEEP_TIME / elapsed, 1)
-            time.sleep(TRAFFIC_SLEEP_TIME)
+            time.sleep(max(TRAFFIC_SLEEP_TIME - (time.time() - end_time), 0))
             log.info('Set factor to: {}'.format(self.factor))
 
     @staticmethod

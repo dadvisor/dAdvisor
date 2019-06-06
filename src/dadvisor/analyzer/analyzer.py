@@ -33,46 +33,33 @@ class Analyzer(object):
             5. Increment the label from the local/remote source to the local/remote destination.
             6. The data is exposed as a prometheus_client-counter, such that the prometheus server scrapes
                this and stores this in its database.
-        :param dataflow: the dataflow-object to be analysed
+        :param dataflow: the DataFlow-object to be analysed
         """
 
         self.add_port(dataflow.src)
         self.add_port(dataflow.dst)
 
-        log.info(dataflow)
-        src_hash = None
-        dst_hash = None
-
         if dataflow.src.is_local() and dataflow.dst.is_local():
             src_hash = self.container_collector.ip_to_hash(dataflow.src.container)
             dst_hash = self.container_collector.ip_to_hash(dataflow.dst.container)
+            if src_hash and dst_hash:
+                log.info('Found dataflow: {}'.format(dataflow))
+                self.counter.labels(src=src_hash, dst=dst_hash).inc(dataflow.size)
         elif not dataflow.dst.is_local():
+            # src is local
+            # dst is not local
             src_hash = self.container_collector.ip_to_hash(dataflow.src.container)
             peer = self.peers_collector.is_other_peer(dataflow.dst.host)
-            log.info(peer)
-
-        if src_hash and dst_hash:
-            log.info('Found dataflow: {}'.format(dataflow))
-            self.counter.labels(src=src_hash, dst=dst_hash).inc(dataflow.size)
+            if peer:
+                self.cache.add_to(peer[0], src_hash, dataflow.dst.port, dataflow.size)
+        elif not dataflow.src.is_local():
+            # src is not local
+            # dst is local
+            dst_hash = self.container_collector.ip_to_hash(dataflow.dst.container)
+            peer = self.peers_collector.is_other_peer(dataflow.src.host)
+            if peer:
+                self.cache.add_from(peer[0], dataflow.src.port, dst_hash, dataflow.size)
 
     def add_port(self, address):
         if address.is_local():
             self.port_mapping[address.port] = address.container
-
-    # def resolve_local_address(self, address):
-    #     if address.host == INTERNAL_IP:
-    #         for info in self.container_collector.containers:
-    #             for port_map in info.ports:
-    #                 if 'PublicPort' in port_map and str(port_map['PublicPort']) == str(address.port):
-    #                     address.container = info.ip
-    #                     if 'PrivatePort' in port_map:
-    #                         address.port = str(port_map['PrivatePort'])
-    #                     return
-    #
-    # async def resolve_remote_address(self, address):
-    #     if address.host != INTERNAL_IP:
-    #         p = self.peers_collector.get_peer_from_host(address.host)
-    #         if p:
-    #             ports = await get_ports(p)
-    #             if address.port in ports:
-    #                 address.container = ports[address.port]
