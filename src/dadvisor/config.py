@@ -17,6 +17,7 @@ from dadvisor.log import log
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 PROXY_PORT = int(os.environ.get('DADVISOR_PORT', 14100))
 INTERNAL_PORT = 14101
+PROMETHEUS_PORT = 14102
 
 CADVISOR_URL = 'http://localhost:14104'
 PROMETHEUS_URL = 'http://localhost:{}/prometheus'.format(PROXY_PORT)
@@ -24,7 +25,8 @@ TRACKER = os.environ.get('TRACKER', 'http://35.204.250.252:14100')
 
 CACHE_TIME = 5
 
-FILTER_PORTS = os.environ.get('FILTER_PORTS', '22,{},{}'.format(PROXY_PORT, INTERNAL_PORT)).split(',')
+FILTER_PORTS = os.environ.get('FILTER_PORTS', '22,{},{},{}'.
+                              format(PROXY_PORT, INTERNAL_PORT, PROMETHEUS_PORT)).split(',')
 log.info('Filtering internet traffic ports: {}'.format(FILTER_PORTS))
 
 

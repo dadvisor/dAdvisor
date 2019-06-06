@@ -51,7 +51,7 @@ class Analyzer(object):
         else:
             pass  # Add to some kind of todo list
 
-        log.debug('src: {}, dst: {}'.format(src_hash, dst_hash))
+        log.info('src: {}, dst: {}'.format(src_hash, dst_hash))
 
         if src_hash and dst_hash:
             log.debug('Found dataflow: {}'.format(dataflow))
