@@ -43,11 +43,11 @@ async def get_ip():
             return data['ip']
 
 
-INTERNAL_IP = os.environ.get('INTERNAL_IP',
-                             socket.gethostbyname(socket.gethostname()))
+INTERNAL_IP = os.environ.get('INTERNAL_IP', socket.gethostbyname(socket.gethostname()))
 loop = asyncio.get_event_loop()
-IP = loop.run_until_complete(get_ip())
-log.info('IP: {}'.format(IP))
+# IP = loop.run_until_complete(get_ip())
+# log.info('IP: {}'.format(IP))
+
 
 # INFO_HASH
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -61,7 +61,7 @@ if INFO_HASH == DEFAULT_INFO_HASH:
 log.info('INFO_HASH: {}'.format(INFO_HASH))
 PREFIX = '/dadvisor'
 
-LOG_LEVEL = os.environ.get('LOG_LEVEL', 'ERROR')
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
 log.setLevel(LOG_LEVEL)
 # Possible log values: 'CRITICAL', 'FATAL', 'ERROR', 'WARN', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'
 

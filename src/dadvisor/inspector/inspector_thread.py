@@ -25,24 +25,25 @@ class InspectorThread(Thread):
         args.pop()  # remove last element (because it is 'and')
 
         while True:
-
+            # start timer
             t = time.time()
             p = subprocess.Popen(['tcpdump', '-c', TRAFFIC_SAMPLE, '-i', 'any', '-n', '-l'] + args,
                                  stdout=subprocess.PIPE)
 
+            # parse results
             for row in iter(p.stdout.readline, b''):
                 try:
                     dataflow = parse_row(row.decode('utf-8'))
                     if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
                         dataflow.size = round(dataflow.size * self.factor)
-                        self.analyser.loop.create_task(
-                            self.analyser.analyse_dataflow(dataflow))
+                        self.analyser.loop.create_task(self.analyser.analyse_dataflow(dataflow))
                 except Exception as e:
                     log.warn(e)
                     log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
 
+            elapsed = max(time.time() - t, 1)
+            self.factor = max(TRAFFIC_SLEEP_TIME / elapsed, 1)
             time.sleep(TRAFFIC_SLEEP_TIME)
-            self.factor = TRAFFIC_SLEEP_TIME / (time.time() - t)
             log.debug('Set factor to: {}'.format(self.factor))
 
     @staticmethod
@@ -50,7 +51,7 @@ class InspectorThread(Thread):
         try:
             subprocess.Popen(['tcpdump', '-D'], stdout=subprocess.PIPE)
         except ProcessLookupError:
-            log.error('tcpdump is not installed. Please install it before running this code.\n')
+            log.error('tcpdump is not installed. Please install it before running this code.')
             exit(-1)
 
     def is_p2p_communication(self, data_flow):
@@ -59,7 +60,7 @@ class InspectorThread(Thread):
         :return:
         """
         for p in self.peers_collector.peers:
-            if (data_flow.src.host == p.address.host and str(data_flow.src.port) == str(p.address.port)) or \
-                    (data_flow.dst.host == p.address.host and str(data_flow.dst.port) == str(p.address.port)):
+            if (data_flow.src.host == p.address.host and int(data_flow.src.port) == int(p.address.port)) or \
+                    (data_flow.dst.host == p.address.host and int(data_flow.dst.port) == int(p.address.port)):
                 return True
         return False

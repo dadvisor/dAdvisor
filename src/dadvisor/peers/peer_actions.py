@@ -1,3 +1,5 @@
+import platform
+import subprocess
 from datetime import datetime, timedelta
 
 import aiohttp
@@ -12,6 +14,21 @@ PORTS_CACHE = {}
 def get_name(peer):
     log.info('http://{}:{}{}'.format(peer.host, peer.port, PREFIX))
     return 'http://{}:{}{}'.format(peer.host, peer.port, PREFIX)
+
+
+def ping(host):
+    """
+    Returns True if host (str) responds to a ping request.
+    Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
+    """
+
+    # Option for the number of packets as a function of
+    param = '-n' if platform.system().lower() == 'windows' else '-c'
+
+    # Building the command. Ex: "ping -c 1 google.com"
+    command = ['ping', param, '1', host]
+
+    return subprocess.call(command) == 0
 
 
 async def fetch_peers(peer):
@@ -55,13 +72,6 @@ async def get_containers(peer):
     async with aiohttp.ClientSession() as session:
         async with session.get(get_name(peer) + '/containers') as resp:
             return await resp.json()
-
-
-async def get_ip(peer):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(get_name(peer) + '/ip') as resp:
-            data = await resp.json()
-            return data['internal'], data['external']
 
 
 async def get_peer_list():

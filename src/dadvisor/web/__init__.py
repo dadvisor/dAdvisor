@@ -3,7 +3,7 @@ import json
 from aiohttp import web
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
-from dadvisor.config import INTERNAL_IP, IP, INTERNAL_PORT, PREFIX
+from dadvisor.config import INTERNAL_PORT, PREFIX
 from dadvisor.datatypes.encoder import JSONCustomEncoder
 from dadvisor.log import log
 from dadvisor.peers.peer_actions import get_name
@@ -31,9 +31,6 @@ def get_app(loop, peers_collector, analyser, container_collector):
         resp = web.Response(body=generate_latest())
         resp.content_type = CONTENT_TYPE_LATEST
         return resp
-
-    async def ip(request):
-        return web.json_response({'internal': INTERNAL_IP, 'external': IP})
 
     async def hosts(request):
         return web.json_response(text=json.dumps(peers_collector.host_mapping,
@@ -78,7 +75,6 @@ def get_app(loop, peers_collector, analyser, container_collector):
                     web.get('{}/peers'.format(PREFIX), peers),
                     web.get('{}/peers/add/'.format(PREFIX) + '{peer}', add_peer),
                     web.get('{}/hosts'.format(PREFIX), hosts),
-                    web.get('{}/ip'.format(PREFIX), ip),
                     web.get('{}/ports'.format(PREFIX), ports),
                     web.get('{}/dashboard'.format(PREFIX), dashboard),
                     web.get('{}/node_info'.format(PREFIX), node_info),

@@ -9,7 +9,7 @@ def to_address(address):
 
     address = address.rstrip('.:')  # remove last . and :
     array = address.split('.')
-    return Address.decode('.'.join(array[:-1]), array[-1])
+    return Address.decode('.'.join(array[:-1]), int(array[-1]))
 
 
 def parse_size(s):

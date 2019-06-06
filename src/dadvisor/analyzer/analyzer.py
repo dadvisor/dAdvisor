@@ -2,7 +2,7 @@ import asyncio
 
 from prometheus_client import Counter
 
-from dadvisor.config import IP, CACHE_TIME
+from dadvisor.config import INTERNAL_IP, CACHE_TIME
 from dadvisor.log import log
 from dadvisor.peers.peer_actions import get_ports
 
@@ -49,7 +49,7 @@ class Analyzer(object):
         dst_id = self.address_id(dataflow.dst)
 
         if src_id and dst_id:
-            log.info('Found dataflow: {}'.format(dataflow))
+            log.debug('Found dataflow: {}'.format(dataflow))
             self.counter.labels(src=id_map(src_id), dst=id_map(dst_id)).inc(dataflow.size)
 
     def add_port(self, address):
@@ -60,7 +60,7 @@ class Analyzer(object):
         if address.host in self.peers_collector.host_mapping:
             address.host = self.peers_collector.host_mapping[address.host]
 
-        if address.host == IP:
+        if address.host == INTERNAL_IP:
             for info in self.container_collector.own_containers:
                 for port_map in info.ports:
                     if 'PublicPort' in port_map and str(port_map['PublicPort']) == str(address.port):
@@ -70,7 +70,7 @@ class Analyzer(object):
                         return
 
     async def resolve_remote_address(self, address):
-        if address.host != IP:
+        if address.host != INTERNAL_IP:
             p = self.peers_collector.get_peer_from_host(address.host)
             if p:
                 ports = await get_ports(p)

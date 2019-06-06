@@ -3,13 +3,13 @@ import json
 
 from prometheus_client import Info
 
-from dadvisor.config import INTERNAL_IP, IP, PROXY_PORT
+from dadvisor.config import INTERNAL_IP, PROXY_PORT
 from dadvisor.datatypes.peer import Peer, from_list
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_ip, get_peer_list, register_peer, get_tracker_info
+from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_peer_list, register_peer, get_tracker_info, ping
 
 FILENAME = '/prometheus-federation.json'
-SLEEP_TIME = 10
+SLEEP_TIME = 30
 
 
 class PeersCollector(object):
@@ -21,10 +21,8 @@ class PeersCollector(object):
     def __init__(self):
         self.running = True
         self.my_peer = None
-        self.peers = []  # List of Peer
-        self.host_mapping = {INTERNAL_IP: IP}  # a dict from internal IP to external IP
+        self.peers = []  # List of Peer-objects
         self.set_my_peer()
-
         self.parent = None
         self.children = []
 
@@ -33,6 +31,14 @@ class PeersCollector(object):
         self.peers.append(self.my_peer)
 
     async def run(self):
+        """
+        This run method performs the following two actions:
+        1. register this peer in the tracker
+        2. continuously perform the following actions:
+            - ask the tracker for its parent and children
+            - validate other peers
+        :return:
+        """
         succeeded = False
         while not succeeded:
             try:
@@ -51,6 +57,10 @@ class PeersCollector(object):
                 log.error(e)
 
     @property
+    def addresses(self):
+        return [p.host for p in self.other_peers]
+
+    @property
     def other_peers(self):
         return [p for p in self.peers if p != self.my_peer]
 
@@ -58,28 +68,27 @@ class PeersCollector(object):
         return [p for p in self.other_peers if p.host == host]
 
     async def init_peers(self):
-        """ Read peers from an external address and add them to the list
+        """ Read peers from the tracker and add them to the list
         """
         for p in await get_peer_list():
             host, port = p
-            internal, external = await get_ip(Peer(host, port))
-            self.host_mapping[internal] = external
-            await self.add_peer(host, port)
+            if ping(host):
+                await self.add_peer(host, port)
 
     async def validate_peers(self):
         log.info('Validating other peers: {}'.format(len(self.other_peers)))
         if not self.other_peers:
             await self.init_peers()
+
         for p in self.other_peers:
-            # Create mapping
             try:
-                internal, external = await get_ip(p)
-                self.host_mapping[internal] = external
+                if not ping(p.host):
+                    raise Exception('peer not up')
             except Exception as e:
-                log.error('Cannot connect to peer: {}'.format(p))
                 log.error(e)
                 if p in self.peers:
                     self.peers.remove(p)
+                continue
 
             try:
                 peer_list = await fetch_peers(p)

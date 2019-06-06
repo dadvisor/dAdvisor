@@ -4,7 +4,7 @@ import subprocess
 
 from prometheus_client import Info
 
-from dadvisor.config import IP
+from dadvisor.config import INTERNAL_IP
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.container_info import ContainerInfo
 from dadvisor.datatypes.container_mapping import ContainerMapping
@@ -76,7 +76,7 @@ class ContainerCollector(object):
                         self.analyser_thread.port_mapping[key] = info.ip
 
     def get_own_containers(self):
-        return [c.to_container_mapping(IP) for c in self.containers_filtered]
+        return [c.to_container_mapping(INTERNAL_IP) for c in self.containers_filtered]
 
     def get_all_containers(self):
         return self.get_own_containers() + self.remote_containers
@@ -94,6 +94,6 @@ class ContainerCollector(object):
         num_cores = info['num_cores']
         memory = sum([fs['capacity'] for fs in info['filesystems'] if fs['device'].startswith('/dev/')])
         self.default_host_price.info({
-            'host': IP,
+            'host': INTERNAL_IP,
             'num_cores': str(num_cores),
             'memory': str(memory)})
