@@ -1,19 +1,15 @@
 import os
 import platform
 import subprocess
-from datetime import datetime, timedelta
 
 import aiohttp
 
-from dadvisor.config import TRACKER, INFO_HASH, PREFIX, CACHE_TIME
+from dadvisor.config import TRACKER, INFO_HASH, PREFIX
 from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
 
-PORTS_CACHE = {}
-
 
 def get_name(peer):
-    log.info('http://{}:{}{}'.format(peer.host, peer.port, PREFIX))
     return 'http://{}:{}{}'.format(peer.host, peer.port, PREFIX)
 
 
@@ -48,29 +44,15 @@ async def expose_peer(my_peer, other_peer):
             return []
 
 
-async def get_ports(peer):
-    if peer in PORTS_CACHE and PORTS_CACHE[peer] \
-            and PORTS_CACHE[peer]['value'] \
-            and PORTS_CACHE[peer]['valid'] > datetime.now():
-        return PORTS_CACHE[peer]['value']
-
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(get_name(peer) + '/ports') as resp:
-                value = await resp.json()
-                PORTS_CACHE[peer] = {
-                    'valid': datetime.now() + timedelta(seconds=CACHE_TIME),
-                    'value': value
-                }
-                return value
-        except Exception as e:
-            log.error(e)
-            return []
-
-
 async def get_containers(peer):
     async with aiohttp.ClientSession() as session:
         async with session.get(get_name(peer) + '/containers') as resp:
+            return await resp.json()
+
+
+async def get_container_ports(peer):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(get_name(peer) + '/container_ports') as resp:
             return await resp.json()
 
 

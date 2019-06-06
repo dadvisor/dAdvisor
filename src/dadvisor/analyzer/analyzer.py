@@ -1,9 +1,14 @@
+from collections import OrderedDict
+from typing import Dict
+
 from prometheus_client import Counter
 
 from dadvisor import ContainerCollector, PeersCollector
 from dadvisor.analyzer.dataflow_cache import DataFlowCache
 from dadvisor.datatypes.dataflow import DataFlow
 from dadvisor.log import log
+
+MAX_ITEMS = 200
 
 
 class Analyzer(object):
@@ -13,9 +18,11 @@ class Analyzer(object):
         self.container_collector = container_collector
         self.peers_collector = peers_collector
         self.loop = loop
-        self.port_mapping = {}  # a dict from port to container_id
+        self.port_mapping: Dict[int, str] = {}  # a dict from port to container IP
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
         self.cache = DataFlowCache()
+
+        self.ports: OrderedDict[int, str] = OrderedDict()  # Contains at most MAX_ITEMS elements
 
     async def analyse_dataflow(self, dataflow: DataFlow):
         """
@@ -52,8 +59,6 @@ class Analyzer(object):
             peer = self.peers_collector.is_other_peer(dataflow.dst.host)
             if peer:
                 self.cache.add_to(peer[0], src_hash, dataflow.dst.port, dataflow.size)
-            else:
-                log.info('Dropping (1) {}'.format(dataflow))
         elif not dataflow.src.is_local():
             # src is not local
             # dst is local
@@ -61,9 +66,7 @@ class Analyzer(object):
             peer = self.peers_collector.is_other_peer(dataflow.src.host)
             if peer:
                 self.cache.add_from(peer[0], dataflow.src.port, dst_hash, dataflow.size)
-            else:
-                log.info('Dropping (2) {}'.format(dataflow))
 
     def add_port(self, address):
         if address.is_local():
-            self.port_mapping[address.port] = address.container
+            self.ports[address.port] = address.container

@@ -59,11 +59,10 @@ def get_app(loop, peers_collector, analyser, container_collector):
             return web.HTTPFound('/grafana')
 
     async def ports(request):
-        return web.json_response(analyser.port_mapping)
+        return web.json_response({**analyser.port_mapping, **analyser.ports})
 
-    async def container_ports(request):
-        return web.json_response(
-            {port: container_collector.ip_to_hash(ip) for port, ip in analyser.port_mapping.items()})
+    async def container_mapping(request):
+        return web.json_response(container_collector.container_mapping)
 
     async def node_info(request):
         return web.json_response(text=json.dumps({'parent': peers_collector.parent,
@@ -80,7 +79,7 @@ def get_app(loop, peers_collector, analyser, container_collector):
                     web.get('{}/peers/add/'.format(PREFIX) + '{peer}', add_peer),
                     web.get('{}/hosts'.format(PREFIX), hosts),
                     web.get('{}/ports'.format(PREFIX), ports),
-                    web.get('{}/container_ports'.format(PREFIX), container_ports),
+                    web.get('{}/container_mapping'.format(PREFIX), container_mapping),
                     web.get('{}/dashboard'.format(PREFIX), dashboard),
                     web.get('{}/node_info'.format(PREFIX), node_info),
                     web.get('{}/containers'.format(PREFIX), containers)])

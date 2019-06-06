@@ -23,8 +23,6 @@ CADVISOR_URL = 'http://localhost:14104'
 PROMETHEUS_URL = 'http://localhost:{}/prometheus'.format(PROXY_PORT)
 TRACKER = os.environ.get('TRACKER', 'http://35.204.250.252:14100')
 
-CACHE_TIME = 5
-
 FILTER_PORTS = os.environ.get('FILTER_PORTS', '22,{},{},{}'.
                               format(PROXY_PORT, INTERNAL_PORT, PROMETHEUS_PORT)).split(',')
 log.info('Filtering internet traffic ports: {}'.format(FILTER_PORTS))

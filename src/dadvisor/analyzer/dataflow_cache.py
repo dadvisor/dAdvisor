@@ -29,14 +29,16 @@ class DataFlowCache(object):
         else:
             self.cache[peer].append(data)
 
-    def resolve(self):
+    async def resolve(self):
         """
         Ask all peers to resolve their ports into a container-hash.
         After this function has been called, the cache is empty
         """
         for peer, data_list in self.cache.items():
             log.info('Peer {} contains {} items'.format(peer.host, len(data_list)))
-            l2 = [port for (_, _, port, _) in data_list]
-            log.info('Ports: {}'.format(l2))
+            port_set = {port for (_, _, port, _) in data_list}
+            log.info('Ports: {}'.format(port_set))
+
+
 
         self.cache = {}
