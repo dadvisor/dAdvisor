@@ -39,13 +39,15 @@ class DataFlowCache(object):
         for peer, data_list in list(self.cache.items()):
             ports = await get_ports(peer)
             containers = await get_container_mapping(peer)
+            log.info(ports)
+            log.info(containers)
 
             for (from_to, local_hash, port, size) in data_list:
                 try:
                     ip = ports[port]
                     remote_hash = containers[ip]
                 except Exception as e:
-                    log.debug(e)
+                    log.error(e)
                     continue
                 if from_to == TO:
                     self.counter.labels(src=local_hash, dst=remote_hash).inc(size)

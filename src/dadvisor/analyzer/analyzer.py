@@ -7,7 +7,6 @@ from dadvisor import ContainerCollector, PeersCollector
 from dadvisor.analyzer.dataflow_cache import DataFlowCache
 from dadvisor.config import TRAFFIC_SAMPLE
 from dadvisor.datatypes.dataflow import DataFlow
-from dadvisor.log import log
 
 
 class Analyzer(object):
@@ -21,24 +20,10 @@ class Analyzer(object):
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
         self.cache = DataFlowCache(self.counter)
 
-        self.ports: OrderedDict[int, str] = OrderedDict()  # Contains at most MAX_ITEMS elements
+        self.ports: OrderedDict[int, str] = OrderedDict()  # Contains at most TRAFFIC_SAMPLE elements
 
     async def analyse_dataflow(self, dataflow: DataFlow):
         """
-        In order to reduce the amount of http requests that is made to other peers,
-        this function starts to sleep CACHE_TIME seconds. By doing this in an asynchronous
-        manner, there is almost no overhead for the program itself.
-        The flow for analysing a dataflow is the following:
-            1. Add the ports from the source and destination to its own port mapping.
-               Note that this is only done if the address is local.
-            2. In case an other peers wants to analyse the port mapping, then this new
-               port mapping is already returned. (Therefore, it is performed before sleeping.)
-            3. The local host address is mapped from internal IP to external IP. Also, in case
-               of a port mapping, the port is mapped from public to private (external to internal).
-            4. In case the address is from a remote address, retrieve the container from the other peer.
-            5. Increment the label from the local/remote source to the local/remote destination.
-            6. The data is exposed as a prometheus_client-counter, such that the prometheus server scrapes
-               this and stores this in its database.
         :param dataflow: the DataFlow-object to be analysed
         """
 
