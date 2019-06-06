@@ -1,9 +1,11 @@
 import asyncio
 import json
 import subprocess
+from typing import Dict, List
 
 from prometheus_client import Info
 
+from dadvisor import PeersCollector
 from dadvisor.config import INTERNAL_IP
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.container_info import ContainerInfo
@@ -14,13 +16,13 @@ SLEEP_TIME = 30
 
 class ContainerCollector(object):
 
-    def __init__(self, peers_collector):
+    def __init__(self, peers_collector: PeersCollector):
         self.peers_collector = peers_collector
         self.running = True
         self.analyser_thread = None
         self.default_host_price = Info('default_host_price', 'Default host price in dollars')
 
-        self.containers = []  # list of ContainerInfo objects
+        self.containers: List[ContainerInfo] = []
 
     async def run(self):
         """
@@ -72,17 +74,17 @@ class ContainerCollector(object):
                         self.analyser_thread.port_mapping[key] = self.get_hash(info.ip)
 
     @property
-    def container_mapping(self):
+    def container_mapping(self) -> Dict[str, str]:
         """
         :return: A dict from local ip to container id
         """
         return {c.ip: c.hash for c in self.containers_filtered}
 
-    def get_hash(self, ip):
-        return self.container_mapping[ip] or ''
+    def get_hash(self, ip: str) -> str:
+        return self.container_mapping[ip]
 
     @property
-    def containers_filtered(self):
+    def containers_filtered(self) -> List[ContainerInfo]:
         """
         :return: A dict without the key for its own container
         """

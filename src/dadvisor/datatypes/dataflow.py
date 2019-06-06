@@ -1,9 +1,12 @@
+from dadvisor.datatypes.address import Address
+
+
 class DataFlow(object):
     """
         stores the transmission of a certain amount of data from the source to the destination
     """
 
-    def __init__(self, src, dst, size):
+    def __init__(self, src: Address, dst: Address, size: int):
         self.src = src
         self.dst = dst
         self.size = size
