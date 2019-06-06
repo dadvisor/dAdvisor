@@ -28,7 +28,7 @@ class Address(object):
         return hash(str(self))
 
     def is_local(self):
-        return self.host == INTERNAL_IP and re.match(r'172.\d+.0.\d+', self.container)
+        return self.host == INTERNAL_IP
 
     @staticmethod
     def decode(host_container, port):
