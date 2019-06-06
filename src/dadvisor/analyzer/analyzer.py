@@ -57,9 +57,6 @@ class Analyzer(object):
             self.port_mapping[address.port] = address.container
 
     def resolve_local_address(self, address):
-        if address.host in self.peers_collector.host_mapping:
-            address.host = self.peers_collector.host_mapping[address.host]
-
         if address.host == INTERNAL_IP:
             for info in self.container_collector.own_containers:
                 for port_map in info.ports:

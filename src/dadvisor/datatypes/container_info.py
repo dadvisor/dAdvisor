@@ -5,7 +5,6 @@ import time
 from prometheus_client import Info
 
 from dadvisor.config import INTERNAL_IP
-from dadvisor.datatypes.container_mapping import ContainerMapping
 
 INFO = Info('docker_container', 'Container info', ['hash'])
 
@@ -78,6 +77,3 @@ class ContainerInfo(object):
             'image': self.image,
             'ip': self.ip
         }
-
-    def to_container_mapping(self, host):
-        return ContainerMapping(host, self.ip, self.image, self.hash)

@@ -7,11 +7,9 @@ from prometheus_client import Info
 from dadvisor.config import INTERNAL_IP
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.container_info import ContainerInfo
-from dadvisor.datatypes.container_mapping import ContainerMapping
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import get_containers
 
-SLEEP_TIME = 5
+SLEEP_TIME = 30
 
 
 class ContainerCollector(object):
@@ -19,12 +17,20 @@ class ContainerCollector(object):
     def __init__(self, peers_collector):
         self.peers_collector = peers_collector
         self.running = True
-        self.own_containers = []  # list of ContainerInfo objects
-        self.remote_containers = []  # list of ContainerMapping objects
         self.analyser_thread = None
         self.default_host_price = Info('default_host_price', 'Default host price in dollars')
 
+        self.containers = []  # list of ContainerInfo objects
+
     async def run(self):
+        """
+        Performs the following two actions:
+        - only at initialization: collect static information about the host price
+        - continuously (every 30 sec) perform the following actions:
+            - find new containers
+            - validate own containers (find out ip address and if they're alive)
+        :return:
+        """
         succeeded = False
         while not succeeded:
             try:
@@ -39,7 +45,6 @@ class ContainerCollector(object):
                 await asyncio.sleep(SLEEP_TIME)
                 await self.collect_own_containers()
                 await self.validate_own_containers()
-                await self.collect_remote_containers()
             except Exception as e:
                 log.error(e)
 
@@ -50,23 +55,14 @@ class ContainerCollector(object):
         for c in data:
             if c['Image'].endswith('dadvisor'):
                 continue
-            if c['Id'] not in [c.hash for c in self.own_containers]:
-                self.own_containers.append(ContainerInfo(c['Id'], c))
-
-    async def collect_remote_containers(self):
-        """ Ask every peer for a list of containers. """
-        for peer in self.peers_collector.other_peers:
-            container_list = await get_containers(peer)
-            self.remote_containers = [c for c in self.remote_containers if c.host != peer.host]
-            for c in container_list:
-                self.remote_containers.append(ContainerMapping(c['host'], c['container'],
-                                                               c['image'], c['id']))
+            if c['Id'] not in [c.hash for c in self.containers]:
+                self.containers.append(ContainerInfo(c['Id'], c))
 
     async def validate_own_containers(self):
-        for info in self.own_containers:
+        for info in self.containers:
             info.validate()
             if info.stopped:
-                self.own_containers.remove(info)
+                self.containers.remove(info)
                 continue
 
             for port_map in info.ports:
@@ -75,11 +71,12 @@ class ContainerCollector(object):
                     if key not in self.analyser_thread.port_mapping and info.ip:
                         self.analyser_thread.port_mapping[key] = info.ip
 
-    def get_own_containers(self):
-        return [c.to_container_mapping(INTERNAL_IP) for c in self.containers_filtered]
-
-    def get_all_containers(self):
-        return self.get_own_containers() + self.remote_containers
+    @property
+    def container_mapping(self):
+        """
+        :return: A dict from local ip to container id
+        """
+        return {c.ip: c.hash for c in self.containers_filtered}
 
     @property
     def containers_filtered(self):
@@ -87,7 +84,7 @@ class ContainerCollector(object):
         :return: A dict without the key for its own container
         """
         skip = '/dadvisor'
-        return [info for info in self.own_containers if skip not in info.names]
+        return [info for info in self.containers if skip not in info.names]
 
     async def collect_host_price(self):
         info = await get_machine_info()

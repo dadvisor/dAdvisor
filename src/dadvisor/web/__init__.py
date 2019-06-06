@@ -67,7 +67,7 @@ def get_app(loop, peers_collector, analyser, container_collector):
                                                  cls=JSONCustomEncoder))
 
     async def containers(request):
-        return web.json_response(text=json.dumps(container_collector.get_own_containers(),
+        return web.json_response(text=json.dumps(container_collector.containers_filtered,
                                                  cls=JSONCustomEncoder))
 
     app = web.Application(loop=loop, debug=True, logger=log)
