@@ -2,6 +2,7 @@ from typing import Dict, List, Tuple
 
 from dadvisor.log import log
 from dadvisor.datatypes.peer import Peer
+from dadvisor.peers.peer_actions import get_ports, get_container_mapping
 
 FROM = 0
 TO = 1
@@ -12,8 +13,9 @@ class DataFlowCache(object):
         implements a caching functionality, such that multiple addresses can be resolved at once.
     """
 
-    def __init__(self):
+    def __init__(self, counter):
         self.cache: Dict[Peer, List[Tuple[int, str, int, int]]] = {}
+        self.counter = counter
 
     def add_to(self, peer: Peer, from_hash: str, to_port: int, size: int):
         data = (TO, from_hash, to_port, size)
@@ -38,6 +40,15 @@ class DataFlowCache(object):
             log.info('Peer {} contains {} items'.format(peer.host, len(data_list)))
             port_set = {port for (_, _, port, _) in data_list}
             log.info('Ports: {}'.format(port_set))
+
+            ports = await get_ports(peer)
+            containers = await get_container_mapping(peer)
+            log.info(ports)
+            log.info(containers)
+
+            for (from_to, hash, port, size) in data_list:
+                if from_to == FROM:
+                    pass
 
             del self.cache[peer]
         self.cache = {}

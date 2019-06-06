@@ -20,7 +20,7 @@ class Analyzer(object):
         self.loop = loop
         self.port_mapping: Dict[int, str] = {}  # a dict from port to container IP
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
-        self.cache = DataFlowCache()
+        self.cache = DataFlowCache(self.counter)
 
         self.ports: OrderedDict[int, str] = OrderedDict()  # Contains at most MAX_ITEMS elements
 
