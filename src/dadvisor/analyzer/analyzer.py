@@ -68,6 +68,6 @@ class Analyzer(object):
 
     def add_port(self, address):
         if address.is_local():
-            while len(self.ports) >= TRAFFIC_SAMPLE:
+            while len(self.ports) >= int(TRAFFIC_SAMPLE):
                 del self.ports[next(self.ports.__iter__())]
             self.ports[address.port] = address.container
