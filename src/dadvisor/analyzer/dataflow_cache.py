@@ -37,24 +37,28 @@ class DataFlowCache(object):
         After this function has been called, the cache is empty
         """
         for peer, data_list in list(self.cache.items()):
-            ports = await get_ports(peer)
-            # port is encoded as string, therefore decode to int
-            ports = {int(port): ip for port, ip in ports.items()}
-            containers = await get_container_mapping(peer)
-            log.info(ports)
-            log.info(containers)
 
-            for (from_to, local_hash, port, size) in data_list:
-                try:
-                    ip = ports[port]
-                    remote_hash = containers[ip]
-                except Exception as e:
-                    log.debug(e)
-                    continue
-                if local_hash and remote_hash:
-                    if from_to == TO:
-                        self.counter.labels(src=local_hash, dst=remote_hash).inc(size)
-                    elif from_to == FROM:
-                        self.counter.labels(src=remote_hash, dst=local_hash).inc(size)
+            try:
+                ports = await get_ports(peer)
+                # port is encoded as string, therefore decode to int
+                ports = {int(port): ip for port, ip in ports.items()}
+                containers = await get_container_mapping(peer)
+                log.info(ports)
+                log.info(containers)
+
+                for (from_to, local_hash, port, size) in data_list:
+                    try:
+                        ip = ports[port]
+                        remote_hash = containers[ip]
+                    except Exception as e:
+                        log.debug(e)
+                        continue
+                    if local_hash and remote_hash:
+                        if from_to == TO:
+                            self.counter.labels(src=local_hash, dst=remote_hash).inc(size)
+                        elif from_to == FROM:
+                            self.counter.labels(src=remote_hash, dst=local_hash).inc(size)
+            except Exception as e:
+                log.error(e)
             del self.cache[peer]
         self.cache = {}
