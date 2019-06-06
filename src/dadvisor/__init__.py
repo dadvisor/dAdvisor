@@ -1,7 +1,7 @@
 import asyncio
 
-from dadvisor.analyzer import Analyzer
 from dadvisor.containers import ContainerCollector
+from dadvisor.analyzer import Analyzer
 from dadvisor.inspector import InspectorThread
 from dadvisor.log import log
 from dadvisor.peers import PeersCollector

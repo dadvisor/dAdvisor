@@ -1,9 +1,7 @@
-import asyncio
-
 from prometheus_client import Counter
 
 from dadvisor import ContainerCollector, PeersCollector
-from dadvisor.config import INTERNAL_IP, CACHE_TIME
+from dadvisor.config import INTERNAL_IP
 from dadvisor.datatypes.dataflow import DataFlow
 from dadvisor.log import log
 from dadvisor.peers.peer_actions import get_ports
