@@ -6,10 +6,11 @@ from prometheus_client import Info
 from dadvisor.config import INTERNAL_IP, PROXY_PORT
 from dadvisor.datatypes.peer import Peer, from_list
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_peer_list, register_peer, get_tracker_info, ping
+from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_peer_list, register_peer, get_tracker_info, ping, \
+    remove_peer
 
 FILENAME = '/prometheus-federation.json'
-SLEEP_TIME = 30
+SLEEP_TIME = 60
 
 
 class PeersCollector(object):
@@ -20,15 +21,10 @@ class PeersCollector(object):
 
     def __init__(self):
         self.running = True
-        self.my_peer = None
-        self.peers = []  # List of Peer-objects
-        self.set_my_peer()
+        self.my_peer = Peer(INTERNAL_IP, PROXY_PORT)
+        self.peers = [self.my_peer]
         self.parent = None
         self.children = []
-
-    def set_my_peer(self):
-        self.my_peer = Peer(INTERNAL_IP, PROXY_PORT)
-        self.peers.append(self.my_peer)
 
     async def run(self):
         """
@@ -46,7 +42,6 @@ class PeersCollector(object):
                 succeeded = True
             except Exception as e:
                 log.error(e)
-                await asyncio.sleep(SLEEP_TIME)
 
         while self.running:
             try:
@@ -88,6 +83,7 @@ class PeersCollector(object):
                 log.error(e)
                 if p in self.peers:
                     self.peers.remove(p)
+                    await remove_peer(p)
                 continue
 
             try:
@@ -142,7 +138,7 @@ class PeersCollector(object):
         """
         data = await get_tracker_info(self.my_peer)
         self.parent = None
-        if data['parent']:
+        if 'parent' in data and data['parent']:
             self.parent = from_list(data['parent'])
         self.children = []
         for child in data['children']:

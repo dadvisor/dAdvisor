@@ -71,7 +71,7 @@ class ContainerCollector(object):
                 if 'PublicPort' in port_map:
                     key = str(port_map['PublicPort'])
                     if key not in self.analyser_thread.port_mapping and info.ip:
-                        self.analyser_thread.port_mapping[key] = self.get_hash(info.ip)
+                        self.analyser_thread.port_mapping[key] = self.ip_to_hash(info.ip)
 
     @property
     def container_mapping(self) -> Dict[str, str]:
