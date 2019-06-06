@@ -63,7 +63,7 @@ def get_app(loop, peers_collector, analyser, container_collector):
 
     async def container_ports(request):
         return web.json_response(
-            {port: container_collector.ip_to_hash(ip) for port, ip in analyser.port_mapping.values()})
+            {port: container_collector.ip_to_hash(ip) for port, ip in analyser.port_mapping.items()})
 
     async def node_info(request):
         return web.json_response(text=json.dumps({'parent': peers_collector.parent,

@@ -52,6 +52,8 @@ class Analyzer(object):
             peer = self.peers_collector.is_other_peer(dataflow.dst.host)
             if peer:
                 self.cache.add_to(peer[0], src_hash, dataflow.dst.port, dataflow.size)
+            else:
+                log.info('Dropping {}'.format(dataflow))
         elif not dataflow.src.is_local():
             # src is not local
             # dst is local
@@ -59,6 +61,8 @@ class Analyzer(object):
             peer = self.peers_collector.is_other_peer(dataflow.src.host)
             if peer:
                 self.cache.add_from(peer[0], dataflow.src.port, dst_hash, dataflow.size)
+            else:
+                log.info('Dropping {}'.format(dataflow))
 
     def add_port(self, address):
         if address.is_local():
