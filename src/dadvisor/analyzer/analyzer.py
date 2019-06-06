@@ -1,10 +1,8 @@
 from prometheus_client import Counter
 
 from dadvisor import ContainerCollector, PeersCollector
-from dadvisor.config import INTERNAL_IP
 from dadvisor.datatypes.dataflow import DataFlow
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import get_ports
 
 
 class Analyzer(object):
@@ -39,6 +37,7 @@ class Analyzer(object):
         self.add_port(dataflow.src)
         self.add_port(dataflow.dst)
 
+        log.info(dataflow)
         src_hash = None
         dst_hash = None
 
@@ -78,4 +77,3 @@ class Analyzer(object):
     #             ports = await get_ports(p)
     #             if address.port in ports:
     #                 address.container = ports[address.port]
-

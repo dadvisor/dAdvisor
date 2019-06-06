@@ -109,7 +109,7 @@ class PeersCollector(object):
 
     async def add_peer(self, host, port):
         host_format = host.replace('.', '_')
-        log.error('host: {}, port: {}'.format(host, port))
+        log.info('host: {}, port: {}'.format(host, port))
 
         try:
             info = Info('peer_{}'.format(host_format), 'Peer')
