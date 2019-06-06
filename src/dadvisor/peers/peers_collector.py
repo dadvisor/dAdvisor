@@ -76,14 +76,10 @@ class PeersCollector(object):
             await self.init_peers()
 
         for p in self.other_peers:
-            try:
-                if not ping(p.host):
-                    raise Exception('peer not up')
-            except Exception as e:
-                log.error(e)
-                if p in self.peers:
-                    self.peers.remove(p)
-                    await remove_peer(p)
+
+            if not ping(p.host):
+                self.peers.remove(p)
+                await remove_peer(p)
                 continue
 
             try:
@@ -98,8 +94,8 @@ class PeersCollector(object):
                         await self.add_peer(p2.host, p2.port)
             except Exception as e:
                 log.error(e)
-                if p in self.peers:
-                    self.peers.remove(p)
+                await remove_peer(p)
+                self.peers.remove(p)
 
     def get_peer_from_host(self, host):
         for peer in self.other_peers:
@@ -132,6 +128,7 @@ class PeersCollector(object):
         For the children, let it scrape by prometheus
         :return:
         """
+        await register_peer(self.my_peer)
         data = await get_tracker_info(self.my_peer)
         self.parent = None
         if 'parent' in data and data['parent']:

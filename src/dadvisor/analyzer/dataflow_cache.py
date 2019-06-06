@@ -49,7 +49,7 @@ class DataFlowCache(object):
                     ip = ports[port]
                     remote_hash = containers[ip]
                 except Exception as e:
-                    log.error(e)
+                    log.debug(e)
                     continue
                 if local_hash and remote_hash:
                     if from_to == TO:
