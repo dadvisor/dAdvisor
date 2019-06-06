@@ -141,8 +141,9 @@ class PeersCollector(object):
         if 'parent' in data and data['parent']:
             self.parent = from_list(data['parent'])
         self.children = []
-        for child in data['children']:
-            self.children.append(from_list(child))
+        if 'children' in data and data['children']:
+            for child in data['children']:
+                self.children.append(from_list(child))
         self.set_scraper()
 
     def set_scraper(self):

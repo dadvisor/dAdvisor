@@ -102,4 +102,6 @@ async def get_tracker_info(peer):
     async with aiohttp.ClientSession() as session:
         async with session.get('{}/node_info/{}/{}:{}'.format(TRACKER, INFO_HASH, peer.host, peer.port)) as resp:
             if resp.status == 200:
-                return await resp.json()
+                data = await resp.json()
+                log.info('Tracker info: {}'.format(data))
+                return data

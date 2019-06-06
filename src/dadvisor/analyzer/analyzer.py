@@ -61,21 +61,21 @@ class Analyzer(object):
         if address.is_local():
             self.port_mapping[address.port] = self.container_collector.ip_to_hash(address.container)
 
-    def resolve_local_address(self, address):
-        if address.host == INTERNAL_IP:
-            for info in self.container_collector.containers:
-                for port_map in info.ports:
-                    if 'PublicPort' in port_map and str(port_map['PublicPort']) == str(address.port):
-                        address.container = info.ip
-                        if 'PrivatePort' in port_map:
-                            address.port = str(port_map['PrivatePort'])
-                        return
-
-    async def resolve_remote_address(self, address):
-        if address.host != INTERNAL_IP:
-            p = self.peers_collector.get_peer_from_host(address.host)
-            if p:
-                ports = await get_ports(p)
-                if address.port in ports:
-                    address.container = ports[address.port]
+    # def resolve_local_address(self, address):
+    #     if address.host == INTERNAL_IP:
+    #         for info in self.container_collector.containers:
+    #             for port_map in info.ports:
+    #                 if 'PublicPort' in port_map and str(port_map['PublicPort']) == str(address.port):
+    #                     address.container = info.ip
+    #                     if 'PrivatePort' in port_map:
+    #                         address.port = str(port_map['PrivatePort'])
+    #                     return
+    #
+    # async def resolve_remote_address(self, address):
+    #     if address.host != INTERNAL_IP:
+    #         p = self.peers_collector.get_peer_from_host(address.host)
+    #         if p:
+    #             ports = await get_ports(p)
+    #             if address.port in ports:
+    #                 address.container = ports[address.port]
 
