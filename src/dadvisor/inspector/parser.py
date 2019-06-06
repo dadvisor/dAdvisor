@@ -25,8 +25,8 @@ def parse_size(s):
 def parse_row(row):
     row = row.rstrip()
     parts = row.split(' ')
-    src = to_address(parts[2])
-    dst = to_address(parts[4])
+    src = to_address(parts[1])
+    dst = to_address(parts[3])
 
     try:
         size = parse_size(parts[-1])

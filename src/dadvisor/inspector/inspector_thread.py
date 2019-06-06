@@ -22,13 +22,13 @@ class InspectorThread(Thread):
         self.check_installation()
         args = [['not', 'port', str(port), 'and'] for port in FILTER_PORTS]
         args = [j for i in args for j in i]
-        args.pop()  # remove last element (because it is 'and')
+        command = ['tcpdump', '-c', TRAFFIC_SAMPLE, '-i', 'any', '-nn', 'ip', 'and', '-l', '-t'] + args + ['tcp']
+        log.info('Running command: {}'.format(' '.join(command)))
 
         while True:
             # start timer
             t = time.time()
-            p = subprocess.Popen(['tcpdump', '-c', TRAFFIC_SAMPLE, '-i', 'any', '-n', '-l'] + args,
-                                 stdout=subprocess.PIPE)
+            p = subprocess.Popen(command, stdout=subprocess.PIPE)
 
             # parse results
             for row in iter(p.stdout.readline, b''):
