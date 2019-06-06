@@ -33,6 +33,7 @@ class InspectorThread(Thread):
             # parse results
             for row in iter(p.stdout.readline, b''):
                 try:
+                    log.info(row.decode('utf-8'))
                     dataflow = parse_row(row.decode('utf-8'))
                     log.info(dataflow)
                     if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
