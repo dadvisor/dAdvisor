@@ -22,7 +22,8 @@ class InspectorThread(Thread):
         self.check_installation()
         args = [['not', 'port', str(port), 'and'] for port in FILTER_PORTS]
         args = [j for i in args for j in i]
-        command = ['tcpdump', '-c', TRAFFIC_SAMPLE, '-i', 'any', '-nn', 'ip', 'and', '-l', '-t'] + args + ['tcp']
+        command = ['tcpdump', '-c', TRAFFIC_SAMPLE, '-i', 'any', '-nn', 'ip', 'and', '-l', '-t'] + args + \
+                  ['tcp', 'and', '\'(((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)\'']
         log.info('Running command: {}'.format(' '.join(command)))
 
         while True:
@@ -33,7 +34,6 @@ class InspectorThread(Thread):
             # parse results
             for row in iter(p.stdout.readline, b''):
                 try:
-                    log.info(row.decode('utf-8'))
                     dataflow = parse_row(row.decode('utf-8'))
                     log.info(dataflow)
                     if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
