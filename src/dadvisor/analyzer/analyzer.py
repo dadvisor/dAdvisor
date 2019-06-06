@@ -5,10 +5,9 @@ from prometheus_client import Counter
 
 from dadvisor import ContainerCollector, PeersCollector
 from dadvisor.analyzer.dataflow_cache import DataFlowCache
+from dadvisor.config import TRAFFIC_SAMPLE
 from dadvisor.datatypes.dataflow import DataFlow
 from dadvisor.log import log
-
-MAX_ITEMS = 20
 
 
 class Analyzer(object):
@@ -69,7 +68,6 @@ class Analyzer(object):
 
     def add_port(self, address):
         if address.is_local():
-            while len(self.ports) >= MAX_ITEMS:
+            while len(self.ports) >= TRAFFIC_SAMPLE:
                 del self.ports[next(self.ports.__iter__())]
-
             self.ports[address.port] = address.container

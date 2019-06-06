@@ -37,18 +37,20 @@ class DataFlowCache(object):
         After this function has been called, the cache is empty
         """
         for peer, data_list in self.cache.items():
-            log.info('Peer {} contains {} items'.format(peer.host, len(data_list)))
-            port_set = {port for (_, _, port, _) in data_list}
-            log.info('Ports: {}'.format(port_set))
-
             ports = await get_ports(peer)
             containers = await get_container_mapping(peer)
-            log.info(ports)
-            log.info(containers)
 
-            for (from_to, hash, port, size) in data_list:
-                if from_to == FROM:
-                    pass
+            for (from_to, local_hash, port, size) in data_list:
+                try:
+                    ip = ports[port]
+                    remote_hash = containers[ip]
+                except ValueError as e:
+                    log.debug(e)
+                    continue
+                if from_to == TO:
+                    self.counter.labels(src=local_hash, dst=remote_hash).inc(size)
+                elif from_to == FROM:
+                    self.counter.labels(src=remote_hash, dst=local_hash).inc(size)
 
             del self.cache[peer]
         self.cache = {}
