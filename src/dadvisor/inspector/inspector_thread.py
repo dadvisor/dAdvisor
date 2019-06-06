@@ -34,6 +34,7 @@ class InspectorThread(Thread):
             for row in iter(p.stdout.readline, b''):
                 try:
                     dataflow = parse_row(row.decode('utf-8'))
+                    log.info(dataflow)
                     if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
                         dataflow.size = round(dataflow.size * self.factor)
                         self.analyser.loop.create_task(self.analyser.analyse_dataflow(dataflow))
