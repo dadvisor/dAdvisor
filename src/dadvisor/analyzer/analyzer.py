@@ -42,9 +42,15 @@ class Analyzer(object):
         src_hash = None
         dst_hash = None
 
-        if dataflow.src.is_local() and dataflow.dst.is_local():
-            src_hash = self.container_collector.get_hash(dataflow.src.container)
-            dst_hash = self.container_collector.get_hash(dataflow.src.container)
+        if dataflow.src.is_local():
+            src_hash = self.container_collector.ip_to_hash(dataflow.src.container)
+        else:
+            pass  # Add to some kind of todo list
+
+        if dataflow.dst.is_local():
+            dst_hash = self.container_collector.ip_to_hash(dataflow.dst.container)
+        else:
+            pass  # Add to some kind of todo list
 
         if src_hash and dst_hash:
             log.debug('Found dataflow: {}'.format(dataflow))
@@ -53,7 +59,7 @@ class Analyzer(object):
 
     def add_port(self, address):
         if address.is_local():
-            self.port_mapping[address.port] = self.container_collector.get_hash(address.container)
+            self.port_mapping[address.port] = self.container_collector.ip_to_hash(address.container)
 
     def resolve_local_address(self, address):
         if address.host == INTERNAL_IP:

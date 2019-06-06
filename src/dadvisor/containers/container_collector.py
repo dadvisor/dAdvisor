@@ -80,8 +80,9 @@ class ContainerCollector(object):
         """
         return {c.ip: c.hash for c in self.containers_filtered}
 
-    def get_hash(self, ip: str) -> str:
-        return self.container_mapping[ip]
+    def ip_to_hash(self, ip: str) -> str:
+        if ip in self.container_mapping:
+            return self.container_mapping[ip]
 
     @property
     def containers_filtered(self) -> List[ContainerInfo]:
