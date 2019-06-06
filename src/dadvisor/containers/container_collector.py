@@ -69,7 +69,7 @@ class ContainerCollector(object):
                 if 'PublicPort' in port_map:
                     key = str(port_map['PublicPort'])
                     if key not in self.analyser_thread.port_mapping and info.ip:
-                        self.analyser_thread.port_mapping[key] = info.ip
+                        self.analyser_thread.port_mapping[key] = self.get_hash(info.ip)
 
     @property
     def container_mapping(self):
@@ -77,6 +77,9 @@ class ContainerCollector(object):
         :return: A dict from local ip to container id
         """
         return {c.ip: c.hash for c in self.containers_filtered}
+
+    def get_hash(self, ip):
+        return self.container_mapping[ip] or ''
 
     @property
     def containers_filtered(self):

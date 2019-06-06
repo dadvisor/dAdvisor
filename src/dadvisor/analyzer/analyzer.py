@@ -39,8 +39,9 @@ class Analyzer(object):
         self.add_port(dataflow.src)
         self.add_port(dataflow.dst)
 
-        self.resolve_local_address(dataflow.src)
-        self.resolve_local_address(dataflow.dst)
+        if dataflow.src.is_local() and dataflow.dst.is_local():
+            self.resolve_local_address(dataflow.src)
+            self.resolve_local_address(dataflow.dst)
 
         await asyncio.sleep(CACHE_TIME)
         await self.resolve_remote_address(dataflow.dst)
@@ -54,11 +55,11 @@ class Analyzer(object):
 
     def add_port(self, address):
         if address.is_local():
-            self.port_mapping[address.port] = address.container
+            self.port_mapping[address.port] = self.container_collector.get_hash(address.container)
 
     def resolve_local_address(self, address):
         if address.host == INTERNAL_IP:
-            for info in self.container_collector.own_containers:
+            for info in self.container_collector.containers:
                 for port_map in info.ports:
                     if 'PublicPort' in port_map and str(port_map['PublicPort']) == str(address.port):
                         address.container = info.ip
