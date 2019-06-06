@@ -18,11 +18,7 @@ def ping(host):
     Returns True if host (str) responds to a ping request.
     Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
     """
-
-    # Option for the number of packets as a function of
     param = '-n' if platform.system().lower() == 'windows' else '-c'
-
-    # Building the command. Ex: "ping -c 1 google.com"
     command = ['ping', param, '1', host]
     return subprocess.call(command, stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT) == 0
 
@@ -44,15 +40,15 @@ async def expose_peer(my_peer, other_peer):
             return []
 
 
-async def get_containers(peer):
+async def get_ports(peer):
     async with aiohttp.ClientSession() as session:
-        async with session.get(get_name(peer) + '/containers') as resp:
+        async with session.get(get_name(peer) + '/ports') as resp:
             return await resp.json()
 
 
-async def get_container_ports(peer):
+async def get_container_mapping(peer):
     async with aiohttp.ClientSession() as session:
-        async with session.get(get_name(peer) + '/container_ports') as resp:
+        async with session.get(get_name(peer) + '/container_mapping') as resp:
             return await resp.json()
 
 

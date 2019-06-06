@@ -39,6 +39,5 @@ class DataFlowCache(object):
             port_set = {port for (_, _, port, _) in data_list}
             log.info('Ports: {}'.format(port_set))
 
-
-
+            del self.cache[peer]
         self.cache = {}

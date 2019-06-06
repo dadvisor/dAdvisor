@@ -69,7 +69,7 @@ class ContainerCollector(object):
 
             for port_map in info.ports:
                 if 'PublicPort' in port_map:
-                    key = str(port_map['PublicPort'])
+                    key = int(port_map['PublicPort'])
                     if key not in self.analyser_thread.port_mapping and info.ip:
                         self.analyser_thread.port_mapping[key] = info.ip
 

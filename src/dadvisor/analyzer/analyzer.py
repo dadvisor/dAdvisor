@@ -8,7 +8,7 @@ from dadvisor.analyzer.dataflow_cache import DataFlowCache
 from dadvisor.datatypes.dataflow import DataFlow
 from dadvisor.log import log
 
-MAX_ITEMS = 200
+MAX_ITEMS = 20
 
 
 class Analyzer(object):
@@ -69,4 +69,7 @@ class Analyzer(object):
 
     def add_port(self, address):
         if address.is_local():
+            while len(self.ports) >= MAX_ITEMS:
+                del self.ports[next(self.ports.__iter__())]
+
             self.ports[address.port] = address.container
