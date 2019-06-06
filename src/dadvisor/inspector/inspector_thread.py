@@ -23,7 +23,7 @@ class InspectorThread(Thread):
         args = [['not', 'port', str(port), 'and'] for port in FILTER_PORTS]
         args = [j for i in args for j in i]
         command = ['tcpdump', '-c', TRAFFIC_SAMPLE, '-i', 'any', '-nn', 'ip', 'and', '-l', '-t'] + args + \
-                  ['tcp', 'and', '\'(((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)\'']
+                  ['tcp', 'and', '(((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)']
         log.info('Running command: {}'.format(' '.join(command)))
 
         while True:
