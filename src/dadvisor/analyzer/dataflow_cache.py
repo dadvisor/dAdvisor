@@ -36,7 +36,7 @@ class DataFlowCache(object):
         Ask all peers to resolve their ports into a container-hash.
         After this function has been called, the cache is empty
         """
-        for peer, data_list in self.cache.items():
+        for peer, data_list in list(self.cache.items()):
             ports = await get_ports(peer)
             containers = await get_container_mapping(peer)
 

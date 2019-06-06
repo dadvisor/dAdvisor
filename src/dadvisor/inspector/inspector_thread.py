@@ -60,7 +60,7 @@ class InspectorThread(Thread):
 
             self.analyser.loop.create_task(self.analyser.cache.resolve())
 
-            self.factor = max(TRAFFIC_SLEEP_TIME / elapsed, 1)
+            self.factor = 1 + TRAFFIC_SLEEP_TIME / elapsed
             time.sleep(max(TRAFFIC_SLEEP_TIME - (time.time() - end_time), 0))
             log.info('Set factor to: {}'.format(self.factor))
 
