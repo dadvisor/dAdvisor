@@ -1,6 +1,7 @@
 from prometheus_client import Counter
 
 from dadvisor import ContainerCollector, PeersCollector
+from dadvisor.analyzer.dataflow_cache import DataFlowCache
 from dadvisor.datatypes.dataflow import DataFlow
 from dadvisor.log import log
 
@@ -14,6 +15,7 @@ class Analyzer(object):
         self.loop = loop
         self.port_mapping = {}  # a dict from port to container_id
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
+        self.cache = DataFlowCache()
 
     async def analyse_dataflow(self, dataflow: DataFlow):
         """
@@ -41,20 +43,16 @@ class Analyzer(object):
         src_hash = None
         dst_hash = None
 
-        if dataflow.src.is_local():
+        if dataflow.src.is_local() and dataflow.dst.is_local():
             src_hash = self.container_collector.ip_to_hash(dataflow.src.container)
-        else:
-            pass  # Add to some kind of todo list
-
-        if dataflow.dst.is_local():
             dst_hash = self.container_collector.ip_to_hash(dataflow.dst.container)
-        else:
-            pass  # Add to some kind of todo list
-
-        log.info('src: {}, dst: {}'.format(src_hash, dst_hash))
+        elif not dataflow.dst.is_local():
+            src_hash = self.container_collector.ip_to_hash(dataflow.src.container)
+            peer = self.peers_collector.is_other_peer(dataflow.dst.host)
+            log.info(peer)
 
         if src_hash and dst_hash:
-            log.debug('Found dataflow: {}'.format(dataflow))
+            log.info('Found dataflow: {}'.format(dataflow))
             self.counter.labels(src=src_hash, dst=dst_hash).inc(dataflow.size)
 
     def add_port(self, address):
