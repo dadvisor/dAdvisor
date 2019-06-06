@@ -49,7 +49,6 @@ class Analyzer(object):
             src_hash = self.container_collector.ip_to_hash(dataflow.src.container)
             dst_hash = self.container_collector.ip_to_hash(dataflow.dst.container)
             if src_hash and dst_hash:
-                log.info('Found dataflow: {}'.format(dataflow))
                 self.counter.labels(src=src_hash, dst=dst_hash).inc(dataflow.size)
         elif not dataflow.dst.is_local():
             # src is local
