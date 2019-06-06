@@ -38,6 +38,8 @@ class DataFlowCache(object):
         """
         for peer, data_list in list(self.cache.items()):
             ports = await get_ports(peer)
+            # port is encoded as string, therefore decode to int
+            ports = {int(port): ip for port, ip in ports}
             containers = await get_container_mapping(peer)
             log.info(ports)
             log.info(containers)
