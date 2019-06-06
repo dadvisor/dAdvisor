@@ -31,10 +31,6 @@ class Address(object):
         return self.host == INTERNAL_IP and re.match(r'172.\d+.0.\d+', self.container)
 
     @staticmethod
-    def is_host(host, container):
-        return host == INTERNAL_IP and re.match(r'172.\d+.0.1', container)
-
-    @staticmethod
     def decode(host_container, port):
         """
         :param host_container: either the address of a container, or of a host

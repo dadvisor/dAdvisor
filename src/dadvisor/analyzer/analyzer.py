@@ -51,9 +51,10 @@ class Analyzer(object):
         else:
             pass  # Add to some kind of todo list
 
+        log.debug('src: {}, dst: {}'.format(src_hash, dst_hash))
+
         if src_hash and dst_hash:
             log.debug('Found dataflow: {}'.format(dataflow))
-            log.debug('src: {}, dst: {}'.format(src_hash, dst_hash))
             self.counter.labels(src=src_hash, dst=dst_hash).inc(dataflow.size)
 
     def add_port(self, address):
