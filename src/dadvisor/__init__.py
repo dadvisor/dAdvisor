@@ -1,10 +1,11 @@
 import asyncio
 
+
+from dadvisor.peers import PeersCollector
 from dadvisor.containers import ContainerCollector
 from dadvisor.analyzer import Analyzer
 from dadvisor.inspector import InspectorThread
 from dadvisor.log import log
-from dadvisor.peers import PeersCollector
 from dadvisor.waste import WasteCollector
 from dadvisor.web import get_app, run_app
 
