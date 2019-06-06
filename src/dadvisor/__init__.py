@@ -1,6 +1,5 @@
 import asyncio
 
-
 from dadvisor.peers import PeersCollector
 from dadvisor.containers import ContainerCollector
 from dadvisor.analyzer import Analyzer
@@ -37,5 +36,12 @@ def run_forever():
         loop.run_forever()
     except KeyboardInterrupt:
         log.info('Stopping loop')
+        loop.create_task(peers_collector.stop())
+        inspector_thread.stop()
+        container_collector.stop()
+        waste_collector.stop()
+        loop.stop()
+        log.info('Loop stopped')
     finally:
         loop.close()
+        log.info('Loop closed')

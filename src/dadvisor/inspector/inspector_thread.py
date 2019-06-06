@@ -16,6 +16,7 @@ class InspectorThread(Thread):
         Thread.__init__(self, name='InspectorThread')
         self.peers_collector = peers_collector
         self.analyser = analyser
+        self.running = True
         self.factor = 1
 
     def run(self):
@@ -26,7 +27,7 @@ class InspectorThread(Thread):
                   ['tcp', 'and', '(((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)']
         log.info('Running command: {}'.format(' '.join(command)))
 
-        while True:
+        while self.running:
             """
             One iteration of this while loop performns the following actions:
             1. Run the tcpdump command that captures TRAFFIC_SAMPLE requests
@@ -63,6 +64,7 @@ class InspectorThread(Thread):
             self.factor = 1 + TRAFFIC_SLEEP_TIME / elapsed
             time.sleep(max(TRAFFIC_SLEEP_TIME - (time.time() - end_time), 0))
             log.info('Set factor to: {}'.format(self.factor))
+        log.info('Inspector thread stopped')
 
     @staticmethod
     def check_installation():
@@ -82,3 +84,7 @@ class InspectorThread(Thread):
                     (data_flow.dst.host == p.address.host and int(data_flow.dst.port) == int(p.address.port)):
                 return True
         return False
+
+    def stop(self):
+        log.info('Stopping InspectorThread')
+        self.running = False

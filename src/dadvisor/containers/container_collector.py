@@ -49,6 +49,7 @@ class ContainerCollector(object):
                 await self.validate_own_containers()
             except Exception as e:
                 log.error(e)
+        log.info('ContainerCollector stopped')
 
     async def collect_own_containers(self):
         cmd = 'curl -s --unix-socket /var/run/docker.sock http://localhost/containers/json'
@@ -102,3 +103,7 @@ class ContainerCollector(object):
             'host': INTERNAL_IP,
             'num_cores': str(num_cores),
             'memory': str(memory)})
+
+    def stop(self):
+        self.running = False
+        log.info('Stopping containerCollector')

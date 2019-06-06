@@ -162,3 +162,7 @@ class PeersCollector(object):
         if old_data != new_data:
             with open(FILENAME, 'w') as file:
                 file.write(new_data)
+
+    async def stop(self):
+        self.running = False
+        await remove_peer(self.my_peer)

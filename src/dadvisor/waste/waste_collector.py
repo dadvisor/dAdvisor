@@ -14,11 +14,12 @@ class WasteCollector(object):
     """
 
     def __init__(self):
+        self.running = True
         self.waste_container = Gauge('waste_container', 'Waste utilization for a container', ['id'])
         self.waste_container_sum = Counter('waste_container', 'Total waste utilization for a container', ['id'])
 
     async def run(self):
-        while True:
+        while self.running:
             try:
                 now = datetime.utcnow()
                 next_hour = now.replace(minute=0, second=20) + timedelta(hours=1)
@@ -28,6 +29,7 @@ class WasteCollector(object):
                 await self.compute_waste()
             except Exception as e:
                 log.error(e)
+        log.info('WasteCollector stopped')
 
     async def compute_waste(self):
         info = await get_container_utilization()
@@ -56,3 +58,6 @@ class WasteCollector(object):
                 waste_list[i] = elem * (1 - u) / w
         return waste_list
 
+    def stop(self):
+        self.running = False
+        log.info('Stopping WasteCollector')
