@@ -2,7 +2,7 @@ import subprocess
 import time
 from threading import Thread
 
-from dadvisor.config import FILTER_PORTS, TRAFFIC_SAMPLE, TRAFFIC_SLEEP_TIME
+from dadvisor.config import FILTER_PORTS, TRAFFIC_SAMPLE, TRAFFIC_K, TRAFFIC_SLEEP_MAX, TRAFFIC_SLEEP_MIN
 from dadvisor.inspector.parser import parse_row
 from dadvisor.log import log
 
@@ -17,29 +17,18 @@ class InspectorThread(Thread):
         self.peers_collector = peers_collector
         self.analyser = analyser
         self.running = True
-        self.factor = 1
 
     def run(self):
         self.check_installation()
-        args = [['not', 'port', str(port), 'and'] for port in FILTER_PORTS]
-        args = [j for i in args for j in i]
-        command = ['tcpdump', '-c', TRAFFIC_SAMPLE, '-i', 'any', '-nn', 'ip', 'and', '-l', '-t'] + args + \
-                  ['tcp', 'and', '(((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)']
-        log.info('Running command: {}'.format(' '.join(command)))
+        command = self.get_tcpdump_command()
 
         while self.running:
             """
             One iteration of this while loop performns the following actions:
-            1. Run the tcpdump command that captures TRAFFIC_SAMPLE requests
+            1. Run the tcpdump command that captures TRAFFIC_SAMPLE requests. 
+                This is collected in X seconds.
             2. Resolve these requests by communicating with the other peers
-            3. Sleep X seconds.
-            
-            The multiplication factor for the sampling is calculated as: 
-               TRAFFIC_SLEEP_TIME over the time it takes to perform step 1.
-               
-            Step 2 and step 3 together consume TRAFFIC_SLEEP_TIME seconds.
-            Therefore, the X from step 3 can be resolved as:
-               TRAFFIC_SLEEP_TIME - time it takes to perform step 2.
+            3. Sleep k*X seconds, with a lower- and upperbound.
             """
 
             start_time = time.time()
@@ -49,21 +38,24 @@ class InspectorThread(Thread):
             for row in iter(p.stdout.readline, b''):
                 try:
                     dataflow = parse_row(row.decode('utf-8'))
-                    if dataflow.size > 0 and not self.is_p2p_communication(dataflow):
-                        dataflow.size = round(dataflow.size * self.factor)
-                        self.analyser.loop.create_task(self.analyser.analyse_dataflow(dataflow))
+                    dataflow.size = dataflow.size * (TRAFFIC_K + 1)
+                    self.analyser.loop.create_task(self.analyser.analyse_dataflow(dataflow))
                 except Exception as e:
-                    log.warn(e)
-                    log.warn('Cannot parse row: %s' % row.decode('utf-8').rstrip())
+                    log.error(e)
+                    log.error('Cannot parse row: {}'.format(row.decode('utf-8').rstrip()))
 
             end_time = time.time()
-            elapsed = max(end_time - start_time, 1)
+            elapsed = end_time - start_time
+            log.info('Monitoring {} packets in {} sec'.format(TRAFFIC_SAMPLE, elapsed))
 
             self.analyser.loop.create_task(self.analyser.cache.resolve())
 
-            self.factor = 1 + TRAFFIC_SLEEP_TIME / elapsed
-            time.sleep(max(TRAFFIC_SLEEP_TIME - (time.time() - end_time), 0))
-            log.info('Set factor to: {}'.format(self.factor))
+            # sleep K times the elapsed time. Minus the time it takes to resolve the cache
+            sleep_time = TRAFFIC_K * elapsed - (time.time() - end_time)
+            sleep_time = min(max(sleep_time, TRAFFIC_SLEEP_MIN), TRAFFIC_SLEEP_MAX)
+            log.info('Sleeping for: {} sec'.format(sleep_time))
+            time.sleep(sleep_time)
+
         log.info('Inspector thread stopped')
 
     @staticmethod
@@ -74,16 +66,14 @@ class InspectorThread(Thread):
             log.error('tcpdump is not installed. Please install it before running this code.')
             exit(-1)
 
-    def is_p2p_communication(self, data_flow):
-        """
-        Skip communication between peers
-        :return:
-        """
-        for p in self.peers_collector.peers:
-            if (data_flow.src.host == p.address.host and int(data_flow.src.port) == int(p.address.port)) or \
-                    (data_flow.dst.host == p.address.host and int(data_flow.dst.port) == int(p.address.port)):
-                return True
-        return False
+    @staticmethod
+    def get_tcpdump_command():
+        args = [['not', 'port', str(port), 'and'] for port in FILTER_PORTS]
+        args = [j for i in args for j in i]
+        command = ['tcpdump', '-c', TRAFFIC_SAMPLE, '-i', 'any', '-nn', 'ip', 'and', '-l', '-t'] + args + \
+                  ['tcp', 'and', '(((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)']
+        log.info('Running command: {}'.format(' '.join(command)))
+        return command
 
     def stop(self):
         log.info('Stopping InspectorThread')
