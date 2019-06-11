@@ -40,8 +40,10 @@ The following options can be configured, by setting the environment variable:
 - `FILTER_PORTS`: comma-separated list of ports that are filtered, so there is no information captured on these ports. Default: `22,14101,DADVISOR_PORT`.
 - `TRAFFIC_SLEEP_TIME`: time (in seconds) for which the program doesn't collect internet traffic. Default: `60`.
 - `TRAFFIC_SAMPLE`: Amount of lines that are captured before sleeping. Default: `1000`.
-- `INTERNAL_IP`: IP used for communicating with other hosts. Default: `socket.gethostbyname(socket.gethostname())`.
-- `INFO_HASH`: INFO_HASH must be unique per p2p system and is used to find other peers. Default: `abc1234567890`.
+- `TRAFFIC_K`: If `TRAFFIC_SAMPLE` packets are collected in X seconds, than after these X seconds, the program sleeps for `K*X` seconds. Therefore, increasing `K` leads to a better performance, but a decrease in accuracy.
+- `TRAFFIC_SLEEP_MIN` and `TRAFFIC_SLEEP_MAX`. Lower- and upperbound for sleeping times.  
+- `IP`: IP used for communicating with other hosts. Default: `socket.gethostbyname(socket.gethostname())`.
+- `INFO_HASH`: the info-hash must be unique per p2p system and is used to find other peers. Default: `abc1234567890`.
 - `LOG_LEVEL`: Filter for which level logs are received. Default `ERROR`.
 
 
