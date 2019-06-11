@@ -1,6 +1,6 @@
 import re
 
-from dadvisor.config import INTERNAL_IP
+from dadvisor.config import IP
 
 
 class Address(object):
@@ -28,7 +28,7 @@ class Address(object):
         return hash(str(self))
 
     def is_local(self):
-        return self.host == INTERNAL_IP
+        return self.host == IP
 
     @staticmethod
     def decode(host_container, port):
@@ -38,5 +38,5 @@ class Address(object):
         :return:
         """
         if re.match(r'172.\d+.0.\d+', host_container):
-            return Address(INTERNAL_IP, host_container, port)
+            return Address(IP, host_container, port)
         return Address(host_container, '', port)

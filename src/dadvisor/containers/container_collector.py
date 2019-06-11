@@ -6,7 +6,7 @@ from typing import Dict, List
 from prometheus_client import Info
 
 from dadvisor import PeersCollector
-from dadvisor.config import INTERNAL_IP
+from dadvisor.config import IP
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.container_info import ContainerInfo
 from dadvisor.log import log
@@ -100,7 +100,7 @@ class ContainerCollector(object):
         num_cores = info['num_cores']
         memory = sum([fs['capacity'] for fs in info['filesystems'] if fs['device'].startswith('/dev/')])
         self.default_host_price.info({
-            'host': INTERNAL_IP,
+            'host': IP,
             'num_cores': str(num_cores),
             'memory': str(memory)})
 

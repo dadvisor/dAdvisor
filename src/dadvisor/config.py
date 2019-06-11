@@ -3,18 +3,17 @@ This file contains all configurable options.
 In the future, set these values based on environment variables.
 """
 
-import asyncio
 import os
 import socket
 import sys
 from datetime import datetime
 
-import aiohttp
-
 from dadvisor.log import log
 
 # INTERNAL PORTS AND ADDRESSES
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+IP = os.environ.get('IP', socket.gethostbyname(socket.gethostname()))
+
 PROXY_PORT = int(os.environ.get('DADVISOR_PORT', 14100))
 INTERNAL_PORT = 14101
 PROMETHEUS_PORT = 14102
@@ -31,24 +30,9 @@ log.info('Filtering internet traffic ports: {}'.format(FILTER_PORTS))
 # INTERNET TRAFFIC
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TRAFFIC_SAMPLE = int(os.environ.get('TRAFFIC_SAMPLE', 1000))
-TRAFFIC_K = int(os.environ.get('TRAFFIC_K', 5))
+TRAFFIC_K = int(os.environ.get('TRAFFIC_K', 9))
 TRAFFIC_SLEEP_MIN = int(os.environ.get('TRAFFIC_SLEEP_MIN', 1))
 TRAFFIC_SLEEP_MAX = int(os.environ.get('TRAFFIC_SLEEP_MAX', 150))
-
-
-# IP ADDRESSES
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-async def get_ip():
-    async with aiohttp.ClientSession() as session:
-        async with session.get('https://api.ipify.org?format=json') as resp:
-            data = await resp.json()
-            return data['ip']
-
-
-INTERNAL_IP = os.environ.get('INTERNAL_IP', socket.gethostbyname(socket.gethostname()))
-loop = asyncio.get_event_loop()
-# IP = loop.run_until_complete(get_ip())
-# log.info('IP: {}'.format(IP))
 
 
 # INFO_HASH
