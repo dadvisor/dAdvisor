@@ -20,7 +20,8 @@ def run_forever():
     inspector_thread = InspectorThread(peers_collector, traffic_analyzer)
     waste_collector = WasteCollector()
 
-    app = get_app(loop, peers_collector, traffic_analyzer, container_collector)
+    app = loop.run_until_complete(
+        get_app(loop, peers_collector, traffic_analyzer, container_collector))
 
     # Start threads
     inspector_thread.start()

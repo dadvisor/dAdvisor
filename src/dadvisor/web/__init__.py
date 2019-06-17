@@ -17,7 +17,7 @@ async def run_app(app):
     await site.start()
 
 
-def get_app(loop, peers_collector, analyser, container_collector):
+async def get_app(loop, peers_collector, analyser, container_collector):
     """
     Expose a number of endpoints, such that peers can communicate with each other.
     Note that every endpoint starts with PREFIX. This has been done, because all
