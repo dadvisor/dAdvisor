@@ -8,7 +8,7 @@ def get_name(peer):
     return 'http://{}:{}{}'.format(peer.host, peer.port, PREFIX)
 
 
-def get_peer_info(peer):
+async def get_peer_info(peer):
     async with aiohttp.ClientSession() as session:
         async with session.get(get_name(peer) + '/get_info') as resp:
             return await resp.json()
