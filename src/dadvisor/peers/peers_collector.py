@@ -24,7 +24,6 @@ class PeersCollector(object):
         self.running = True
         self.my_peer = Peer(IP, PROXY_PORT)
         self.other_peers = []
-        self.set_my_peer()
 
     async def set_my_peer(self):
         num_cores, memory = await get_machine_info()

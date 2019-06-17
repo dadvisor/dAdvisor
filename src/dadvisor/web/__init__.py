@@ -60,7 +60,7 @@ async def get_app(loop, peers_collector, analyser, container_collector):
     async def set_peers(request):
         data = await request.post()
         peers = data['peers']
-        peers_collector.set_peers(peers)
+        await peers_collector.set_peers(peers)
         log.info(peers)
         return web.Response(body='OK')
 
