@@ -1,7 +1,7 @@
 #!/bin/sh
 set -ex
 
-if [[ "$DATA_REPLICATION"="1"]]; then
+if [[ "$DATA_REPLICATION"="1" ]]; then
 	echo "Starting Prometheus and Grafana"
 
 	./prometheus/prometheus --web.listen-address=:14102 \
