@@ -27,6 +27,7 @@ def run_forever():
     inspector_thread.start()
 
     # Create tasks
+    loop.create_task(peers_collector.set_my_peer())
     loop.create_task(run_app(app))
     loop.create_task(peers_collector.run())
     loop.create_task(container_collector.run())

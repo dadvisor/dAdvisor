@@ -25,8 +25,7 @@ async def get_app(loop, peers_collector, analyser, container_collector):
     Internally, they all have a different port, but now only one port needs to be opened
     on the host, to allow the communication.
     """
-    data = await get_machine_info()
-    num_cores, memory = data
+    num_cores, memory = await get_machine_info()
 
     async def metrics(request):
         """ Each endpoint might use a request argument, but most of them don't need it."""

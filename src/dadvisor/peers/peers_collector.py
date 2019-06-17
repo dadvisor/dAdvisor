@@ -22,12 +22,11 @@ class PeersCollector(object):
 
     def __init__(self):
         self.running = True
-        self.my_peer = None
+        self.my_peer = Peer(IP, PROXY_PORT)
         self.other_peers = []
         self.set_my_peer()
 
-    def set_my_peer(self):
-        self.my_peer = Peer(IP, PROXY_PORT)
+    async def set_my_peer(self):
         num_cores, memory = await get_machine_info()
         PEER_INFO.labels(host=IP).info({
             'port': str(PROXY_PORT),
