@@ -1,11 +1,6 @@
-import os
-import platform
-import subprocess
-
 import aiohttp
 
 from dadvisor.config import TRACKER, INFO_HASH, PREFIX
-from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
 
 
@@ -13,31 +8,10 @@ def get_name(peer):
     return 'http://{}:{}{}'.format(peer.host, peer.port, PREFIX)
 
 
-def ping(host):
-    """
-    Returns True if host (str) responds to a ping request.
-    Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
-    """
-    param = '-n' if platform.system().lower() == 'windows' else '-c'
-    command = ['ping', param, '1', host]
-    return subprocess.call(command, stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT) == 0
-
-
-async def fetch_peers(peer):
+def get_peer_info(peer):
     async with aiohttp.ClientSession() as session:
-        async with session.get(get_name(peer) + '/peers') as resp:
-            return [Peer(p2['host'], p2['port']) for p2 in await resp.json()]
-
-
-async def expose_peer(my_peer, other_peer):
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(
-                    get_name(other_peer) + '/peers/add/{}:{}'.format(my_peer.host, my_peer.port)) as resp:
-                return await resp.json()
-        except Exception as e:
-            log.error(e)
-            return []
+        async with session.get(get_name(peer) + '/get_info') as resp:
+            return await resp.json()
 
 
 async def get_ports(peer):

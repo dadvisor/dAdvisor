@@ -1,16 +1,17 @@
-import asyncio
 import json
 
 from prometheus_client import Info
 
 from dadvisor.config import IP, PROXY_PORT
+from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_peer_list, register_peer, \
-    ping, remove_peer
+from dadvisor.peers.peer_actions import get_peer_list, register_peer, remove_peer, get_peer_info
 
 FILENAME = '/prometheus-federation.json'
 SLEEP_TIME = 60
+
+PEER_INFO = Info('peer', 'Peers', ['host'])
 
 
 class PeersCollector(object):
@@ -21,15 +22,30 @@ class PeersCollector(object):
 
     def __init__(self):
         self.running = True
+        self.my_peer = None
+        self.other_peers = []
+        self.set_my_peer()
+
+    def set_my_peer(self):
         self.my_peer = Peer(IP, PROXY_PORT)
-        self.peers = [self.my_peer]
+        num_cores, memory = await get_machine_info()
+        PEER_INFO.labels(host=IP).info({
+            'port': str(PROXY_PORT),
+            'num_cores': str(num_cores),
+            'memory': str(memory)})
+
+    @staticmethod
+    async def set_peer_info(p, data):
+        PEER_INFO.labels(host=p.host).info({
+            'port': str(p.port),
+            'num_cores': str(data['num_cores']),
+            'memory': str(data['memory'])})
 
     async def run(self):
         """
         This run method performs the following two actions:
         1. register this peer in the tracker
         2. continuously perform the following actions:
-            - ask the tracker for its parent and children
             - validate other peers
         :return:
         """
@@ -41,77 +57,26 @@ class PeersCollector(object):
             except Exception as e:
                 log.error(e)
 
-        while self.running:
-            try:
-                await asyncio.sleep(SLEEP_TIME)
-                await self.validate_peers()
-            except Exception as e:
-                log.error(e)
-
     @property
-    def addresses(self):
-        return [p.host for p in self.other_peers]
-
-    @property
-    def other_peers(self):
-        return [p for p in self.peers if p != self.my_peer]
+    def peers(self):
+        return [self.my_peer] + self.other_peers
 
     def is_other_peer(self, host):
         return [p for p in self.other_peers if p.host == host]
 
-    async def init_peers(self):
-        """ Read peers from the tracker and add them to the list
-        """
-        for p in await get_peer_list():
-            host, port = p
-            if ping(host):
-                await self.add_peer(host, port)
-
-    async def validate_peers(self):
-        log.info('Validating other peers: {}'.format(len(self.other_peers)))
-        if not self.other_peers:
-            await self.init_peers()
-
-        for p in self.other_peers:
-
-            if not ping(p.host):
-                self.peers.remove(p)
-                await remove_peer(p)
+    async def set_peers(self, peers):
+        self.other_peers = []
+        for p in peers:
+            peer = Peer(p[0], p[1])
+            if peer == self.my_peer:
                 continue
-
             try:
-                peer_list = await fetch_peers(p)
-                # Expose own node if it is not in the other_peers-list
-                if self.my_peer not in peer_list:
-                    await expose_peer(self.my_peer, p)
-
-                # Add new peers (if they're not in the list)
-                for p2 in peer_list:
-                    if p2 not in self.peers:
-                        await self.add_peer(p2.host, p2.port)
+                info = await get_peer_info(peer)
+                await self.set_peer_info(peer, info)
+                self.other_peers.append(peer)
             except Exception as e:
                 log.error(e)
-                await remove_peer(p)
-                self.peers.remove(p)
-
-    async def add_peer(self, host, port):
-        host_format = host.replace('.', '_')
-
-        try:
-            info = Info('peer_{}'.format(host_format), 'Peer')
-            info.info({'host': host, 'port': str(port)})
-        except ValueError:
-            pass
-
-        p = Peer(host, port)
-        try:
-            if p not in self.peers:
-                self.peers.append(p)
-                log.info('Adding peer: {}'.format(p))
-                await expose_peer(self.my_peer, p)
-        except Exception as e:
-            log.error(e)
-        return p
+        self.set_scraper()
 
     def set_scraper(self):
         """ Set a line with federation information. Prometheus is configured in

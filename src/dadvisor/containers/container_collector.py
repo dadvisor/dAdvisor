@@ -3,11 +3,7 @@ import json
 import subprocess
 from typing import Dict, List
 
-from prometheus_client import Info
-
 from dadvisor import PeersCollector
-from dadvisor.config import IP
-from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.container_info import ContainerInfo
 from dadvisor.log import log
 
@@ -20,8 +16,6 @@ class ContainerCollector(object):
         self.peers_collector = peers_collector
         self.running = True
         self.analyser_thread = None
-        self.default_host_price = Info('default_host_price', 'Default host price in dollars')
-
         self.containers: List[ContainerInfo] = []
 
     async def run(self):
@@ -33,14 +27,6 @@ class ContainerCollector(object):
             - validate own containers (find out ip address and if they're alive)
         :return:
         """
-        succeeded = False
-        while not succeeded:
-            try:
-                await self.collect_host_price()
-                succeeded = True
-            except Exception as e:
-                log.error(e)
-                await asyncio.sleep(SLEEP_TIME)
 
         while self.running:
             try:
@@ -94,15 +80,6 @@ class ContainerCollector(object):
         """
         skip = '/dadvisor'
         return [info for info in self.containers if skip not in info.names]
-
-    async def collect_host_price(self):
-        info = await get_machine_info()
-        num_cores = info['num_cores']
-        memory = sum([fs['capacity'] for fs in info['filesystems'] if fs['device'].startswith('/dev/')])
-        self.default_host_price.info({
-            'host': IP,
-            'num_cores': str(num_cores),
-            'memory': str(memory)})
 
     def stop(self):
         self.running = False
