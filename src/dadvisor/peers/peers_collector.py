@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from prometheus_client import Info
@@ -6,7 +7,7 @@ from dadvisor.config import IP, PROXY_PORT
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import register_peer, remove_peer, get_peer_info
+from dadvisor.peers.peer_actions import register_peer, remove_peer, get_peer_info, get_peer_list
 
 FILENAME = '/prometheus-federation.json'
 SLEEP_TIME = 60
@@ -55,12 +56,22 @@ class PeersCollector(object):
             except Exception as e:
                 log.error(e)
 
+        while self.running:
+            try:
+                await asyncio.sleep(SLEEP_TIME)
+                await self.set_other_peers()
+            except Exception as e:
+                log.error(e)
+
     @property
     def peers(self):
         return [self.my_peer] + self.other_peers
 
     def is_other_peer(self, host):
         return [p for p in self.other_peers if p.host == host]
+
+    async def set_other_peers(self):
+        await self.set_peers(await get_peer_list())
 
     async def set_peers(self, peers):
         self.other_peers = []
