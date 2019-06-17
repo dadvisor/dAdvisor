@@ -1,23 +1,7 @@
 scrape_configs:
-- job_name: 'cadvisor'
-  scrape_interval: 5s
-  static_configs:
-  - targets: ['localhost:14104']
-
-- job_name: 'promadvisor'
-  scrape_interval: 30s
-  metrics_path: '/prometheus/federate'
-
-  params:
-    'match[]':
-      - '{job=~".*advisor"}'  # match everything with *advisor
-
-  file_sd_configs:
-  - files:
-    - /prometheus-federation.json
-
 - job_name:       'dadvisor'
   scrape_interval: 10s
   metrics_path: /dadvisor/metrics
-  static_configs:
-    - targets: ['localhost:14100']
+  file_sd_configs:
+  - files:
+    - /prometheus-federation.json
