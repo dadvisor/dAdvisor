@@ -25,9 +25,3 @@ class Peer(object):
 
     def __hash__(self):
         return self.address.__hash__()
-
-
-def from_list(list):
-    """ Returns a peer object, created from a list with length 2"""
-    host, port = list
-    return Peer(host, port)

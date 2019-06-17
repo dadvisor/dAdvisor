@@ -4,9 +4,9 @@ import json
 from prometheus_client import Info
 
 from dadvisor.config import IP, PROXY_PORT
-from dadvisor.datatypes.peer import Peer, from_list
+from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_peer_list, register_peer, get_tracker_info, \
+from dadvisor.peers.peer_actions import fetch_peers, expose_peer, get_peer_list, register_peer, \
     ping, remove_peer
 
 FILENAME = '/prometheus-federation.json'
@@ -23,8 +23,6 @@ class PeersCollector(object):
         self.running = True
         self.my_peer = Peer(IP, PROXY_PORT)
         self.peers = [self.my_peer]
-        self.parent = None
-        self.children = []
 
     async def run(self):
         """
@@ -46,7 +44,6 @@ class PeersCollector(object):
         while self.running:
             try:
                 await asyncio.sleep(SLEEP_TIME)
-                await self.validate_node()
                 await self.validate_peers()
             except Exception as e:
                 log.error(e)
@@ -97,12 +94,6 @@ class PeersCollector(object):
                 await remove_peer(p)
                 self.peers.remove(p)
 
-    def get_peer_from_host(self, host):
-        for peer in self.other_peers:
-            if peer.host == host:
-                return peer
-        return None
-
     async def add_peer(self, host, port):
         host_format = host.replace('.', '_')
 
@@ -122,23 +113,6 @@ class PeersCollector(object):
             log.error(e)
         return p
 
-    async def validate_node(self):
-        """
-        Ask the tracker for its children and it's parent.
-        For the children, let it scrape by prometheus
-        :return:
-        """
-        await register_peer(self.my_peer)
-        data = await get_tracker_info(self.my_peer)
-        self.parent = None
-        if 'parent' in data and data['parent']:
-            self.parent = from_list(data['parent'])
-        self.children = []
-        if 'children' in data and data['children']:
-            for child in data['children']:
-                self.children.append(from_list(child))
-        self.set_scraper()
-
     def set_scraper(self):
         """ Set a line with federation information. Prometheus is configured in
         such a way that it reads this file. """
@@ -148,11 +122,11 @@ class PeersCollector(object):
         except FileNotFoundError:
             old_data = ''
 
-        child_list = []
-        for child in self.children:
-            child_list.append('{}:{}'.format(child.host, child.port))
+        peer_list = ['localhost:{}'.format(PROXY_PORT)]
+        for p in self.other_peers:
+            peer_list.append('{}:{}'.format(p.host, p.port))
 
-        data = [{"labels": {"job": "promadvisor"}, "targets": child_list}]
+        data = [{"labels": {"job": "promadvisor"}, "targets": peer_list}]
         new_data = json.dumps(data) + '\n'
         log.debug(new_data)
 
