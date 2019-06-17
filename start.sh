@@ -1,7 +1,7 @@
 #!/bin/sh
 set -ex
 
-if [[$DATA_REPLICATION='1']]; then
+if [[ "$DATA_REPLICATION"="1"]]; then
 	echo "Starting Prometheus and Grafana"
 
 	./prometheus/prometheus --web.listen-address=:14102 \
@@ -17,7 +17,7 @@ if [[$DATA_REPLICATION='1']]; then
 
 	su-exec grafana grafana-server --homepath=/grafana &
 else
-	echo "No prometheus and grafana: $(DATA_REPLICATION)"
+	echo "No prometheus and grafana: $DATA_REPLICATION"
 fi
 
 /usr/bin/cadvisor --port 14104 &
