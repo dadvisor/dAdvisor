@@ -6,7 +6,6 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from dadvisor.config import INTERNAL_PORT, PREFIX
 from dadvisor.datatypes.encoder import JSONCustomEncoder
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import get_name
 
 
 async def run_app(app):
@@ -40,47 +39,28 @@ def get_app(loop, peers_collector, analyser, container_collector):
         return web.json_response(text=json.dumps(peers_collector.peers,
                                                  cls=JSONCustomEncoder))
 
-    async def add_peer(request):
-        peer = request.match_info['peer']
-        host, port = peer.split(':')
-        await peers_collector.add_peer(host, port)
-        return web.json_response({'message': 'ok'})
-
-    async def dashboard(request):
-        """
-        All data is in the Prometheus of the root, so check if it has a parent. If it has,
-        visit this endpoint of the parent. If not, redirect to /grafana.
-        :param request:
-        :return:
-        """
-        if peers_collector.parent:
-            return web.HTTPFound(get_name(peers_collector.parent) + '/dashboard')
-        else:
-            return web.HTTPFound('/grafana')
-
     async def ports(request):
         return web.json_response({**analyser.port_mapping, **analyser.ports})
 
     async def container_mapping(request):
         return web.json_response(container_collector.container_mapping)
 
-    async def node_info(request):
-        return web.json_response(text=json.dumps({'parent': peers_collector.parent,
-                                                  'children': peers_collector.children},
-                                                 cls=JSONCustomEncoder))
-
     async def containers(request):
         return web.json_response(text=json.dumps(container_collector.containers_filtered,
                                                  cls=JSONCustomEncoder))
 
+    async def set_peers(request):
+        data = await request.post()
+        log.info(data)
+
+        return web.Response(body='OK')
+
     app = web.Application(loop=loop, debug=True, logger=log)
     app.add_routes([web.get('{}/metrics'.format(PREFIX), metrics),
                     web.get('{}/peers'.format(PREFIX), peers),
-                    web.get('{}/peers/add/'.format(PREFIX) + '{peer}', add_peer),
                     web.get('{}/hosts'.format(PREFIX), hosts),
                     web.get('{}/ports'.format(PREFIX), ports),
                     web.get('{}/container_mapping'.format(PREFIX), container_mapping),
-                    web.get('{}/dashboard'.format(PREFIX), dashboard),
-                    web.get('{}/node_info'.format(PREFIX), node_info),
-                    web.get('{}/containers'.format(PREFIX), containers)])
+                    web.get('{}/containers'.format(PREFIX), containers),
+                    web.post('{}/set_peers'.format(PREFIX), set_peers)])
     return app
