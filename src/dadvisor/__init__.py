@@ -15,7 +15,7 @@ def run_forever():
 
     # Create objects and threads
     peers_collector = PeersCollector()
-    container_collector = ContainerCollector(peers_collector)
+    container_collector = ContainerCollector()
     traffic_analyzer = Analyzer(container_collector, peers_collector, loop)
     inspector_thread = InspectorThread(peers_collector, traffic_analyzer)
     waste_collector = WasteCollector()

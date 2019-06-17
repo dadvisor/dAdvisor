@@ -6,7 +6,7 @@ from dadvisor.config import IP, PROXY_PORT
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import get_peer_list, register_peer, remove_peer, get_peer_info
+from dadvisor.peers.peer_actions import register_peer, remove_peer, get_peer_info
 
 FILENAME = '/prometheus-federation.json'
 SLEEP_TIME = 60

@@ -3,7 +3,6 @@ import json
 import subprocess
 from typing import Dict, List
 
-from dadvisor import PeersCollector
 from dadvisor.datatypes.container_info import ContainerInfo
 from dadvisor.log import log
 
@@ -12,8 +11,7 @@ SLEEP_TIME = 30
 
 class ContainerCollector(object):
 
-    def __init__(self, peers_collector: PeersCollector):
-        self.peers_collector = peers_collector
+    def __init__(self):
         self.running = True
         self.analyser_thread = None
         self.containers: List[ContainerInfo] = []
