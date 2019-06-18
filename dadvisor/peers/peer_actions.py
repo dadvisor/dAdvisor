@@ -1,6 +1,6 @@
 import aiohttp
 
-from dadvisor.config import TRACKER, INFO_HASH, PREFIX
+from dadvisor.config import TRACKER, PREFIX
 from dadvisor.log import log
 
 
@@ -28,7 +28,7 @@ async def get_container_mapping(peer):
 
 async def get_peer_list():
     async with aiohttp.ClientSession() as session:
-        async with session.get('{}/peers/{}'.format(TRACKER, INFO_HASH)) as resp:
+        async with session.get('{}/peers'.format(TRACKER)) as resp:
             data = await resp.json()
             return data
 
@@ -36,7 +36,7 @@ async def get_peer_list():
 async def register_peer(peer):
     log.info('Registering peer: {}'.format(peer))
     async with aiohttp.ClientSession() as session:
-        async with session.get('{}/add/{}/{}:{}'.format(TRACKER, INFO_HASH, peer.host, peer.port)) as resp:
+        async with session.get('{}/add/{}:{}'.format(TRACKER, peer.host, peer.port)) as resp:
             if resp.status == 200:
                 return await resp.json()
 
@@ -44,6 +44,6 @@ async def register_peer(peer):
 async def remove_peer(peer):
     log.info('Removing peer: {}'.format(peer))
     async with aiohttp.ClientSession() as session:
-        async with session.get('{}/remove/{}/{}:{}'.format(TRACKER, INFO_HASH, peer.host, peer.port)) as resp:
+        async with session.get('{}/remove/{}:{}'.format(TRACKER, peer.host, peer.port)) as resp:
             if resp.status == 200:
                 return await resp.json()
