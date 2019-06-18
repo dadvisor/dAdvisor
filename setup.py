@@ -11,12 +11,12 @@ with open(loc + '/requirements.txt') as f:
     required = f.read().splitlines()
 
 setup(
-    name='tracker',
+    name='dadvisor',
     version='1.0',
     description=info,
     author='Patrick Vogel',
     author_email='p.p.vogel@student.rug.nl',
     packages=setuptools.find_packages(),
     install_requires=required,
-    url='https://github.com/dadvisor/tracker',
+    url='https://github.com/dadvisor/core',
 )

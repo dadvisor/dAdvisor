@@ -9,7 +9,7 @@ from dadvisor.datatypes.peer import Peer
 from dadvisor.log import log
 from dadvisor.peers.peer_actions import register_peer, remove_peer, get_peer_info, get_peer_list
 
-FILENAME = '/prometheus-federation.json'
+FILENAME = '/prometheus.json'
 SLEEP_TIME = 60
 
 PEER_INFO = Info('peer', 'Peers', ['host'])
