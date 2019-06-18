@@ -1,49 +1,65 @@
+import json
+
 import aiohttp
 
 from dadvisor.config import TRACKER, PREFIX
 from dadvisor.log import log
 
 
-def get_name(peer):
+def _get_name(peer):
     return 'http://{}:{}{}'.format(peer.host, peer.port, PREFIX)
 
 
-async def get_peer_info(peer):
+# # # # # # # # # # # # # # # # # # # # # # # # #
+#       Communication with peers
+# # # # # # # # # # # # # # # # # # # # # # # # #
+async def get_node_info(node):
+    return await _send_get(_get_name(node) + '/get_info')
+
+
+async def get_ports(node):
+    return await _send_get(_get_name(node) + '/ports')
+
+
+async def get_container_mapping(node):
+    return await _send_get(_get_name(node) + '/container_mapping')
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # #
+#       Communication with root
+# # # # # # # # # # # # # # # # # # # # # # # # #
+async def register_node(loop, node):
+    log.info(f'Registering peer: {node}')
+    loop.create_task(_send_post(f'{TRACKER}/root/add', data=node))
+
+
+async def remove_node(loop, node):
+    log.info(f'Removing peer: {node}')
+    loop.create_task(_send_post(f'{TRACKER}/root/remove', data=node))
+
+
+async def get_distribution():
+    log.info('Get all nodes')
     async with aiohttp.ClientSession() as session:
-        async with session.get(get_name(peer) + '/get_info') as resp:
-            return await resp.json()
+        async with session.get(f'{TRACKER}/root/distribution') as resp:
+            return resp.json()
 
 
-async def get_ports(peer):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(get_name(peer) + '/ports') as resp:
-            return await resp.json()
+async def _send_post(url, data):
+    try:
+        async with aiohttp.ClientSession() as session:
+            await session.post(url, json=json.dumps(data))
+        return True
+    except Exception as e:
+        print(e)
+    return False
 
 
-async def get_container_mapping(peer):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(get_name(peer) + '/container_mapping') as resp:
-            return await resp.json()
-
-
-async def get_peer_list():
-    async with aiohttp.ClientSession() as session:
-        async with session.get('{}/peers'.format(TRACKER)) as resp:
-            data = await resp.json()
-            return data
-
-
-async def register_peer(peer):
-    log.info('Registering peer: {}'.format(peer))
-    async with aiohttp.ClientSession() as session:
-        async with session.get('{}/add/{}:{}'.format(TRACKER, peer.host, peer.port)) as resp:
-            if resp.status == 200:
-                return await resp.json()
-
-
-async def remove_peer(peer):
-    log.info('Removing peer: {}'.format(peer))
-    async with aiohttp.ClientSession() as session:
-        async with session.get('{}/remove/{}:{}'.format(TRACKER, peer.host, peer.port)) as resp:
-            if resp.status == 200:
-                return await resp.json()
+async def _send_get(url):
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+                return await resp.text()
+    except Exception as e:
+        print(e)
+        return None

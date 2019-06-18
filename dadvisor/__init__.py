@@ -14,7 +14,7 @@ def run_forever():
     loop = asyncio.new_event_loop()
 
     # Create objects and threads
-    peers_collector = PeersCollector()
+    peers_collector = PeersCollector(loop)
     container_collector = ContainerCollector()
     traffic_analyzer = Analyzer(container_collector, peers_collector, loop)
     inspector_thread = InspectorThread(peers_collector, traffic_analyzer)
@@ -27,7 +27,6 @@ def run_forever():
     inspector_thread.start()
 
     # Create tasks
-    loop.create_task(peers_collector.set_my_peer())
     loop.create_task(run_app(app))
     loop.create_task(peers_collector.run())
     loop.create_task(container_collector.run())

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from prometheus_client import Gauge, Counter
 
-from dadvisor.containers.prometheus import get_container_utilization
+from dadvisor.containers.cadvisor import get_container_utilization
 from dadvisor.log import log
 
 
@@ -33,6 +33,10 @@ class WasteCollector(object):
 
     async def compute_waste(self):
         info = await get_container_utilization()
+        containers = info.keys()
+        print(containers)
+        # TODO: parse data
+
         util_list = [float(container['value'][1]) for container in info['data']['result']]
         waste_list = self.get_waste(util_list)
         log.info('Computing waste: {}'.format(util_list))

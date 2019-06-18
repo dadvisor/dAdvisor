@@ -3,11 +3,11 @@ import json
 
 from prometheus_client import Info
 
-from dadvisor.config import IP, PROXY_PORT
+from dadvisor.config import IP, PROXY_PORT, IS_SUPER_NODE
 from dadvisor.containers.cadvisor import get_machine_info
-from dadvisor.datatypes.peer import Peer
+from dadvisor.datatypes.node import Node
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import register_peer, remove_peer, get_peer_info, get_peer_list
+from dadvisor.peers.peer_actions import register_node, remove_node, get_node_info, get_distribution
 
 FILENAME = '/prometheus.json'
 SLEEP_TIME = 60
@@ -21,24 +21,27 @@ class PeersCollector(object):
     other peers if it detects a dataflow between its own peer and a remote peer.
     """
 
-    def __init__(self):
+    def __init__(self, loop):
+        self.loop = loop
         self.running = True
-        self.my_peer = Peer(IP, PROXY_PORT)
-        self.other_peers = []
+        self.my_node = Node(IP, PROXY_PORT, IS_SUPER_NODE)
+        self.other_nodes = []
+        self.set_my_node()
 
-    async def set_my_peer(self):
-        num_cores, memory = await get_machine_info()
-        PEER_INFO.labels(host=IP).info({
-            'port': str(PROXY_PORT),
-            'num_cores': str(num_cores),
-            'memory': str(memory)})
+    def set_my_node(self):
+        num_cores, memory = self.loop.run_util_complete(get_machine_info())
+        self.set_node_info(self.my_node, {
+            'num_cores': num_cores,
+            'memory': memory
+        })
 
     @staticmethod
-    async def set_peer_info(p, data):
-        PEER_INFO.labels(host=p.host).info({
-            'port': str(p.port),
+    def set_node_info(node: Node, data):
+        PEER_INFO.labels(host=node.ip).info({
+            'port': str(node.port),
             'num_cores': str(data['num_cores']),
-            'memory': str(data['memory'])})
+            'memory': str(data['memory']),
+            'is_super_node': str(node.is_super_node)})
 
     async def run(self):
         """
@@ -51,7 +54,7 @@ class PeersCollector(object):
         succeeded = False
         while not succeeded:
             try:
-                await register_peer(self.my_peer)
+                await register_node(self.loop, self.my_node)
                 succeeded = True
             except Exception as e:
                 log.error(e)
@@ -64,25 +67,26 @@ class PeersCollector(object):
                 log.error(e)
 
     @property
-    def peers(self):
-        return [self.my_peer] + self.other_peers
+    def nodes(self):
+        return [self.my_node] + self.other_nodes
 
     def is_other_peer(self, host):
-        return [p for p in self.other_peers if p.host == host]
+        return [p for p in self.other_nodes if p.host == host]
 
     async def set_other_peers(self):
-        await self.set_peers(await get_peer_list())
+        await self.set_peers(await get_distribution())
 
-    async def set_peers(self, peers):
-        self.other_peers = []
-        for p in peers:
-            peer = Peer(p[0], p[1])
-            if peer == self.my_peer:
+    async def set_peers(self, nodes):
+        self.other_nodes = []
+        for node_json in nodes:
+            node_data = node_json['node']
+            node = Node(node_data['ip'], node_data['port'], node_data['is_super_node'])
+            if node == self.my_node:
                 continue
             try:
-                info = await get_peer_info(peer)
-                await self.set_peer_info(peer, info)
-                self.other_peers.append(peer)
+                info = await get_node_info(node)
+                await self.set_node_info(node, info)
+                self.other_nodes.append(node)
             except Exception as e:
                 log.error(e)
         self.set_scraper()
@@ -97,7 +101,7 @@ class PeersCollector(object):
             old_data = ''
 
         peer_list = ['localhost:{}'.format(PROXY_PORT)]
-        for p in self.other_peers:
+        for p in self.other_nodes:
             peer_list.append('{}:{}'.format(p.host, p.port))
 
         data = [{"labels": {"job": "dadvisor"}, "targets": peer_list}]
@@ -110,4 +114,4 @@ class PeersCollector(object):
 
     async def stop(self):
         self.running = False
-        await remove_peer(self.my_peer)
+        await remove_node(self.loop, self.my_node)

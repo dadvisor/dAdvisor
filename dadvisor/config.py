@@ -5,7 +5,6 @@ In the future, set these values based on environment variables.
 
 import os
 import socket
-import sys
 from datetime import datetime
 
 from dadvisor.log import log
@@ -20,18 +19,18 @@ except socket.gaierror as e:
 
 IP = os.environ.get('IP', ip)
 
+IS_SUPER_NODE = os.environ.get('TYPE', 'NODE') == 'SUPERNODE'
 PROXY_PORT = int(os.environ.get('DADVISOR_PORT', 14100))
 INTERNAL_PORT = 14101
 PROMETHEUS_PORT = 14102
 
 CADVISOR_URL = 'http://localhost:14104'
-PROMETHEUS_URL = 'http://localhost:{}/prometheus'.format(PROXY_PORT)
+PROMETHEUS_URL = f'http://localhost:{PROXY_PORT}/prometheus'
 TRACKER = os.environ.get('TRACKER', 'http://35.204.250.252:14100')
 
-FILTER_PORTS = os.environ.get('FILTER_PORTS', '22,{},{},{}'.
-                              format(PROXY_PORT, INTERNAL_PORT, PROMETHEUS_PORT)).split(',')
-log.info('Filtering internet traffic ports: {}'.format(FILTER_PORTS))
-
+FILTER_PORTS = os.environ.get('FILTER_PORTS',
+                              f'22,{PROXY_PORT},{INTERNAL_PORT},{PROMETHEUS_PORT}').split(',')
+log.info(f'Filtering internet traffic ports: {FILTER_PORTS}')
 
 # INTERNET TRAFFIC
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -39,7 +38,6 @@ TRAFFIC_SAMPLE = int(os.environ.get('TRAFFIC_SAMPLE', 1000))
 TRAFFIC_K = int(os.environ.get('TRAFFIC_K', 9))
 TRAFFIC_SLEEP_MIN = int(os.environ.get('TRAFFIC_SLEEP_MIN', 1))
 TRAFFIC_SLEEP_MAX = int(os.environ.get('TRAFFIC_SLEEP_MAX', 150))
-
 
 PREFIX = '/dadvisor'
 
