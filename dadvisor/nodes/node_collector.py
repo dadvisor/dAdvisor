@@ -76,9 +76,9 @@ class NodeCollector(object):
         return None
 
     async def set_other_nodes(self):
-        await self.set_peers(await get_distribution())
+        await self.set_nodes(await get_distribution())
 
-    async def set_peers(self, nodes):
+    async def set_nodes(self, nodes):
         log.info(nodes)
         self.other_nodes = []
         for node_json in nodes:

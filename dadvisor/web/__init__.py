@@ -17,7 +17,7 @@ async def run_app(app):
     await site.start()
 
 
-async def get_app(loop, peers_collector, analyser, container_collector):
+async def get_app(loop, node_collector, analyser, container_collector):
     """
     Expose a number of endpoints, such that nodes can communicate with each other.
     Note that every endpoint starts with PREFIX. This has been done, because all
@@ -57,11 +57,10 @@ async def get_app(loop, peers_collector, analyser, container_collector):
             'memory': memory,
         }))
 
-    async def set_peers(request):
+    async def set_nodes(request):
         data = await request.json()
-        peers = data['nodes']
-        await peers_collector.set_peers(peers)
-        log.info(peers)
+        await node_collector.set_nodes(data['nodes'])
+        log.info(data['nodes'])
         return web.Response(body='OK')
 
     app = web.Application(loop=loop, debug=True, logger=log)
@@ -72,5 +71,5 @@ async def get_app(loop, peers_collector, analyser, container_collector):
                     web.get('{}/container_mapping'.format(PREFIX), container_mapping),
                     web.get('{}/containers'.format(PREFIX), containers),
                     web.get('{}/get_info'.format(PREFIX), get_info),
-                    web.post('{}/set_peers'.format(PREFIX), set_peers)])
+                    web.post('{}/set_nodes'.format(PREFIX), set_nodes)])
     return app
