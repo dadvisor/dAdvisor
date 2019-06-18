@@ -6,7 +6,7 @@ from prometheus_client import Info
 from dadvisor.config import IP, PROXY_PORT, IS_SUPER_NODE
 from dadvisor.datatypes.node import Node
 from dadvisor.log import log
-from dadvisor.nodes.node_actions import register_node, remove_node, get_node_info, get_distribution, get_machine_info
+from dadvisor.nodes.node_actions import register_node, remove_node, get_node_info, get_all_nodes, get_machine_info
 
 FILENAME = '/prometheus.json'
 SLEEP_TIME = 60
@@ -62,7 +62,7 @@ class NodeCollector(object):
         while self.running:
             try:
                 await asyncio.sleep(SLEEP_TIME)
-                await self.set_other_nodes()
+                await self.set_nodes(await get_all_nodes())
             except Exception as e:
                 log.error(e)
 
@@ -76,13 +76,11 @@ class NodeCollector(object):
                 return node
         return None
 
-    async def set_other_nodes(self):
-        await self.set_nodes(await get_distribution())
-
-    async def set_nodes(self, data):
-        distribution = data['distribution']
+    async def set_nodes(self, data_list):
+        data = data_list['list']
+        log.info(data)
         self.other_nodes = []
-        for node_json in distribution:
+        for node_json in data:
             node_data = node_json['node']
             node = Node(node_data['ip'], int(node_data['port']), node_data['is_super_node'])
             if node == self.my_node:

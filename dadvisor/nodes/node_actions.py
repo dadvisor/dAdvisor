@@ -35,8 +35,8 @@ async def remove_node(loop, node):
     loop.create_task(_send_post(f'{TRACKER}/root/remove', data=node))
 
 
-async def get_distribution():
-    return await _send_get_json(f'{TRACKER}/root/distribution')
+async def get_all_nodes():
+    return await _send_get_json(f'{TRACKER}/root/list')
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
