@@ -12,7 +12,13 @@ from dadvisor.log import log
 
 # INTERNAL PORTS AND ADDRESSES
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-IP = os.environ.get('IP', socket.gethostbyname(socket.gethostname()))
+try:
+    ip = socket.gethostbyname(socket.gethostname())
+except socket.gaierror as e:
+    log.error(e)
+    ip = 'localhost'
+
+IP = os.environ.get('IP', ip)
 
 PROXY_PORT = int(os.environ.get('DADVISOR_PORT', 14100))
 INTERNAL_PORT = 14101
