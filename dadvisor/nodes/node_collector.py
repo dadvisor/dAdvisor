@@ -4,15 +4,14 @@ import json
 from prometheus_client import Info
 
 from dadvisor.config import IP, PROXY_PORT, IS_SUPER_NODE
-from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.node import Node
 from dadvisor.log import log
-from dadvisor.nodes.node_actions import register_node, remove_node, get_node_info, get_distribution
+from dadvisor.nodes.node_actions import register_node, remove_node, get_node_info, get_distribution, get_machine_info
 
 FILENAME = '/prometheus.json'
 SLEEP_TIME = 60
 
-NODE_INFO = Info('peer', 'Peers', ['host'])
+NODE_INFO = Info('node', 'Nodes', ['host'])
 
 
 class NodeCollector(object):

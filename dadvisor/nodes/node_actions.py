@@ -2,27 +2,23 @@ import json
 
 import aiohttp
 
-from dadvisor.config import TRACKER, PREFIX
+from dadvisor.config import TRACKER, PREFIX, CADVISOR_URL
 from dadvisor.log import log
-
-
-def _get_name(peer):
-    return 'http://{}:{}{}'.format(peer.host, peer.port, PREFIX)
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
 #       Communication with nodes
 # # # # # # # # # # # # # # # # # # # # # # # # #
 async def get_node_info(node):
-    return await _send_get(_get_name(node) + '/get_info')
+    return await _send_get(_get_node_name(node) + '/get_info')
 
 
 async def get_ports(node):
-    return await _send_get(_get_name(node) + '/ports')
+    return await _send_get(_get_node_name(node) + '/ports')
 
 
 async def get_container_mapping(node):
-    return await _send_get(_get_name(node) + '/container_mapping')
+    return await _send_get(_get_node_name(node) + '/container_mapping')
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -45,13 +41,35 @@ async def get_distribution():
             return resp.json()
 
 
+# # # # # # # # # # # # # # # # # # # # # # # # #
+#       Communication with cAdvisor
+# # # # # # # # # # # # # # # # # # # # # # # # #
+async def get_machine_info():
+    data = await _send_get_json(f'{CADVISOR_URL}/api/v2.0/machine')
+    num_cores = data['num_cores']
+    memory = sum([fs['capacity'] for fs in data['filesystems'] if fs['device'].startswith('/dev/')])
+    return num_cores, memory
+
+
+async def get_container_utilization():
+    return await _send_get_json(f'{CADVISOR_URL}/api/v2.0/summary?type=docker&recursive=true')
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # #
+#       Helper functions
+# # # # # # # # # # # # # # # # # # # # # # # # #
+def _get_node_name(node):
+    return 'http://{}:{}{}'.format(node.ip, node.port, PREFIX)
+
+
 async def _send_post(url, data):
     try:
         async with aiohttp.ClientSession() as session:
             await session.post(url, json=json.dumps(data))
         return True
     except Exception as e:
-        print(e)
+        log.error(e)
+        log.error(f'Cannot reach {url}')
     return False
 
 
@@ -61,5 +79,17 @@ async def _send_get(url):
             async with session.get(url) as resp:
                 return await resp.text()
     except Exception as e:
-        print(e)
+        log.error(e)
+        log.error(f'Cannot reach {url}')
+        return None
+
+
+async def _send_get_json(url):
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as resp:
+                return await resp.json()
+    except Exception as e:
+        log.error(e)
+        log.error(f'Cannot reach {url}')
         return None

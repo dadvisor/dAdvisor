@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from prometheus_client import Gauge, Counter
 
-from dadvisor.containers.cadvisor import get_container_utilization
+from dadvisor.nodes.node_actions import get_container_utilization
 from dadvisor.log import log
 
 

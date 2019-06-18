@@ -10,16 +10,16 @@ from dadvisor.datatypes.dataflow import DataFlow
 
 class Analyzer(object):
 
-    def __init__(self, container_collector: ContainerCollector, peers_collector: NodeCollector, loop):
+    def __init__(self, container_collector: ContainerCollector, node_collector: NodeCollector, loop):
         container_collector.analyser_thread = self
         self.container_collector = container_collector
-        self.peers_collector = peers_collector
+        self.node_collector = node_collector
         self.loop = loop
         self.port_mapping: Dict[int, str] = {}  # a dict from port to container IP
         self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
         self.cache = DataFlowCache(self.counter)
 
-        self.ports: OrderedDict[int, str] = OrderedDict()  # Contains at most TRAFFIC_SAMPLE elements
+        self.ports: OrderedDict[int, str] = OrderedDict()
 
     async def analyse_dataflow(self, dataflow: DataFlow):
         """

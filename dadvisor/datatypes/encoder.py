@@ -7,7 +7,7 @@ class JSONCustomEncoder(JSONEncoder):
         from dadvisor.datatypes.address import Address
         from dadvisor.datatypes.container_info import ContainerInfo
         from dadvisor.datatypes.dataflow import DataFlow
-        from dadvisor.datatypes.peer import Peer
-        if isinstance(obj, (Peer, Address, ContainerInfo, DataFlow)):
+        from dadvisor.datatypes.node import Node
+        if isinstance(obj, (Node, Address, ContainerInfo, DataFlow)):
             return obj.__dict__()
         return JSONEncoder.default(self, obj)

@@ -4,7 +4,7 @@ from aiohttp import web
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from dadvisor.config import INTERNAL_PORT, PREFIX
-from dadvisor.containers.cadvisor import get_machine_info
+from dadvisor.nodes.node_actions import get_machine_info
 from dadvisor.datatypes.encoder import JSONCustomEncoder
 from dadvisor.log import log
 
@@ -58,7 +58,7 @@ async def get_app(loop, peers_collector, analyser, container_collector):
         }))
 
     async def set_peers(request):
-        data = await request.post()
+        data = await request.json()
         peers = data['nodes']
         await peers_collector.set_peers(peers)
         log.info(peers)

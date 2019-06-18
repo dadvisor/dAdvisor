@@ -12,9 +12,9 @@ class InspectorThread(Thread):
     Reads data from the tcpdump program and store it in a queue, so that it can be processed further
     """
 
-    def __init__(self, peers_collector, analyser):
+    def __init__(self, node_collector, analyser):
         Thread.__init__(self, name='InspectorThread')
-        self.peers_collector = peers_collector
+        self.node_collector = node_collector
         self.analyser = analyser
         self.running = True
 
