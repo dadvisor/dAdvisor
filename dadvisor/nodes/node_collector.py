@@ -26,6 +26,7 @@ class NodeCollector(object):
         self.my_node = Node(IP, PROXY_PORT, IS_SUPER_NODE)
         self.other_nodes = []
         self.set_my_node()
+        self.set_scraper([])
 
     def set_my_node(self):
         num_cores, memory = self.loop.run_until_complete(get_machine_info())
@@ -92,9 +93,9 @@ class NodeCollector(object):
                 self.other_nodes.append(node)
             except Exception as e:
                 log.error(e)
-        self.set_scraper()
 
-    def set_scraper(self):
+    @staticmethod
+    def set_scraper(nodes):
         """ Set a line with federation information. Prometheus is configured in
         such a way that it reads this file. """
         try:
@@ -103,8 +104,8 @@ class NodeCollector(object):
         except FileNotFoundError:
             old_data = ''
 
-        node_list = ['localhost:{}'.format(PROXY_PORT)]
-        for node in self.other_nodes:
+        node_list = [f'localhost:{PROXY_PORT}']
+        for node in nodes:
             node_list.append('{}:{}'.format(node.ip, node.port))
 
         data = [{"labels": {"job": "dadvisor"}, "targets": node_list}]

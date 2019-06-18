@@ -31,10 +31,16 @@ class WasteCollector(object):
                 log.error(e)
         log.info('WasteCollector stopped')
 
+    def get_util(self, value):
+        try:
+            return value['a']
+        except Exception as e:
+            log.error(e)
+
     async def compute_waste(self):
         info = await get_container_utilization()
-        containers = info.keys()
-        print(containers)
+        containers = [docker_id[len('/docker/'):] for docker_id in info.keys()]
+        util_list = [self.get_util(value) for value in info.values()]
         # TODO: parse data
 
         util_list = [float(container['value'][1]) for container in info['data']['result']]
