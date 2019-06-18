@@ -79,10 +79,10 @@ class NodeCollector(object):
     async def set_other_nodes(self):
         await self.set_nodes(await get_distribution())
 
-    async def set_nodes(self, nodes):
-        log.info(nodes)
+    async def set_nodes(self, data):
+        distribution = data['distribution']
         self.other_nodes = []
-        for node_json in nodes:
+        for node_json in distribution:
             node_data = node_json['node']
             node = Node(node_data['ip'], int(node_data['port']), node_data['is_super_node'])
             if node == self.my_node:

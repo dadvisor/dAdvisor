@@ -36,7 +36,6 @@ async def remove_node(loop, node):
 
 
 async def get_distribution():
-    log.info('Get all nodes')
     return await _send_get_json(f'{TRACKER}/root/distribution')
 
 
