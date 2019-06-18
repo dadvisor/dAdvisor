@@ -36,9 +36,7 @@ async def remove_node(loop, node):
 
 async def get_distribution():
     log.info('Get all nodes')
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'{TRACKER}/root/distribution') as resp:
-            return resp.json()
+    return await _send_get_json(f'{TRACKER}/root/distribution')
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
