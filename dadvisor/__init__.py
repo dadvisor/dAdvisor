@@ -1,6 +1,6 @@
 import asyncio
 
-from dadvisor.peers import PeersCollector
+from dadvisor.nodes import NodeCollector
 from dadvisor.containers import ContainerCollector
 from dadvisor.analyzer import Analyzer
 from dadvisor.inspector import InspectorThread
@@ -14,7 +14,7 @@ def run_forever():
     loop = asyncio.new_event_loop()
 
     # Create objects and threads
-    peers_collector = PeersCollector(loop)
+    peers_collector = NodeCollector(loop)
     container_collector = ContainerCollector()
     traffic_analyzer = Analyzer(container_collector, peers_collector, loop)
     inspector_thread = InspectorThread(peers_collector, traffic_analyzer)

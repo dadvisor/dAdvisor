@@ -27,7 +27,7 @@ class InspectorThread(Thread):
             One iteration of this while loop performns the following actions:
             1. Run the tcpdump command that captures TRAFFIC_SAMPLE requests. 
                 This is collected in X seconds.
-            2. Resolve these requests by communicating with the other peers
+            2. Resolve these requests by communicating with the other nodes
             3. Sleep k*X seconds, with a lower- and upperbound.
             """
 

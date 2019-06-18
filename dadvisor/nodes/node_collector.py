@@ -7,18 +7,18 @@ from dadvisor.config import IP, PROXY_PORT, IS_SUPER_NODE
 from dadvisor.containers.cadvisor import get_machine_info
 from dadvisor.datatypes.node import Node
 from dadvisor.log import log
-from dadvisor.peers.peer_actions import register_node, remove_node, get_node_info, get_distribution
+from dadvisor.nodes.node_actions import register_node, remove_node, get_node_info, get_distribution
 
 FILENAME = '/prometheus.json'
 SLEEP_TIME = 60
 
-PEER_INFO = Info('peer', 'Peers', ['host'])
+NODE_INFO = Info('peer', 'Peers', ['host'])
 
 
-class PeersCollector(object):
+class NodeCollector(object):
     """
-    Collect information about other peers. The dAdvisor needs to be fully connected, as it needs to communicate with
-    other peers if it detects a dataflow between its own peer and a remote peer.
+    Collect information about other nodes. The dAdvisor needs to be fully connected, as it needs to communicate with
+    other nodes if it detects a dataflow between its own peer and a remote peer.
     """
 
     def __init__(self, loop):
@@ -37,7 +37,7 @@ class PeersCollector(object):
 
     @staticmethod
     def set_node_info(node: Node, data):
-        PEER_INFO.labels(host=node.ip).info({
+        NODE_INFO.labels(host=node.ip).info({
             'port': str(node.port),
             'num_cores': str(data['num_cores']),
             'memory': str(data['memory']),
@@ -48,7 +48,7 @@ class PeersCollector(object):
         This run method performs the following two actions:
         1. register this peer in the tracker
         2. continuously perform the following actions:
-            - validate other peers
+            - validate other nodes
         :return:
         """
         succeeded = False
@@ -70,8 +70,11 @@ class PeersCollector(object):
     def nodes(self):
         return [self.my_node] + self.other_nodes
 
-    def is_other_peer(self, host):
-        return [p for p in self.other_nodes if p.host == host]
+    def is_other_peer(self, ip):
+        for node in self.other_nodes:
+            if node.ip == ip:
+                return node
+        return None
 
     async def set_other_peers(self):
         await self.set_peers(await get_distribution())

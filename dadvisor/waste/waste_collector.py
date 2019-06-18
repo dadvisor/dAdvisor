@@ -9,8 +9,8 @@ from dadvisor.log import log
 
 class WasteCollector(object):
     """
-    Collect information about other peers. The dAdvisor needs to be fully connected, as it needs to communicate with
-    other peers if it detects a dataflow between its own peer and a remote peer.
+    Collect information about other nodes. The dAdvisor needs to be fully connected, as it needs to communicate with
+    other nodes if it detects a dataflow between its own peer and a remote peer.
     """
 
     def __init__(self):

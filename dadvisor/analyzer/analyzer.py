@@ -3,14 +3,14 @@ from typing import Dict
 
 from prometheus_client import Counter
 
-from dadvisor import ContainerCollector, PeersCollector
+from dadvisor import ContainerCollector, NodeCollector
 from dadvisor.analyzer.dataflow_cache import DataFlowCache
 from dadvisor.datatypes.dataflow import DataFlow
 
 
 class Analyzer(object):
 
-    def __init__(self, container_collector: ContainerCollector, peers_collector: PeersCollector, loop):
+    def __init__(self, container_collector: ContainerCollector, peers_collector: NodeCollector, loop):
         container_collector.analyser_thread = self
         self.container_collector = container_collector
         self.peers_collector = peers_collector
@@ -38,16 +38,12 @@ class Analyzer(object):
             # src is local
             # dst is not local
             src_hash = self.container_collector.ip_to_hash(dataflow.src.container)
-            peer = self.peers_collector.is_other_peer(dataflow.dst.host)
-            if peer:
-                self.cache.add_to(peer[0], src_hash, dataflow.dst.port, dataflow.size)
+            self.cache.add_to(dataflow.dst.host, src_hash, dataflow.dst.port, dataflow.size)
         elif not dataflow.src.is_local():
             # src is not local
             # dst is local
             dst_hash = self.container_collector.ip_to_hash(dataflow.dst.container)
-            peer = self.peers_collector.is_other_peer(dataflow.src.host)
-            if peer:
-                self.cache.add_from(peer[0], dataflow.src.port, dst_hash, dataflow.size)
+            self.cache.add_from(dataflow.src.host, dataflow.src.port, dst_hash, dataflow.size)
 
     def add_port(self, address):
         if address.is_local():

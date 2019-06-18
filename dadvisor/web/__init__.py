@@ -19,7 +19,7 @@ async def run_app(app):
 
 async def get_app(loop, peers_collector, analyser, container_collector):
     """
-    Expose a number of endpoints, such that peers can communicate with each other.
+    Expose a number of endpoints, such that nodes can communicate with each other.
     Note that every endpoint starts with PREFIX. This has been done, because all
     processes (dAdvisor, Prometheus, and Grafana) are reversed proxied to NGINX_PORT.
     Internally, they all have a different port, but now only one port needs to be opened
@@ -59,14 +59,14 @@ async def get_app(loop, peers_collector, analyser, container_collector):
 
     async def set_peers(request):
         data = await request.post()
-        peers = data['peers']
+        peers = data['nodes']
         await peers_collector.set_peers(peers)
         log.info(peers)
         return web.Response(body='OK')
 
     app = web.Application(loop=loop, debug=True, logger=log)
     app.add_routes([web.get('{}/metrics'.format(PREFIX), metrics),
-                    web.get('{}/peers'.format(PREFIX), peers),
+                    web.get('{}/nodes'.format(PREFIX), peers),
                     web.get('{}/hosts'.format(PREFIX), hosts),
                     web.get('{}/ports'.format(PREFIX), ports),
                     web.get('{}/container_mapping'.format(PREFIX), container_mapping),

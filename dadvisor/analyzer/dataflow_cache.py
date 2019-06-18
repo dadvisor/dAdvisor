@@ -1,8 +1,7 @@
 from typing import Dict, List, Tuple
 
 from dadvisor.log import log
-from dadvisor.datatypes.peer import Peer
-from dadvisor.peers.peer_actions import get_ports, get_container_mapping
+from dadvisor.nodes.node_actions import get_ports, get_container_mapping
 
 FROM = 0
 TO = 1
@@ -14,35 +13,39 @@ class DataFlowCache(object):
     """
 
     def __init__(self, counter):
-        self.cache: Dict[Peer, List[Tuple[int, str, int, int]]] = {}
+        self.cache: Dict[str, List[Tuple[int, str, int, int]]] = {}
         self.counter = counter
 
-    def add_to(self, peer: Peer, from_hash: str, to_port: int, size: int):
+    def add_to(self, ip: str, from_hash: str, to_port: int, size: int):
         data = (TO, from_hash, to_port, size)
-        self._add(peer, data)
+        self._add(ip, data)
 
-    def add_from(self, peer: Peer, from_port: int, to_hash: str, size: int):
+    def add_from(self, ip: str, from_port: int, to_hash: str, size: int):
         data = (FROM, to_hash, from_port, size)
-        self._add(peer, data)
+        self._add(ip, data)
 
-    def _add(self, peer: Peer, data: Tuple[int, str, int, int]):
-        if peer not in self.cache:
-            self.cache[peer] = [data]
+    def _add(self, ip: str, data: Tuple[int, str, int, int]):
+        if ip not in self.cache:
+            self.cache[ip] = [data]
         else:
-            self.cache[peer].append(data)
+            self.cache[ip].append(data)
 
-    async def resolve(self):
+    async def resolve(self, nodes_collector):
         """
-        Ask all peers to resolve their ports into a container-hash.
+        Ask all nodes to resolve their ports into a container-hash.
         After this function has been called, the cache is empty
         """
-        for peer, data_list in list(self.cache.items()):
+        for ip, data_list in list(self.cache.items()):
+
+            node = nodes_collector.is_other_node(ip)
+            if not node:
+                continue
 
             try:
-                ports = await get_ports(peer)
+                ports = await get_ports(node)
                 # port is encoded as string, therefore decode to int
                 ports = {int(port): ip for port, ip in ports.items()}
-                containers = await get_container_mapping(peer)
+                containers = await get_container_mapping(node)
 
                 for (from_to, local_hash, port, size) in data_list:
                     try:
@@ -56,7 +59,7 @@ class DataFlowCache(object):
                             self.counter.labels(src=local_hash, dst=remote_hash).inc(size)
                         elif from_to == FROM:
                             self.counter.labels(src=remote_hash, dst=local_hash).inc(size)
-                del self.cache[peer]
+                del self.cache[ip]
             except Exception as e:
                 log.error(e)
         self.cache = {}

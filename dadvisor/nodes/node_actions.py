@@ -11,7 +11,7 @@ def _get_name(peer):
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
-#       Communication with peers
+#       Communication with nodes
 # # # # # # # # # # # # # # # # # # # # # # # # #
 async def get_node_info(node):
     return await _send_get(_get_name(node) + '/get_info')
