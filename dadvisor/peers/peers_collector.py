@@ -100,7 +100,7 @@ class PeersCollector(object):
         for p in self.other_peers:
             peer_list.append('{}:{}'.format(p.host, p.port))
 
-        data = [{"labels": {"job": "promadvisor"}, "targets": peer_list}]
+        data = [{"labels": {"job": "dadvisor"}, "targets": peer_list}]
         new_data = json.dumps(data) + '\n'
         log.debug(new_data)
 

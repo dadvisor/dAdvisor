@@ -35,16 +35,6 @@ TRAFFIC_SLEEP_MIN = int(os.environ.get('TRAFFIC_SLEEP_MIN', 1))
 TRAFFIC_SLEEP_MAX = int(os.environ.get('TRAFFIC_SLEEP_MAX', 150))
 
 
-# INFO_HASH
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-DEFAULT_INFO_HASH = 'abc1234567890'
-INFO_HASH = os.environ.get('INFO_HASH', DEFAULT_INFO_HASH)
-if INFO_HASH == DEFAULT_INFO_HASH:
-    log.error('Cannot use the default INFO_HASH. Run the program with the following command:')
-    log.error('docker run --env INFO_HASH=... dadvisor/dadvisor')
-    sys.exit(-1)
-
-log.info('INFO_HASH: {}'.format(INFO_HASH))
 PREFIX = '/dadvisor'
 
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
