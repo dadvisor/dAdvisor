@@ -61,7 +61,7 @@ class NodeCollector(object):
         while self.running:
             try:
                 await asyncio.sleep(SLEEP_TIME)
-                await self.set_other_peers()
+                await self.set_other_nodes()
             except Exception as e:
                 log.error(e)
 
@@ -69,20 +69,21 @@ class NodeCollector(object):
     def nodes(self):
         return [self.my_node] + self.other_nodes
 
-    def is_other_peer(self, ip):
+    def is_other_node(self, ip):
         for node in self.other_nodes:
             if node.ip == ip:
                 return node
         return None
 
-    async def set_other_peers(self):
+    async def set_other_nodes(self):
         await self.set_peers(await get_distribution())
 
     async def set_peers(self, nodes):
+        log.info(nodes)
         self.other_nodes = []
         for node_json in nodes:
             node_data = node_json['node']
-            node = Node(node_data['ip'], node_data['port'], node_data['is_super_node'])
+            node = Node(node_data['ip'], int(node_data['port']), node_data['is_super_node'])
             if node == self.my_node:
                 continue
             try:
@@ -102,11 +103,11 @@ class NodeCollector(object):
         except FileNotFoundError:
             old_data = ''
 
-        peer_list = ['localhost:{}'.format(PROXY_PORT)]
-        for p in self.other_nodes:
-            peer_list.append('{}:{}'.format(p.host, p.port))
+        node_list = ['localhost:{}'.format(PROXY_PORT)]
+        for node in self.other_nodes:
+            node_list.append('{}:{}'.format(node.ip, node.port))
 
-        data = [{"labels": {"job": "dadvisor"}, "targets": peer_list}]
+        data = [{"labels": {"job": "dadvisor"}, "targets": node_list}]
         new_data = json.dumps(data) + '\n'
         log.debug(new_data)
 

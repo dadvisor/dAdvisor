@@ -3,6 +3,7 @@ import json
 import aiohttp
 
 from dadvisor.config import TRACKER, PREFIX, CADVISOR_URL
+from dadvisor.datatypes.encoder import JSONCustomEncoder
 from dadvisor.log import log
 
 
@@ -63,7 +64,7 @@ def _get_node_name(node):
 async def _send_post(url, data):
     try:
         async with aiohttp.ClientSession() as session:
-            await session.post(url, json=json.dumps(data))
+            await session.post(url, json=json.dumps(data, cls=JSONCustomEncoder))
         return True
     except Exception as e:
         log.error(e)
