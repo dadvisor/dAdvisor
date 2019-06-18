@@ -28,7 +28,7 @@ class NodeCollector(object):
         self.set_my_node()
 
     def set_my_node(self):
-        num_cores, memory = self.loop.run_util_complete(get_machine_info())
+        num_cores, memory = self.loop.run_until_complete(get_machine_info())
         self.set_node_info(self.my_node, {
             'num_cores': num_cores,
             'memory': memory
