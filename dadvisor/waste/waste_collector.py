@@ -33,7 +33,7 @@ class WasteCollector(object):
 
     def get_util(self, value):
         try:
-            return value['a']
+            log.info(value)
         except Exception as e:
             log.error(e)
 

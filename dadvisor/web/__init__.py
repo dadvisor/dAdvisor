@@ -61,7 +61,7 @@ async def get_app(loop, node_collector, analyser, container_collector):
         for node_json in nodes_json:
             node = node_json.get('node')
             nodes.append(Node(node.get('ip'), int(node.get('port')), node.get('is_super_node')))
-        node_collector.set_scrapes(nodes)
+        node_collector.set_scraper(nodes)
         return web.Response(body='OK')
 
     app = web.Application(loop=loop, debug=True, logger=log)
