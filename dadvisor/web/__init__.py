@@ -59,9 +59,8 @@ async def get_app(loop, node_collector, analyser, container_collector):
         nodes_json = data.get('nodes')
         nodes = []
         for node_json in nodes_json:
-            nodes.append(Node(node_json.get('ip'),
-                              int(node_json.get('port')),
-                              node_json.get('is_super_node')))
+            node = nodes_json.get('node')
+            nodes.append(Node(node.get('ip'), int(node.get('port')), node.get('is_super_node')))
         node_collector.set_scrapes(nodes)
         return web.Response(body='OK')
 
