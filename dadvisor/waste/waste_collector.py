@@ -81,11 +81,11 @@ class WasteCollector(object):
 
     def filter_dadvisor(self, containers, values):
         try:
-            dadvisor_index = containers.index(self.container_collector.dadvisor_hash)
+            dadvisor_index = containers.index(self.container_collector.dadvisor_id)
             del containers[dadvisor_index]
             del values[dadvisor_index]
         except ValueError:
-            log.error(f'dadvisor_id unkown: {self.container_collector.dadvisor_hash}')
+            log.error(f'dadvisor_id unkown: {self.container_collector.dadvisor_id}')
 
     @staticmethod
     def get_network(value):
