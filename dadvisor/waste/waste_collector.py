@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from prometheus_client import Gauge, Counter
 
-from dadvisor.nodes.node_actions import get_container_utilization
+from dadvisor.nodes.node_actions import get_container_utilization, get_container_stats
 from dadvisor.log import log
 
 
@@ -18,6 +18,8 @@ class WasteCollector(object):
         self.util_container = Gauge('util_container', 'Utilization for a container', ['id'])
         self.util_container_sum = Counter('util_container', 'Total utilization for a container', ['id'])
 
+        self.network_container = Gauge('network_container', 'Total amount of outgoing network', ['id'])
+
         self.waste_container = Gauge('waste_container', 'Waste utilization for a container', ['id'])
         self.waste_container_sum = Counter('waste_container', 'Total waste utilization for a container', ['id'])
 
@@ -30,10 +32,18 @@ class WasteCollector(object):
                 sleep_time = (next_hour - now).seconds
                 await asyncio.sleep(sleep_time)
                 # Execute once per hour (in the first minute)
+                await self.compute_network_usage()
                 await self.compute_waste()
             except Exception as e:
                 log.error(e)
         log.info('WasteCollector stopped')
+
+    async def compute_network_usage(self):
+        data = await get_container_stats()
+        containers = [docker_id[len('/docker/'):] for docker_id in data.keys()]
+        network_values = [self.get_network(value) for value in data.values()]
+        for i, container in enumerate(containers):
+            self.network_container.labels(container).set(network_values[i])
 
     async def compute_waste(self):
         info = await get_container_utilization()
@@ -53,6 +63,18 @@ class WasteCollector(object):
 
             self.waste_container.labels(container).set(waste_list[i])
             self.waste_container_sum.labels(container).inc(waste_list[i])
+
+    @staticmethod
+    def get_network(value):
+        amount = 0
+        for row in value:
+            try:
+                network = row['network']
+                interfaces = network['interfaces']
+                amount += sum(interface['tx_bytes'] for interface in interfaces)
+            except Exception as e:
+                log.error(e)
+                return amount
 
     @staticmethod
     def get_util(value):

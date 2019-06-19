@@ -53,6 +53,10 @@ async def get_container_utilization():
     return await _send_get_json(f'{CADVISOR_URL}/api/v2.0/summary?type=docker&recursive=true')
 
 
+async def get_container_stats():
+    return await _send_get_json(f'{CADVISOR_URL}/api/v2.0/stats/?type=docker&recursive=true&count=1')
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # #
 #       Helper functions
 # # # # # # # # # # # # # # # # # # # # # # # # #
