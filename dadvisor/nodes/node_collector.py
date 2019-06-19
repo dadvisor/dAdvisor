@@ -77,21 +77,17 @@ class NodeCollector(object):
         return None
 
     async def set_nodes(self, data_list):
-        data = data_list['list']
-        log.info(data)
-        self.other_nodes = []
-        for node_json in data:
+        log.info(data_list['list'])
+        new_nodes = []
+        for node_json in data_list['list']:
             node_data = node_json['node']
-            log.info(type(node_data['ip']))
-            log.info(type(node_data['port']))
-            log.info(type(node_data['is_super_node']))
             node = Node(node_data['ip'], int(node_data['port']), node_data['is_super_node'])
             if node == self.my_node:
                 continue
             try:
                 info = await get_node_info(node)
-                await self.set_node_info(node, info)
-                self.other_nodes.append(node)
+                self.loop.create_task(self.set_node_info(node, info))
+                new_nodes.append(node)
             except Exception as e:
                 log.error(e)
 
