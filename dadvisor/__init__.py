@@ -20,7 +20,7 @@ def run_forever():
     container_collector = ContainerCollector()
     traffic_analyzer = Analyzer(container_collector, node_collector, loop)
     inspector_thread = InspectorThread(node_collector, traffic_analyzer)
-    waste_collector = WasteCollector(node_collector)
+    waste_collector = WasteCollector(node_collector, container_collector)
 
     app = get_app(loop, node_collector, traffic_analyzer, container_collector)
 

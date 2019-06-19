@@ -13,9 +13,10 @@ class WasteCollector(object):
     other nodes if it detects a dataflow between its own peer and a remote peer.
     """
 
-    def __init__(self, node_collector):
+    def __init__(self, node_collector, container_collector):
         self.running = True
         self.node_collector = node_collector
+        self.container_collector = container_collector
 
         self.util_container = Gauge('util_container', 'Utilization for a container', ['id'])
         self.util_container_sum = Counter('util_container', 'Total utilization for a container', ['id'])
@@ -46,6 +47,7 @@ class WasteCollector(object):
         try:
             containers = [docker_id[len('/docker/'):] for docker_id in data.keys()]
             network_values = [self.get_network(value) for value in data.values()]
+            self.filter_dadvisor(containers, network_values)
             for i, container in enumerate(containers):
                 self.network_container.labels(container).set(network_values[i])
         except Exception as e:
@@ -56,6 +58,7 @@ class WasteCollector(object):
         try:
             containers = [docker_id[len('/docker/'):] for docker_id in info.keys()]
             util_list = [self.get_util(value) for value in info.values()]
+            self.filter_dadvisor(containers, util_list)
         except Exception as e:
             log.error(e)
             return
@@ -75,6 +78,14 @@ class WasteCollector(object):
 
             self.waste_container.labels(container).set(waste_list[i])
             self.waste_container_sum.labels(container).inc(waste_list[i])
+
+    def filter_dadvisor(self, containers, values):
+        try:
+            dadvisor_index = containers.index(self.container_collector.dadvisor_hash)
+            del containers[dadvisor_index]
+            del values[dadvisor_index]
+        except ValueError:
+            log.error(f'dadvisor_id unkown: {self.container_collector.dadvisor_hash}')
 
     @staticmethod
     def get_network(value):
