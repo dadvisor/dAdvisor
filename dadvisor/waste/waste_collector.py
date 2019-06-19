@@ -60,9 +60,11 @@ class WasteCollector(object):
             log.error(info)
             return
 
-        if sum(util_list) > 1:
-            log.error(f'Utilization cannot be above 1: {util_list}')
-            return
+        s = sum(util_list)
+        if s > 1:
+            log.error(f'Scaling utilization: {util_list}')
+            for i, item in enumerate(util_list):
+                util_list[i] = item / s
 
         waste_list = self.get_waste(util_list)
         log.info(f'Util: {util_list}')
@@ -84,7 +86,7 @@ class WasteCollector(object):
                 amount += sum(interface['tx_bytes'] for interface in interfaces)
             except Exception as e:
                 log.error(e)
-                return amount
+        return amount
 
     @staticmethod
     def get_util(value):
