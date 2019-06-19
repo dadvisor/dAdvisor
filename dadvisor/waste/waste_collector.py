@@ -15,6 +15,9 @@ class WasteCollector(object):
 
     def __init__(self):
         self.running = True
+        self.util_container = Gauge('util_container', 'Utilization for a container', ['id'])
+        self.util_container_sum = Counter('util_container', 'Total utilization for a container', ['id'])
+
         self.waste_container = Gauge('waste_container', 'Waste utilization for a container', ['id'])
         self.waste_container_sum = Counter('waste_container', 'Total waste utilization for a container', ['id'])
 
@@ -44,6 +47,9 @@ class WasteCollector(object):
         waste_list = self.get_waste(util_list)
         log.info('Computing waste: {}'.format(util_list))
         for i, container in enumerate(containers):
+            self.util_container.labels(container).set(util_list[i])
+            self.util_container_sum.labels(container).inc(util_list[i])
+
             self.waste_container.labels(container).set(waste_list[i])
             self.waste_container_sum.labels(container).inc(waste_list[i])
 
