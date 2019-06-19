@@ -32,29 +32,33 @@ class WasteCollector(object):
                 sleep_time = (next_hour - now).seconds
                 await asyncio.sleep(sleep_time)
                 # Execute once per hour (in the first minute)
-                try:
-                    await self.compute_network_usage()
-                except Exception as e:
-                    log.error(e)
-                try:
-                    await self.compute_waste()
-                except Exception as e:
-                    log.error(e)
+                await self.compute_network_usage()
+                await self.compute_waste()
+
             except Exception as e:
                 log.error(e)
         log.info('WasteCollector stopped')
 
     async def compute_network_usage(self):
         data = await get_container_stats()
-        containers = [docker_id[len('/docker/'):] for docker_id in data.keys()]
-        network_values = [self.get_network(value) for value in data.values()]
-        for i, container in enumerate(containers):
-            self.network_container.labels(container).set(network_values[i])
+        try:
+            containers = [docker_id[len('/docker/'):] for docker_id in data.keys()]
+            network_values = [self.get_network(value) for value in data.values()]
+            for i, container in enumerate(containers):
+                self.network_container.labels(container).set(network_values[i])
+        except Exception as e:
+            log.error(e)
+            log.error(data)
 
     async def compute_waste(self):
         info = await get_container_utilization()
-        containers = [docker_id[len('/docker/'):] for docker_id in info.keys()]
-        util_list = [self.get_util(value) for value in info.values()]
+        try:
+            containers = [docker_id[len('/docker/'):] for docker_id in info.keys()]
+            util_list = [self.get_util(value) for value in info.values()]
+        except Exception as e:
+            log.error(e)
+            log.error(info)
+            return
 
         if sum(util_list) > 1:
             log.error(f'Utilization cannot be above 1: {util_list}')

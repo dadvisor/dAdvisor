@@ -55,7 +55,10 @@ class DataFlowCache(object):
                             self.counter.labels(src=local_hash, dst=remote_hash).inc(size)
                         elif from_to == FROM:
                             self.counter.labels(src=remote_hash, dst=local_hash).inc(size)
-                del self.cache[ip]
+                try:
+                    del self.cache[ip]
+                except KeyError:
+                    log.debug(f'Cannot remove {ip} from self.cache')
             except Exception as e:
                 log.error(e)
         self.cache = {}
