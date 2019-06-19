@@ -82,6 +82,9 @@ class NodeCollector(object):
         self.other_nodes = []
         for node_json in data:
             node_data = node_json['node']
+            log.info(type(node_data['ip']))
+            log.info(type(node_data['port']))
+            log.info(type(node_data['is_super_node']))
             node = Node(node_data['ip'], int(node_data['port']), node_data['is_super_node'])
             if node == self.my_node:
                 continue

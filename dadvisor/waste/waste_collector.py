@@ -22,7 +22,8 @@ class WasteCollector(object):
         while self.running:
             try:
                 now = datetime.utcnow()
-                next_hour = now.replace(minute=0, second=20) + timedelta(hours=1)
+                # next_hour = now.replace(minute=0, second=20) + timedelta(hours=1)
+                next_hour = now + timedelta(minutes=1)
                 sleep_time = (next_hour - now).seconds
                 await asyncio.sleep(sleep_time)
                 # Execute once per hour (in the first minute)
@@ -31,25 +32,26 @@ class WasteCollector(object):
                 log.error(e)
         log.info('WasteCollector stopped')
 
-    def get_util(self, value):
-        try:
-            log.info(value)
-        except Exception as e:
-            log.error(e)
-
     async def compute_waste(self):
         info = await get_container_utilization()
         containers = [docker_id[len('/docker/'):] for docker_id in info.keys()]
         util_list = [self.get_util(value) for value in info.values()]
-        # TODO: parse data
+        log.info(util_list)
 
-        util_list = [float(container['value'][1]) for container in info['data']['result']]
         waste_list = self.get_waste(util_list)
         log.info('Computing waste: {}'.format(util_list))
-        for i, container in enumerate(info['data']['result']):
-            name = container['metric']['id'][len('/docker/'):]
-            self.waste_container.labels(name).set(waste_list[i])
-            self.waste_container_sum.labels(name).inc(waste_list[i])
+        for i, container in enumerate(containers):
+            self.waste_container.labels(container).set(waste_list[i])
+            self.waste_container_sum.labels(container).inc(waste_list[i])
+
+    @staticmethod
+    def get_util(value):
+        try:
+            return value['hour_usage']['cpu']['mean'] / 1000.0
+        except Exception as e:
+            log.error(e)
+            log.error(value)
+            return 0
 
     @staticmethod
     def get_waste(util_list):
