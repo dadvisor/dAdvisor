@@ -41,11 +41,12 @@ class WasteCollector(object):
         util_list = [self.get_util(value) for value in info.values()]
 
         if sum(util_list) > 1:
-            log.error(util_list)
+            log.error(f'Utilization cannot be above 1: {util_list}')
             return
 
         waste_list = self.get_waste(util_list)
-        log.info('Computing waste: {}'.format(util_list))
+        log.info(f'Util: {util_list}')
+        log.info(f'Waste: {waste_list}')
         for i, container in enumerate(containers):
             self.util_container.labels(container).set(util_list[i])
             self.util_container_sum.labels(container).inc(util_list[i])

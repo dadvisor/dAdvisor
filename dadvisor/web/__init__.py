@@ -5,7 +5,6 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from dadvisor.config import INTERNAL_PORT, PREFIX
 from dadvisor.datatypes.node import Node
-from dadvisor.nodes.node_actions import get_machine_info
 from dadvisor.log import log
 
 
@@ -17,7 +16,7 @@ async def run_app(app):
     await site.start()
 
 
-async def get_app(loop, node_collector, analyser, container_collector):
+def get_app(loop, node_collector, analyser, container_collector):
     """
     Expose a number of endpoints, such that nodes can communicate with each other.
     Note that every endpoint starts with PREFIX. This has been done, because all
@@ -25,7 +24,6 @@ async def get_app(loop, node_collector, analyser, container_collector):
     Internally, they all have a different port, but now only one port needs to be opened
     on the host, to allow the communication.
     """
-    num_cores, memory = await get_machine_info()
 
     # # # # # # # # # # # # # # # # # # # # # # # # #
     #       Communication with Prometheus
@@ -40,10 +38,7 @@ async def get_app(loop, node_collector, analyser, container_collector):
     #       Communication with Peers
     # # # # # # # # # # # # # # # # # # # # # # # # #
     async def get_info(request):
-        return web.json_response(text=json.dumps({
-            'num_cores': num_cores,
-            'memory': memory,
-        }))
+        return web.json_response(text=json.dumps(node_collector.my_node_stats))
 
     async def ports(request):
         return web.json_response({**analyser.port_mapping, **analyser.ports})
@@ -69,6 +64,5 @@ async def get_app(loop, node_collector, analyser, container_collector):
                     web.get(f'{PREFIX}/get_info', get_info),
                     web.get(f'{PREFIX}/ports', ports),
                     web.get(f'{PREFIX}/container_mapping', container_mapping),
-                    # web.get('{}/containers'.format(PREFIX), containers),
                     web.post(f'{PREFIX}/set_distribution', set_distribution)])
     return app

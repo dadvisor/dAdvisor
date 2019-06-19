@@ -27,16 +27,17 @@ class NodeCollector(object):
         self.running = True
         self.my_node = Node(IP, PROXY_PORT, IS_SUPER_NODE)
         self.other_nodes = []
-        self.set_my_node()
         self.set_scraper([])
         self.check_removal_counter = 0
+        self.my_node_stats = {}
 
-    def set_my_node(self):
-        num_cores, memory = self.loop.run_until_complete(get_machine_info())
-        self.set_node_info(self.my_node, {
+    async def set_my_node_stats(self):
+        num_cores, memory = await get_machine_info()
+        self.my_node_stats = {
             'num_cores': num_cores,
             'memory': memory
-        })
+        }
+        self.set_node_info(self.my_node, self.my_node_stats)
 
     @staticmethod
     def set_node_info(node: Node, data):
