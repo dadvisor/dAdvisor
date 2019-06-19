@@ -11,6 +11,8 @@ from dadvisor.nodes.node_actions import register_node, remove_node, get_node_inf
 FILENAME = '/prometheus.json'
 SLEEP_TIME = 60
 
+CHECK_REMOVE = 10
+
 NODE_INFO = Info('node', 'Nodes', ['host'])
 
 
@@ -27,6 +29,7 @@ class NodeCollector(object):
         self.other_nodes = []
         self.set_my_node()
         self.set_scraper([])
+        self.check_removal_counter = 0
 
     def set_my_node(self):
         num_cores, memory = self.loop.run_until_complete(get_machine_info())
@@ -62,7 +65,11 @@ class NodeCollector(object):
         while self.running:
             try:
                 await asyncio.sleep(SLEEP_TIME)
-                await self.set_nodes(await get_all_nodes())
+                self.loop.create_task(self.add_nodes(await get_all_nodes()))
+                self.check_removal_counter += 1
+                if self.check_removal_counter == CHECK_REMOVE:
+                    self.check_removal_counter = 0
+                    self.loop.create_task(self.check_nodes())
             except Exception as e:
                 log.error(e)
 
@@ -76,8 +83,7 @@ class NodeCollector(object):
                 return node
         return None
 
-    async def set_nodes(self, data_list):
-        log.info(data_list['list'])
+    async def add_nodes(self, data_list):
         new_nodes = []
         for node_json in data_list['list']:
             node_data = node_json['node']
@@ -85,11 +91,22 @@ class NodeCollector(object):
             if node == self.my_node:
                 continue
             try:
-                info = await get_node_info(node)
-                self.loop.create_task(self.set_node_info(node, info))
-                new_nodes.append(node)
+                if node not in self.other_nodes:
+                    self.loop.create_task(self.set_node_info(node, await get_node_info(node)))
+                    new_nodes.append(node)
             except Exception as e:
                 log.error(e)
+        self.other_nodes += new_nodes
+
+    async def check_nodes(self):
+        """ Removes the nodes that cannot be reached """
+        remove_nodes = []
+        for node in self.other_nodes:
+            info = await get_node_info(node)
+            if not info:
+                remove_nodes.append(node)
+        for node in remove_nodes:
+            self.other_nodes.remove(node)
 
     @staticmethod
     def set_scraper(nodes):

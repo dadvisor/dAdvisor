@@ -36,7 +36,10 @@ class WasteCollector(object):
         info = await get_container_utilization()
         containers = [docker_id[len('/docker/'):] for docker_id in info.keys()]
         util_list = [self.get_util(value) for value in info.values()]
-        log.info(util_list)
+
+        if sum(util_list) > 1:
+            log.error(util_list)
+            return
 
         waste_list = self.get_waste(util_list)
         log.info('Computing waste: {}'.format(util_list))
