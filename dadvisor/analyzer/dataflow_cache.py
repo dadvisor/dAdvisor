@@ -48,12 +48,11 @@ class DataFlowCache(object):
                 containers = await get_container_mapping(node)
 
                 for (from_to, local_hash, port, size) in data_list:
-                    try:
+                    remote_hash = None
+                    if port in ports:
                         ip = ports[port]
-                        remote_hash = containers[ip]
-                    except Exception as e:
-                        log.error(e)
-                        continue
+                        if ip in containers:
+                            remote_hash = containers[ip]
                     if local_hash and remote_hash:
                         if from_to == TO:
                             self.counter.labels(src=local_hash, dst=remote_hash).inc(size)
