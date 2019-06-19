@@ -32,8 +32,14 @@ class WasteCollector(object):
                 sleep_time = (next_hour - now).seconds
                 await asyncio.sleep(sleep_time)
                 # Execute once per hour (in the first minute)
-                await self.compute_network_usage()
-                await self.compute_waste()
+                try:
+                    await self.compute_network_usage()
+                except Exception as e:
+                    log.error(e)
+                try:
+                    await self.compute_waste()
+                except Exception as e:
+                    log.error(e)
             except Exception as e:
                 log.error(e)
         log.info('WasteCollector stopped')
