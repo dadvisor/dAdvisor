@@ -30,9 +30,7 @@ def get_app(loop, node_collector, analyser, container_collector):
     # # # # # # # # # # # # # # # # # # # # # # # # #
     async def metrics(request):
         """ Each endpoint might use a request argument, but most of them don't need it."""
-        resp = web.Response(body=generate_latest())
-        resp.content_type = CONTENT_TYPE_LATEST
-        return resp
+        return web.Response(body=generate_latest(), content_type = CONTENT_TYPE_LATEST)
 
     # # # # # # # # # # # # # # # # # # # # # # # # #
     #       Communication with Peers
@@ -40,11 +38,11 @@ def get_app(loop, node_collector, analyser, container_collector):
     async def get_info(request):
         return web.json_response(text=json.dumps(node_collector.my_node_stats))
 
-    async def ports(request):
-        return web.json_response({**analyser.port_mapping, **analyser.ports})
-
-    async def container_mapping(request):
-        return web.json_response(container_collector.container_mapping)
+    async def mapping(request):
+        return web.json_response(text=json.dumps({
+            'ports': {**analyser.port_mapping, **analyser.ports},
+            'containers': container_collector.container_mapping
+        }))
 
     # # # # # # # # # # # # # # # # # # # # # # # # #
     #       Communication with root
@@ -62,7 +60,6 @@ def get_app(loop, node_collector, analyser, container_collector):
     app = web.Application(loop=loop, debug=True, logger=log)
     app.add_routes([web.get(f'{PREFIX}/metrics', metrics),
                     web.get(f'{PREFIX}/get_info', get_info),
-                    web.get(f'{PREFIX}/ports', ports),
-                    web.get(f'{PREFIX}/container_mapping', container_mapping),
+                    web.get(f'{PREFIX}/mapping', mapping),
                     web.post(f'{PREFIX}/set_distribution', set_distribution)])
     return app

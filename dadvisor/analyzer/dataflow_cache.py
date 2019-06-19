@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple
 
 from dadvisor.log import log
-from dadvisor.nodes.node_actions import get_ports, get_container_mapping
+from dadvisor.nodes.node_actions import get_mapping
 
 FROM = 0
 TO = 1
@@ -42,10 +42,11 @@ class DataFlowCache(object):
                 continue
 
             try:
-                ports = await get_ports(node)
+                mapping = await get_mapping(node)
+                ports = mapping['ports']
                 # port is encoded as string, therefore decode to int
                 ports = {int(port): ip for port, ip in ports.items()}
-                containers = await get_container_mapping(node)
+                containers = mapping['containers']
 
                 for (from_to, local_hash, port, size) in data_list:
                     ip = ports.get(port, None)

@@ -14,12 +14,8 @@ async def get_node_info(node):
     return await _send_get_json(_get_node_name(node) + '/get_info')
 
 
-async def get_ports(node):
-    return await _send_get_json(_get_node_name(node) + '/ports')
-
-
-async def get_container_mapping(node):
-    return await _send_get_json(_get_node_name(node) + '/container_mapping')
+async def get_mapping(node):
+    return await _send_get_json(_get_node_name(node) + '/mapping')
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
