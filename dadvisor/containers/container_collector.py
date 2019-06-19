@@ -40,7 +40,7 @@ class ContainerCollector(object):
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         data = json.loads(p.communicate()[0].decode('utf-8'))
         for c in data:
-            if c['Image'].endswith('dadvisor'):
+            if '/dadvisor' in c['Names']:
                 continue
             if c['Id'] not in [c.hash for c in self.containers]:
                 self.containers.append(ContainerInfo(c['Id'], c))
