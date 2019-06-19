@@ -1,7 +1,7 @@
 import json
 
 from aiohttp import web
-from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import generate_latest
 
 from dadvisor.config import INTERNAL_PORT, PREFIX
 from dadvisor.datatypes.node import Node

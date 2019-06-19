@@ -15,6 +15,7 @@ class ContainerCollector(object):
         self.running = True
         self.analyser_thread = None
         self.containers: List[ContainerInfo] = []
+        self.dadvisor_hash = ''
 
     async def run(self):
         """
@@ -41,6 +42,7 @@ class ContainerCollector(object):
         data = json.loads(p.communicate()[0].decode('utf-8'))
         for c in data:
             if '/dadvisor' in c['Names']:
+                self.dadvisor_hash = c['Id']
                 continue
             if c['Id'] not in [c.hash for c in self.containers]:
                 self.containers.append(ContainerInfo(c['Id'], c))
