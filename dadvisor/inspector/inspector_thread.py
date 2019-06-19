@@ -48,7 +48,7 @@ class InspectorThread(Thread):
             elapsed = end_time - start_time
             log.info('Monitoring {} packets in {} sec'.format(TRAFFIC_SAMPLE, elapsed))
 
-            self.analyser.loop.create_task(self.analyser.cache.resolve())
+            self.analyser.loop.create_task(self.analyser.cache.resolve(self.node_collector))
 
             # sleep K times the elapsed time. Minus the time it takes to resolve the cache
             sleep_time = TRAFFIC_K * elapsed - (time.time() - end_time)
