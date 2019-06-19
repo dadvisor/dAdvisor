@@ -13,8 +13,10 @@ class WasteCollector(object):
     other nodes if it detects a dataflow between its own peer and a remote peer.
     """
 
-    def __init__(self):
+    def __init__(self, node_collector):
         self.running = True
+        self.node_collector = node_collector
+
         self.util_container = Gauge('util_container', 'Utilization for a container', ['id'])
         self.util_container_sum = Counter('util_container', 'Total utilization for a container', ['id'])
 
@@ -48,7 +50,6 @@ class WasteCollector(object):
                 self.network_container.labels(container).set(network_values[i])
         except Exception as e:
             log.error(e)
-            log.error(data)
 
     async def compute_waste(self):
         info = await get_container_utilization()
@@ -57,12 +58,11 @@ class WasteCollector(object):
             util_list = [self.get_util(value) for value in info.values()]
         except Exception as e:
             log.error(e)
-            log.error(info)
             return
 
         s = sum(util_list)
         if s > 1:
-            log.error(f'Scaling utilization: {util_list}')
+            log.info(f'Scaling utilization: {util_list}')
             for i, item in enumerate(util_list):
                 util_list[i] = item / s
 
@@ -88,10 +88,10 @@ class WasteCollector(object):
                 log.error(e)
         return amount
 
-    @staticmethod
-    def get_util(value):
+    def get_util(self, value):
         try:
-            return value['hour_usage']['cpu']['mean'] / 1000.0
+            cores = self.node_collector.my_node_stats.get('num_cores', 1)
+            return value['hour_usage']['cpu']['mean'] / (cores * 1000.0)
         except Exception as e:
             log.error(e)
             log.error(value)
