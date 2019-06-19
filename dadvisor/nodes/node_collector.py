@@ -54,13 +54,7 @@ class NodeCollector(object):
             - validate other nodes
         :return:
         """
-        succeeded = False
-        while not succeeded:
-            try:
-                await register_node(self.loop, self.my_node)
-                succeeded = True
-            except Exception as e:
-                log.error(e)
+        register_node(self.loop, self.my_node)
 
         while self.running:
             try:
@@ -132,4 +126,4 @@ class NodeCollector(object):
 
     async def stop(self):
         self.running = False
-        await remove_node(self.loop, self.my_node)
+        remove_node(self.loop, self.my_node)

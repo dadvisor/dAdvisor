@@ -25,12 +25,12 @@ async def get_container_mapping(node):
 # # # # # # # # # # # # # # # # # # # # # # # # #
 #       Communication with root
 # # # # # # # # # # # # # # # # # # # # # # # # #
-async def register_node(loop, node):
+def register_node(loop, node):
     log.info(f'Registering peer: {node}')
     loop.create_task(_send_post(f'{TRACKER}/root/add', data=node))
 
 
-async def remove_node(loop, node):
+def remove_node(loop, node):
     log.info(f'Removing peer: {node}')
     loop.create_task(_send_post(f'{TRACKER}/root/remove', data=node))
 
