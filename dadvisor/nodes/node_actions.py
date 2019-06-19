@@ -11,15 +11,15 @@ from dadvisor.log import log
 #       Communication with nodes
 # # # # # # # # # # # # # # # # # # # # # # # # #
 async def get_node_info(node):
-    return await _send_get(_get_node_name(node) + '/get_info')
+    return await _send_get_json(_get_node_name(node) + '/get_info')
 
 
 async def get_ports(node):
-    return await _send_get(_get_node_name(node) + '/ports')
+    return await _send_get_json(_get_node_name(node) + '/ports')
 
 
 async def get_container_mapping(node):
-    return await _send_get(_get_node_name(node) + '/container_mapping')
+    return await _send_get_json(_get_node_name(node) + '/container_mapping')
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # #
