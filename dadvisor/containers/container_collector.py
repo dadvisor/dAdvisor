@@ -15,7 +15,15 @@ class ContainerCollector(object):
         self.running = True
         self.analyser_thread = None
         self.containers: List[ContainerInfo] = []
+        self.old_containers = set()
+
         self.dadvisor_id = ''
+
+        # Add functions that will be executed when a certain container stops
+        # The function must use 1 argument that is the containerInfo object.
+        self.on_container_stopped = [
+            lambda x: self.old_containers.add(x.hash),
+            lambda x: self.containers.remove(x)]
 
     async def run(self):
         """
@@ -51,7 +59,8 @@ class ContainerCollector(object):
         for info in self.containers:
             info.validate()
             if info.stopped:
-                self.containers.remove(info)
+                for f in self.on_container_stopped:
+                    f(info)
                 continue
 
             for port_map in info.ports:

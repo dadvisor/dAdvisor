@@ -20,17 +20,17 @@ class WasteCollector(object):
 
         self.util_container = Gauge('util_container', 'Utilization for a container', ['id'])
         self.util_container_sum = Counter('util_container', 'Total utilization for a container', ['id'])
-
         self.network_container = Gauge('network_container', 'Total amount of outgoing network', ['id'])
-
         self.waste_container = Gauge('waste_container', 'Waste utilization for a container', ['id'])
         self.waste_container_sum = Counter('waste_container', 'Total waste utilization for a container', ['id'])
+
+        self.container_collector.on_container_stopped.append(lambda x: self.remove_labels(x.hash))
 
     async def run(self):
         while self.running:
             try:
                 now = datetime.utcnow()
-                # next_hour = now.replace(minute=0, second=20) + timedelta(hours=1)
+                # next_hour = now.replace(minute=0, second=0) + timedelta(hours=1)
                 next_hour = now + timedelta(minutes=1)
                 sleep_time = (next_hour - now).seconds
                 await asyncio.sleep(sleep_time)
@@ -72,14 +72,20 @@ class WasteCollector(object):
         waste_list = self.get_waste(util_list)
         log.info(f'Util: {util_list}')
         log.info(f'Waste: {waste_list}')
+
         for i, container in enumerate(containers):
             self.util_container.labels(container).set(util_list[i])
             self.util_container_sum.labels(container).inc(util_list[i])
-
             self.waste_container.labels(container).set(waste_list[i])
             self.waste_container_sum.labels(container).inc(waste_list[i])
 
+    def remove_labels(self, container_id):
+        self.network_container.labels(container_id).set(0)
+        self.util_container.labels(container_id).set(0)
+        self.waste_container.labels(container_id).set(0)
+
     def filter_dadvisor(self, containers, values):
+        """ Don't compute utilization values about dAdvisor """
         try:
             dadvisor_index = containers.index(self.container_collector.dadvisor_id)
             del containers[dadvisor_index]
@@ -105,7 +111,6 @@ class WasteCollector(object):
             return value['hour_usage']['cpu']['mean'] / (cores * 1000.0)
         except Exception as e:
             log.error(e)
-            log.error(value)
             return 0
 
     @staticmethod
