@@ -30,7 +30,7 @@ def get_app(loop, node_collector, analyser, container_collector):
     # # # # # # # # # # # # # # # # # # # # # # # # #
     async def metrics(request):
         """ Each endpoint might use a request argument, but most of them don't need it."""
-        return web.Response(body=generate_latest(), content_type=CONTENT_TYPE_LATEST)
+        return web.Response(body=generate_latest())
 
     # # # # # # # # # # # # # # # # # # # # # # # # #
     #       Communication with Peers

@@ -1,4 +1,6 @@
 import asyncio
+import signal
+import sys
 
 from dadvisor.nodes import NodeCollector
 from dadvisor.containers import ContainerCollector
@@ -11,6 +13,16 @@ from dadvisor.web import get_app, run_app
 
 def run_forever():
     """ Starts the program and creates all tasks """
+
+    def signal_handler(signal, frame):
+        loop.stop()
+        log.info('Stopping loop')
+        loop.create_task(node_collector.stop())
+        inspector_thread.stop()
+        container_collector.stop()
+        waste_collector.stop()
+        sys.exit(0)
+
     loop = asyncio.new_event_loop()
 
     # Create objects and threads
@@ -32,17 +44,7 @@ def run_forever():
     loop.create_task(container_collector.run())
     loop.create_task(waste_collector.run())
 
-    try:
-        log.info('Started and running')
-        loop.run_forever()
-    except KeyboardInterrupt:
-        log.info('Stopping loop')
-        loop.create_task(node_collector.stop())
-        inspector_thread.stop()
-        container_collector.stop()
-        waste_collector.stop()
-        loop.stop()
-        log.info('Loop stopped')
-    finally:
-        loop.close()
-        log.info('Loop closed')
+    log.info('Started and running')
+    signal.signal(signal.SIGINT, signal_handler)
+
+    loop.run_forever()
