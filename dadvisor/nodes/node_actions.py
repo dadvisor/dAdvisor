@@ -41,7 +41,7 @@ async def get_all_nodes():
 async def get_machine_info():
     data = await _send_get_json(f'{CADVISOR_URL}/api/v2.0/machine')
     num_cores = data['num_cores']
-    memory = sum([fs['capacity'] for fs in data['filesystems'] if fs['device'].startswith('/dev/')])
+    memory = data['memory_capacity']
     return num_cores, memory
 
 

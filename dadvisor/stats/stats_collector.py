@@ -19,9 +19,17 @@ class StatsCollector(object):
         self.container_collector = container_collector
         self.prev_network_container = {}
 
-        self.util_container_sum = Counter('util_container', 'Total utilization for a container', ['dst'])
         self.network_container_sum = Counter('network_container', 'Total amount of outgoing network', ['dst'])
-        self.waste_container_sum = Counter('waste_container', 'Total stats utilization for a container', ['dst'])
+
+        self.cpu_util_container_sum = Counter('cpu_util_container',
+                                              'Total CPU utilization percentage for a container', ['dst'])
+        self.mem_util_container_sum = Counter('mem_util_container',
+                                              'Total memory utilization percentage for a container', ['dst'])
+
+        self.cpu_waste_container_sum = Counter('cpu_waste_container',
+                                               'Total CPU waste percentage for a container', ['dst'])
+        self.mem_waste_container_sum = Counter('mem_waste_container',
+                                               'Total memory waste percentage for a container', ['dst'])
 
     async def run(self):
         while self.running:
@@ -30,7 +38,7 @@ class StatsCollector(object):
                 next_hour = now.replace(minute=0, second=0) + timedelta(hours=1)
                 sleep_time = (next_hour - now).seconds
                 await asyncio.sleep(sleep_time)
-                # Execute once per hour (in the first minute)
+                # Execute once per hour
                 await self.compute_network_usage()
                 await self.compute_util_and_waste()
 
@@ -61,19 +69,19 @@ class StatsCollector(object):
             log.error(e)
             return
 
-        s = sum(util_list)
-        if s > 1:
-            log.info(f'Scaling utilization: {util_list}')
-            for i, item in enumerate(util_list):
-                util_list[i] = item / s
+        cpu_util_list, mem_util_list = zip(*util_list)
 
-        waste_list = self.get_waste(util_list)
-        log.info(f'Util: {util_list}')
-        log.info(f'Waste: {waste_list}')
+        self.scale_list(cpu_util_list)
+        self.scale_list(mem_util_list)
+
+        cpu_waste_list = self.get_waste(cpu_util_list)
+        mem_waste_list = self.get_waste(mem_util_list)
 
         for i, container in enumerate(containers):
-            self.util_container_sum.labels(container).inc(util_list[i])
-            self.waste_container_sum.labels(container).inc(waste_list[i])
+            self.cpu_util_container_sum.labels(container).inc(cpu_util_list[i])
+            self.mem_util_container_sum.labels(container).inc(mem_util_list[i])
+            self.cpu_waste_container_sum.labels(container).inc(cpu_waste_list[i])
+            self.mem_waste_container_sum.labels(container).inc(mem_waste_list[i])
 
     def filter_dadvisor(self, containers, values):
         """ Don't compute utilization values about dAdvisor """
@@ -99,10 +107,21 @@ class StatsCollector(object):
     def get_util(self, value):
         try:
             cores = self.node_collector.my_node_stats.get('num_cores', 1)
-            return value['hour_usage']['cpu']['mean'] / (cores * 1000.0)
+            memory = self.node_collector.my_node_stats.get('memory', 8*2**30)
+            cpu = value['hour_usage']['cpu']['mean'] / (cores * 1000.0)
+            memory_percentage = value['hour_usage']['memory']['mean'] / memory
+            return cpu, memory_percentage
         except Exception as e:
             log.error(e)
             return 0
+
+    @staticmethod
+    def scale_list(util_list):
+        s = sum(util_list)
+        if s > 1:
+            log.info(f'Scaling list: {util_list}')
+            for i, item in enumerate(util_list):
+                util_list[i] = item / s
 
     @staticmethod
     def get_waste(util_list):
