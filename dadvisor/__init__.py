@@ -7,7 +7,7 @@ from dadvisor.analyzer import Analyzer
 from dadvisor.inspector import InspectorThread
 from dadvisor.log import log
 from dadvisor.nodes.node_actions import remove_node
-from dadvisor.waste import WasteCollector
+from dadvisor.stats import StatsCollector
 from dadvisor.web import get_app, run_app
 
 
@@ -20,7 +20,7 @@ def run_forever():
     container_collector = ContainerCollector()
     traffic_analyzer = Analyzer(container_collector, node_collector, loop)
     inspector_thread = InspectorThread(node_collector, traffic_analyzer)
-    waste_collector = WasteCollector(node_collector, container_collector)
+    stats_collector = StatsCollector(node_collector, container_collector)
 
     app = get_app(loop, node_collector, traffic_analyzer, container_collector)
 
@@ -32,7 +32,7 @@ def run_forever():
     loop.create_task(run_app(app))
     loop.create_task(node_collector.run())
     loop.create_task(container_collector.run())
-    loop.create_task(waste_collector.run())
+    loop.create_task(stats_collector.run())
 
     @atexit.register
     def on_exit():

@@ -1,13 +1,13 @@
 import asyncio
 from datetime import datetime, timedelta
 
-from prometheus_client import Gauge, Counter
+from prometheus_client import Counter
 
 from dadvisor.nodes.node_actions import get_container_utilization, get_container_stats
 from dadvisor.log import log
 
 
-class WasteCollector(object):
+class StatsCollector(object):
     """
     Collect information about other nodes. The dAdvisor needs to be fully connected, as it needs to communicate with
     other nodes if it detects a dataflow between its own peer and a remote peer.
@@ -17,30 +17,26 @@ class WasteCollector(object):
         self.running = True
         self.node_collector = node_collector
         self.container_collector = container_collector
+        self.prev_network_container = {}
 
-        self.util_container = Gauge('util_container', 'Utilization for a container', ['id'])
-        self.util_container_sum = Counter('util_container', 'Total utilization for a container', ['id'])
-        self.network_container = Gauge('network_container', 'Total amount of outgoing network', ['id'])
-        self.waste_container = Gauge('waste_container', 'Waste utilization for a container', ['id'])
-        self.waste_container_sum = Counter('waste_container', 'Total waste utilization for a container', ['id'])
-
-        self.container_collector.on_container_stopped.append(lambda x: self.remove_labels(x.hash))
+        self.util_container_sum = Counter('util_container', 'Total utilization for a container', ['dst'])
+        self.network_container_sum = Counter('network_container', 'Total amount of outgoing network', ['dst'])
+        self.waste_container_sum = Counter('waste_container', 'Total stats utilization for a container', ['dst'])
 
     async def run(self):
         while self.running:
             try:
                 now = datetime.utcnow()
-                # next_hour = now.replace(minute=0, second=0) + timedelta(hours=1)
-                next_hour = now + timedelta(minutes=1)
+                next_hour = now.replace(minute=0, second=0) + timedelta(hours=1)
                 sleep_time = (next_hour - now).seconds
                 await asyncio.sleep(sleep_time)
                 # Execute once per hour (in the first minute)
                 await self.compute_network_usage()
-                await self.compute_waste()
+                await self.compute_util_and_waste()
 
             except Exception as e:
                 log.error(e)
-        log.info('WasteCollector stopped')
+        log.info('StatsCollector stopped')
 
     async def compute_network_usage(self):
         data = await get_container_stats()
@@ -49,11 +45,13 @@ class WasteCollector(object):
             network_values = [self.get_network(value) for value in data.values()]
             self.filter_dadvisor(containers, network_values)
             for i, container in enumerate(containers):
-                self.network_container.labels(container).set(network_values[i])
+                prev = self.prev_network_container.get(container, 0)
+                self.prev_network_container[container] = network_values[i]
+                self.network_container_sum.labels(container).inc(network_values[i] - prev)
         except Exception as e:
             log.error(e)
 
-    async def compute_waste(self):
+    async def compute_util_and_waste(self):
         info = await get_container_utilization()
         try:
             containers = [docker_id[len('/docker/'):] for docker_id in info.keys()]
@@ -74,15 +72,8 @@ class WasteCollector(object):
         log.info(f'Waste: {waste_list}')
 
         for i, container in enumerate(containers):
-            self.util_container.labels(container).set(util_list[i])
             self.util_container_sum.labels(container).inc(util_list[i])
-            self.waste_container.labels(container).set(waste_list[i])
             self.waste_container_sum.labels(container).inc(waste_list[i])
-
-    def remove_labels(self, container_id):
-        self.network_container.labels(container_id).set(0)
-        self.util_container.labels(container_id).set(0)
-        self.waste_container.labels(container_id).set(0)
 
     def filter_dadvisor(self, containers, values):
         """ Don't compute utilization values about dAdvisor """
@@ -116,7 +107,7 @@ class WasteCollector(object):
     @staticmethod
     def get_waste(util_list):
         """
-        :return: A list of the waste per container, in the same order as the given util_list
+        :return: A list of the stats per container, in the same order as the given util_list
         """
         waste_list = []
         for u_i in util_list:
@@ -132,4 +123,3 @@ class WasteCollector(object):
 
     def stop(self):
         self.running = False
-        log.info('Stopping WasteCollector')
