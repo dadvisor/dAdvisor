@@ -39,6 +39,8 @@ TRAFFIC_K = int(os.environ.get('TRAFFIC_K', 9))
 TRAFFIC_SLEEP_MIN = int(os.environ.get('TRAFFIC_SLEEP_MIN', 1))
 TRAFFIC_SLEEP_MAX = int(os.environ.get('TRAFFIC_SLEEP_MAX', 150))
 
+SLEEP_TIME = int(os.environ.get('SLEEP_TIME', 60))
+
 PREFIX = '/dadvisor'
 
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
