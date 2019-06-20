@@ -1,10 +1,13 @@
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from prometheus_client import Counter
 
 from dadvisor.nodes.node_actions import get_container_utilization, get_container_stats
 from dadvisor.log import log
+
+SLEEP_TIME = 60
+FACTOR = 3600 / SLEEP_TIME
 
 
 class StatsCollector(object):
@@ -32,15 +35,17 @@ class StatsCollector(object):
                                                'Total memory waste percentage for a container', ['dst'])
 
     async def run(self):
+        elapsed = 0
+        now = datetime.utcnow()
         while self.running:
             try:
-                now = datetime.utcnow()
-                next_hour = now.replace(minute=0, second=0) + timedelta(hours=1)
-                sleep_time = (next_hour - now).seconds
-                await asyncio.sleep(sleep_time)
-                # Execute once per hour
+                await asyncio.sleep(SLEEP_TIME - elapsed)
+                # Execute once per SLEEP_TIME
                 await self.compute_network_usage()
                 await self.compute_util_and_waste()
+                now2 = datetime.utcnow()
+                elapsed = (now2 - now).seconds
+                now = now2
 
             except Exception as e:
                 log.error(e)
@@ -78,10 +83,10 @@ class StatsCollector(object):
         mem_waste_list = self.get_waste(mem_util_list)
 
         for i, container in enumerate(containers):
-            self.cpu_util_container_sum.labels(container).inc(cpu_util_list[i])
-            self.mem_util_container_sum.labels(container).inc(mem_util_list[i])
-            self.cpu_waste_container_sum.labels(container).inc(cpu_waste_list[i])
-            self.mem_waste_container_sum.labels(container).inc(mem_waste_list[i])
+            self.cpu_util_container_sum.labels(container).inc(cpu_util_list[i] * FACTOR)
+            self.mem_util_container_sum.labels(container).inc(mem_util_list[i] * FACTOR)
+            self.cpu_waste_container_sum.labels(container).inc(cpu_waste_list[i] * FACTOR)
+            self.mem_waste_container_sum.labels(container).inc(mem_waste_list[i] * FACTOR)
 
     def filter_dadvisor(self, containers, values):
         """ Don't compute utilization values about dAdvisor """
