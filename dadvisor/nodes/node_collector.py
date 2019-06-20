@@ -80,17 +80,19 @@ class NodeCollector(object):
 
     async def add_nodes(self, data_list):
         new_nodes = []
+        found_my_node = False
         for node_json in data_list['list']:
             node_data = node_json['node']
             node = Node(node_data['ip'], int(node_data['port']), node_data['is_super_node'])
+
             if node == self.my_node:
-                continue
-            try:
-                if node not in self.other_nodes:
-                    self.loop.create_task(self.set_node_info(node, await get_node_info(node)))
-                    new_nodes.append(node)
-            except Exception as e:
-                log.error(e)
+                found_my_node = True
+            elif node not in self.other_nodes:
+                self.loop.create_task(self.set_node_info(node, await get_node_info(node)))
+                new_nodes.append(node)
+
+        if not found_my_node:
+            register_node(self.loop, self.my_node)
         self.other_nodes += new_nodes
 
     async def check_nodes(self):
