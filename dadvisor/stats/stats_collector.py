@@ -75,6 +75,9 @@ class StatsCollector(object):
             log.error(e)
             return
 
+        if not util_list:
+            return
+
         cpu_util_list, mem_util_list = zip(*util_list)
 
         self.scale_list(cpu_util_list)
