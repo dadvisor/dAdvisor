@@ -22,17 +22,17 @@ class StatsCollector(object):
         self.container_collector = container_collector
         self.prev_network_container = {}
 
-        self.network_container_sum = Counter('network_container', 'Total amount of outgoing network', ['dst'])
+        self.network_container_sum = Counter('network_container', 'Total amount of outgoing network', ['src'])
 
         self.cpu_util_container_sum = Counter('cpu_util_container',
-                                              'Total CPU utilization percentage for a container', ['dst'])
+                                              'Total CPU utilization percentage for a container', ['src'])
         self.mem_util_container_sum = Counter('mem_util_container',
-                                              'Total memory utilization percentage for a container', ['dst'])
+                                              'Total memory utilization percentage for a container', ['src'])
 
         self.cpu_waste_container_sum = Counter('cpu_waste_container',
-                                               'Total CPU waste percentage for a container', ['dst'])
+                                               'Total CPU waste percentage for a container', ['src'])
         self.mem_waste_container_sum = Counter('mem_waste_container',
-                                               'Total memory waste percentage for a container', ['dst'])
+                                               'Total memory waste percentage for a container', ['src'])
 
     async def run(self):
         elapsed = 0
