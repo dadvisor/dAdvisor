@@ -114,8 +114,8 @@ class StatsCollector(object):
         try:
             cores = self.node_collector.my_node_stats.get('num_cores', 1)
             memory = self.node_collector.my_node_stats.get('memory', 8*2**30)
-            cpu = value['hour_usage']['cpu']['mean'] / (cores * 1000.0)
-            memory_percentage = value['hour_usage']['memory']['mean'] / memory
+            cpu = value['minute_usage']['cpu']['mean'] / (cores * 1000.0)
+            memory_percentage = value['minute_usage']['memory']['mean'] / memory
             return cpu, memory_percentage
         except Exception as e:
             log.error(e)
