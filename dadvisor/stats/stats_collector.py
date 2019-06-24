@@ -7,7 +7,7 @@ from dadvisor.config import SLEEP_TIME
 from dadvisor.nodes.node_actions import get_container_utilization, get_container_stats
 from dadvisor.log import log
 
-FACTOR = 3600 / SLEEP_TIME
+FACTOR = SLEEP_TIME / 3600
 
 
 class StatsCollector(object):
@@ -41,7 +41,6 @@ class StatsCollector(object):
             try:
                 await asyncio.sleep(SLEEP_TIME - elapsed)
                 # Execute once per SLEEP_TIME
-                log.info('Computing statistics')
                 await self.compute_network_usage()
                 await self.compute_util_and_waste()
                 now2 = datetime.utcnow()
