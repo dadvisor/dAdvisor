@@ -3,7 +3,7 @@ from datetime import datetime
 
 from prometheus_client import Counter
 
-from dadvisor.config import SLEEP_TIME
+from dadvisor.config import SLEEP_TIME, IP
 from dadvisor.nodes.node_actions import get_container_utilization, get_container_stats
 from dadvisor.log import log
 
@@ -22,17 +22,22 @@ class StatsCollector(object):
         self.container_collector = container_collector
         self.prev_network_container = {}
 
-        self.network_container_sum = Counter('network_container', 'Total amount of outgoing network', ['src'])
+        self.network_container_sum = Counter('network_container', 'Total amount of outgoing network',
+                                             ['src', 'src_host'])
 
         self.cpu_util_container_sum = Counter('cpu_util_container',
-                                              'Total CPU utilization percentage for a container', ['src'])
+                                              'Total CPU utilization percentage for a container',
+                                              ['src', 'src_host'])
         self.mem_util_container_sum = Counter('mem_util_container',
-                                              'Total memory utilization percentage for a container', ['src'])
+                                              'Total memory utilization percentage for a container',
+                                              ['src', 'src_host'])
 
         self.cpu_waste_container_sum = Counter('cpu_waste_container',
-                                               'Total CPU waste percentage for a container', ['src'])
+                                               'Total CPU waste percentage for a container',
+                                               ['src', 'src_host'])
         self.mem_waste_container_sum = Counter('mem_waste_container',
-                                               'Total memory waste percentage for a container', ['src'])
+                                               'Total memory waste percentage for a container',
+                                               ['src', 'src_host'])
 
     async def run(self):
         elapsed = 0
@@ -60,7 +65,8 @@ class StatsCollector(object):
             for i, container in enumerate(containers):
                 prev = self.prev_network_container.get(container, 0)
                 self.prev_network_container[container] = network_values[i]
-                self.network_container_sum.labels(container).inc(network_values[i] - prev)
+                self.network_container_sum.labels(src=container, src_host=IP)\
+                    .inc(network_values[i] - prev)
         except Exception as e:
             log.error(e)
 
@@ -88,10 +94,14 @@ class StatsCollector(object):
         log.info(cpu_util_list)
 
         for i, container in enumerate(containers):
-            self.cpu_util_container_sum.labels(container).inc(cpu_util_list[i] * FACTOR)
-            self.mem_util_container_sum.labels(container).inc(mem_util_list[i] * FACTOR)
-            self.cpu_waste_container_sum.labels(container).inc(cpu_waste_list[i] * FACTOR)
-            self.mem_waste_container_sum.labels(container).inc(mem_waste_list[i] * FACTOR)
+            self.cpu_util_container_sum.labels(src=container, src_host=IP)\
+                .inc(cpu_util_list[i] * FACTOR)
+            self.mem_util_container_sum.labels(src=container, src_host=IP)\
+                .inc(mem_util_list[i] * FACTOR)
+            self.cpu_waste_container_sum.labels(src=container, src_host=IP)\
+                .inc(cpu_waste_list[i] * FACTOR)
+            self.mem_waste_container_sum.labels(src=container, src_host=IP)\
+                .inc(mem_waste_list[i] * FACTOR)
 
     def filter_dadvisor(self, containers, values):
         """ Don't compute utilization values about dAdvisor """

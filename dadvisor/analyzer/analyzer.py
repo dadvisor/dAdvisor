@@ -5,6 +5,7 @@ from prometheus_client import Counter
 
 from dadvisor import ContainerCollector, NodeCollector
 from dadvisor.analyzer.dataflow_cache import DataFlowCache
+from dadvisor.config import IP
 from dadvisor.datatypes.dataflow import DataFlow
 
 
@@ -16,7 +17,8 @@ class Analyzer(object):
         self.node_collector = node_collector
         self.loop = loop
         self.port_mapping: Dict[int, str] = {}  # a dict from port to container IP
-        self.counter = Counter('bytes_send', 'Number of bytes send between two nodes', ['src', 'dst'])
+        self.counter = Counter('bytes_send', 'Number of bytes send between two nodes',
+                               ['src', 'dst', 'src_host'])
         self.cache = DataFlowCache(self.counter)
 
         self.ports: OrderedDict[int, str] = OrderedDict()
@@ -33,7 +35,7 @@ class Analyzer(object):
             src_hash = self.container_collector.ip_to_hash(dataflow.src.container)
             dst_hash = self.container_collector.ip_to_hash(dataflow.dst.container)
             if src_hash and dst_hash:
-                self.counter.labels(src=src_hash, dst=dst_hash).inc(dataflow.size)
+                self.counter.labels(src=src_hash, dst=dst_hash, src_host=IP).inc(dataflow.size)
         elif not dataflow.dst.is_local():
             # src is local
             # dst is not local

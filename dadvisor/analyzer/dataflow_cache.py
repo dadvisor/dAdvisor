@@ -1,5 +1,6 @@
 from typing import Dict, List, Tuple
 
+from dadvisor.config import IP
 from dadvisor.log import log
 from dadvisor.nodes.node_actions import get_mapping
 
@@ -53,9 +54,11 @@ class DataFlowCache(object):
                     remote_hash = containers.get(ip, None)
                     if local_hash and remote_hash:
                         if from_to == TO:
-                            self.counter.labels(src=local_hash, dst=remote_hash).inc(size)
+                            self.counter.labels(src=local_hash, dst=remote_hash, src_host=IP)\
+                                .inc(size)
                         elif from_to == FROM:
-                            self.counter.labels(src=remote_hash, dst=local_hash).inc(size)
+                            self.counter.labels(src=remote_hash, dst=local_hash, src_host=IP)\
+                                .inc(size)
                 try:
                     del self.cache[ip]
                 except KeyError:
