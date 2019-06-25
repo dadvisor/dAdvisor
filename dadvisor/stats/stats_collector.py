@@ -36,17 +36,16 @@ class StatsCollector(object):
 
     async def run(self):
         elapsed = 0
-        now = datetime.utcnow()
         while self.running:
             try:
                 await asyncio.sleep(SLEEP_TIME - elapsed)
+                now = datetime.utcnow()
                 log.info(f'Sleeping {SLEEP_TIME - elapsed} sec')
                 # Execute once per SLEEP_TIME
                 await self.compute_network_usage()
                 await self.compute_util_and_waste()
                 now2 = datetime.utcnow()
                 elapsed = (now2 - now).seconds
-                now = now2
 
             except Exception as e:
                 log.error(e)
