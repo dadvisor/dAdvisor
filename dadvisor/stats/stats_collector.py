@@ -40,6 +40,7 @@ class StatsCollector(object):
         while self.running:
             try:
                 await asyncio.sleep(SLEEP_TIME - elapsed)
+                log.info(f'Sleeping {SLEEP_TIME - elapsed} sec')
                 # Execute once per SLEEP_TIME
                 await self.compute_network_usage()
                 await self.compute_util_and_waste()
