@@ -85,6 +85,8 @@ class StatsCollector(object):
         cpu_waste_list = self.get_waste(cpu_util_list)
         mem_waste_list = self.get_waste(mem_util_list)
 
+        log.info(cpu_util_list)
+
         for i, container in enumerate(containers):
             self.cpu_util_container_sum.labels(container).inc(cpu_util_list[i] * FACTOR)
             self.mem_util_container_sum.labels(container).inc(mem_util_list[i] * FACTOR)
