@@ -64,6 +64,7 @@ class StatsCollector(object):
             self.filter_dadvisor(containers, network_values)
             for i, container in enumerate(containers):
                 prev = self.prev_network_container.get(container, 0)
+                log.info(f'Container {container}: {prev}')
                 self.prev_network_container[container] = network_values[i]
                 self.network_container_sum.labels(src=container, src_host=IP)\
                     .inc(network_values[i] - prev)
