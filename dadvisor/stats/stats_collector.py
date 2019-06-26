@@ -66,7 +66,7 @@ class StatsCollector(object):
                 prev = self.prev_network_container.get(container, 0)
                 log.info(f'Container {container}: {prev}')
                 self.prev_network_container[container] = network_values[i]
-                self.network_container_sum.labels(src=container, src_host=IP)\
+                self.network_container_sum.labels(src=container, src_host=IP) \
                     .inc(network_values[i] - prev)
         except Exception as e:
             log.error(e)
@@ -95,13 +95,13 @@ class StatsCollector(object):
         log.info(cpu_util_list)
 
         for i, container in enumerate(containers):
-            self.cpu_util_container_sum.labels(src=container, src_host=IP)\
+            self.cpu_util_container_sum.labels(src=container, src_host=IP) \
                 .inc(cpu_util_list[i] * FACTOR)
-            self.mem_util_container_sum.labels(src=container, src_host=IP)\
+            self.mem_util_container_sum.labels(src=container, src_host=IP) \
                 .inc(mem_util_list[i] * FACTOR)
-            self.cpu_waste_container_sum.labels(src=container, src_host=IP)\
+            self.cpu_waste_container_sum.labels(src=container, src_host=IP) \
                 .inc(cpu_waste_list[i] * FACTOR)
-            self.mem_waste_container_sum.labels(src=container, src_host=IP)\
+            self.mem_waste_container_sum.labels(src=container, src_host=IP) \
                 .inc(mem_waste_list[i] * FACTOR)
 
     def filter_dadvisor(self, containers, values):
@@ -116,12 +116,11 @@ class StatsCollector(object):
     @staticmethod
     def get_network(value):
         amount = 0
+        row = value[0]
         try:
-            row = value[0]
             network = row['network']
             interfaces = network['interfaces']
-            interface = interfaces[0]
-            amount = interface['tx_bytes']
+            amount = sum(interface['tx_bytes'] for interface in interfaces)
         except Exception as e:
             log.error(e)
         return amount
@@ -129,7 +128,7 @@ class StatsCollector(object):
     def get_util(self, value):
         try:
             cores = self.node_collector.my_node_stats.get('num_cores', 1)
-            memory = self.node_collector.my_node_stats.get('memory', 8*2**30)
+            memory = self.node_collector.my_node_stats.get('memory', 8 * 2 ** 30)
             cpu = value['minute_usage']['cpu']['mean'] / (cores * 1000.0)
             memory_percentage = value['minute_usage']['memory']['mean'] / memory
             return cpu, memory_percentage
