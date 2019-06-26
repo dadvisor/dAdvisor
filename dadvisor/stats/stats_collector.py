@@ -116,13 +116,14 @@ class StatsCollector(object):
     @staticmethod
     def get_network(value):
         amount = 0
-        for row in value:
-            try:
-                network = row['network']
-                interfaces = network['interfaces']
-                amount += sum(interface['tx_bytes'] for interface in interfaces)
-            except Exception as e:
-                log.error(e)
+        try:
+            row = value[0]
+            network = row['network']
+            interfaces = network['interfaces']
+            interface = interfaces[0]
+            amount = interface['tx_bytes']
+        except Exception as e:
+            log.error(e)
         return amount
 
     def get_util(self, value):
