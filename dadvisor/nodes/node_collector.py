@@ -88,7 +88,7 @@ class NodeCollector(object):
             if node == self.my_node:
                 found_my_node = True
             elif node not in self.other_nodes:
-                self.loop.create_task(self.set_node_info(node, await get_node_info(node)))
+                self.set_node_info(node, await get_node_info(node))
                 new_nodes.append(node)
 
         if not found_my_node:

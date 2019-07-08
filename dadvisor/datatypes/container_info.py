@@ -59,6 +59,7 @@ class ContainerInfo(object):
                 else:
                     networks = data['NetworkSettings']['Networks']
                     self.ip = next(iter(networks.values()))['IPAddress']
+                    # TODO: instead of the first network value, take all values
                 INFO.labels(hash=self.hash).info({
                     'host': IP,
                     'created': self.created,
