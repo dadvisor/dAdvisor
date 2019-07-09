@@ -58,6 +58,7 @@ class InspectorThread(Thread):
                 multiplier = (sleep_time + elapsed) / elapsed
             else:
                 multiplier = 1
+            log.info(f'Multiplier: {multiplier}')
 
             log.info('Sleeping for: {} sec'.format(sleep_time))
             time.sleep(sleep_time)

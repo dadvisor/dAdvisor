@@ -40,7 +40,7 @@ class DataFlowCache(object):
 
             node = nodes_collector.is_other_node(ip)
             if not node:
-                log.error('Node not found')
+                log.error(f'Node not found {ip}')
                 continue
 
             try:
