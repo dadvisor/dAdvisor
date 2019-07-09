@@ -21,6 +21,7 @@ class InspectorThread(Thread):
     def run(self):
         self.check_installation()
         command = self.get_tcpdump_command()
+        multiplier = 1
 
         while self.running:
             """
@@ -30,7 +31,6 @@ class InspectorThread(Thread):
             2. Resolve these requests by communicating with the other nodes
             3. Sleep k*X seconds, with a lower- and upperbound.
             """
-
             start_time = time.time()
             p = subprocess.Popen(command, stdout=subprocess.PIPE)
 
@@ -38,7 +38,7 @@ class InspectorThread(Thread):
             for row in iter(p.stdout.readline, b''):
                 try:
                     dataflow = parse_row(row.decode('utf-8'))
-                    dataflow.size = dataflow.size * (TRAFFIC_K + 1)
+                    dataflow.size = dataflow.size * multiplier
                     self.analyser.loop.create_task(self.analyser.analyse_dataflow(dataflow))
                 except Exception as e:
                     log.error(e)
@@ -53,6 +53,12 @@ class InspectorThread(Thread):
             # sleep K times the elapsed time. Minus the time it takes to resolve the cache
             sleep_time = TRAFFIC_K * elapsed - (time.time() - end_time)
             sleep_time = min(max(sleep_time, TRAFFIC_SLEEP_MIN), TRAFFIC_SLEEP_MAX)
+
+            if elapsed != 0:
+                multiplier = (sleep_time + elapsed) / elapsed
+            else:
+                multiplier = 1
+
             log.info('Sleeping for: {} sec'.format(sleep_time))
             time.sleep(sleep_time)
 
