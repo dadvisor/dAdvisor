@@ -12,9 +12,10 @@ class InspectorThread(Thread):
     Reads data from the tcpdump program and store it in a queue, so that it can be processed further
     """
 
-    def __init__(self, node_collector, analyser):
+    def __init__(self, node_collector, container_collector, analyser):
         Thread.__init__(self, name='InspectorThread')
         self.node_collector = node_collector
+        self.container_collector = container_collector
         self.analyser = analyser
         self.running = True
 
@@ -37,7 +38,7 @@ class InspectorThread(Thread):
             # parse results
             for row in iter(p.stdout.readline, b''):
                 try:
-                    dataflow = parse_row(row.decode('utf-8'))
+                    dataflow = parse_row(self.container_collector, row.decode('utf-8'))
                     dataflow.size = dataflow.size * multiplier
                     self.analyser.loop.create_task(self.analyser.analyse_dataflow(dataflow))
                 except Exception as e:

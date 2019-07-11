@@ -1,7 +1,7 @@
 from dadvisor.datatypes.dataflow import DataFlow
 
 
-def to_address(address):
+def to_address(container_collector, address):
     """
     Returns an Address-obj containing the host, port, and possibly container
     """
@@ -9,7 +9,8 @@ def to_address(address):
 
     address = address.rstrip('.:')  # remove last . and :
     array = address.split('.')
-    return Address.decode('.'.join(array[:-1]), int(array[-1]))
+    return Address.decode(container_collector,
+                          '.'.join(array[:-1]), int(array[-1]))
 
 
 def parse_size(s):
@@ -22,11 +23,11 @@ def parse_size(s):
     return int(s)
 
 
-def parse_row(row):
+def parse_row(container_collector, row):
     row = row.rstrip()
     parts = row.split(' ')
-    src = to_address(parts[1])
-    dst = to_address(parts[3])
+    src = to_address(container_collector, parts[1])
+    dst = to_address(container_collector, parts[3])
 
     try:
         size = parse_size(parts[-1])

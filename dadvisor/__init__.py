@@ -19,7 +19,7 @@ def run_forever():
     node_collector = NodeCollector(loop)
     container_collector = ContainerCollector()
     traffic_analyzer = Analyzer(container_collector, node_collector, loop)
-    inspector_thread = InspectorThread(node_collector, traffic_analyzer)
+    inspector_thread = InspectorThread(node_collector, container_collector, traffic_analyzer)
     stats_collector = StatsCollector(node_collector, container_collector)
 
     app = get_app(loop, node_collector, traffic_analyzer, container_collector)

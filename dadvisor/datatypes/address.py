@@ -31,12 +31,12 @@ class Address(object):
         return self.host == IP
 
     @staticmethod
-    def decode(host_container, port):
+    def decode(container_collector, host_container, port):
         """
         :param host_container: either the address of a container, or of a host
         :param port:
         :return:
         """
-        if re.match(r'172.\d+.0.\d+', host_container):
+        if host_container in container_collector.container_mapping.keys():
             return Address(IP, host_container, port)
         return Address(host_container, '', port)
