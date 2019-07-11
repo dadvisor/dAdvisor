@@ -6,6 +6,8 @@ from dadvisor.config import FILTER_PORTS, TRAFFIC_SAMPLE, TRAFFIC_K, TRAFFIC_SLE
 from dadvisor.inspector.parser import parse_row
 from dadvisor.log import log
 
+HEADER_SIZE = 64
+
 
 class InspectorThread(Thread):
     """
@@ -39,7 +41,7 @@ class InspectorThread(Thread):
             for row in iter(p.stdout.readline, b''):
                 try:
                     dataflow = parse_row(self.container_collector, row.decode('utf-8'))
-                    dataflow.size = dataflow.size * multiplier
+                    dataflow.size = (dataflow.size + HEADER_SIZE) * multiplier
                     self.analyser.loop.create_task(self.analyser.analyse_dataflow(dataflow))
                 except Exception as e:
                     log.error(e)
